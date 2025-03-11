@@ -2,15 +2,15 @@
 (: schema Type)
 (: operator Type)
 ;;Time dependent schematics
-;; scon stands for schema constructor
-(: scon (-> $context $action $time $goal schema))
-;;Time independent schematics
-(: scon (-> $context $action $goal schema))
+;; schema constructor
+(: Scon (-> $context $action  schema))
 (: truthValue Type)
 ;; The truth-value data-type containing second-order probabilities.
-(: Tv (-> Number Number truthValue))
+(: TV (-> Number Number truthValue))
 (: ImplicationLink Type)
-(: ImplicationLink (-> schema goal truthValue ImplicationLink))
+(: ImplicationLink (-> schema $goal truthValue ImplicationLink))
+(: TemporalImplicationLink Type)
+(: TemporalImplicationLink (-> schema $goal $time truthValue TemporalImplicationLink))
 
 
 !(let* (
