@@ -3,6 +3,7 @@
 (: operator Type)
 ;;Time dependent schematics
 (: scon (-> $context $action $time $goal schema))
+;;Time independent schematics
 (: scon (-> $context $action $goal schema))
 !(let* (
     ($schema (scon first act 2 final))
