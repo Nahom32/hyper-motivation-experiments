@@ -21,5 +21,6 @@
     ($type $type-2)
 )
 (=(get-schemas-with-time-cycle $kb $time-cycle)
-    (collapse (match $kb (scon $context $action $time-cycle $goal)))
+    (collapse (match $kb (TemporalImplicationLink $schema $goal $time $truthValue) $schema))
+    
 )
