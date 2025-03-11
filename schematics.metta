@@ -1,6 +1,5 @@
 !(bind! &kb (new-space))
 (: schema Type)
-(: operator Type)
 ;;Time dependent schematics
 ;; schema constructor
 (: Scon (-> $context $action  schema))
