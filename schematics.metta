@@ -1,15 +1,15 @@
 !(bind! &kb (new-space))
-(: schema Type)
+(: Schema Type)
 ;;Time dependent schematics
 ;; schema constructor
-(: Scon (-> $context $action  schema))
+(: Scon (-> $context $action  Schema))
 (: truthValue Type)
 ;; The truth-value data-type containing second-order probabilities.
 (: TV (-> Number Number truthValue))
 (: ImplicationLink Type)
-(: ImplicationLink (-> schema $goal truthValue ImplicationLink))
+(: ImplicationLink (-> Schema $goal truthValue ImplicationLink))
 (: TemporalImplicationLink Type)
-(: TemporalImplicationLink (-> schema $goal $time truthValue TemporalImplicationLink))
+(: TemporalImplicationLink (-> Schema $goal $time truthValue TemporalImplicationLink))
 
 
 !(let* (
