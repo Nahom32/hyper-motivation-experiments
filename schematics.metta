@@ -8,7 +8,9 @@
 (: scon (-> $context $action $goal schema))
 (: truthValue Type)
 ;; The truth-value data-type containing second-order probabilities.
-(: tv (-> Number Number truthValue))
+(: Tv (-> Number Number truthValue))
+(: ImplicationLink Type)
+(: ImplicationLink (-> schema goal truthValue ImplicationLink))
 
 
 !(let* (
