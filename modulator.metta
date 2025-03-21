@@ -6,11 +6,12 @@
 
 (: insert-modulators (-> Atom empty))
 (= (insert-modulators $space) (add-reduct $space (superpose (
-    (modulator Valence 0.5)
-    (modulator Resolution-level 0.5)
-    (modulator Securing-threshold 0.5)
-    (modulator Activation-threshold 0.5)
-    
+        (modulator arousal 0.5)
+        (modulator positive-valence 0.5)
+        (modulator negative-valence 0.5)
+        (modulator selection-threshold 0.5)
+        (modulator securing-threshold 0.5)
+        (modulator goal-directedness 0.5)
     
 ))))
 
