@@ -15,5 +15,9 @@
     
 ))))
 
+(= (fetch-modulator $space $name)
+    (match $space (modulator $name $x) (modulator $name $x))
+)
 !(insert-modulators &modulator-space)
+!(fetch-modulator &modulator-space securing-threshold)
 !(get-atoms &modulator-space)
