@@ -18,6 +18,11 @@
 (= (fetch-modulator $space $name)
     (match $space (modulator $name $x) (modulator $name $x))
 )
+
+(= (fetch-modulator-val $space $name)
+    (let ($x $y $z) (fetch-modulator $space $name) $z)
+)
 !(insert-modulators &modulator-space)
 !(fetch-modulator &modulator-space securing-threshold)
+!(fetch-modulator-val &modulator-space securing-threshold)
 !(get-atoms &modulator-space)
