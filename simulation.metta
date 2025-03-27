@@ -32,10 +32,16 @@
         (ERROR (provide unique values))
     )
 )
+(= (isInBetween $val $a $b) (if (and (>= $val $a) (<= $val $b)) True False))
+(= (add-modulator $space (modulator $name $value))
+    (if (isInBetween $value 0 1) (add-atom $space (modulator $name $value)) (Error (value is incorrect))))
 
 !(insert-modulators &modulator-space)
 !(fetch-modulator &modulator-space securing-threshold)
 !(fetch-modulator-val &modulator-space securing-threshold)
+
+!(add-modulator &modulator-space (modulator custom 0.8))
 !(get-atoms &modulator-space)
 !(normalize-value 6.0)
-!(normalize-value 9.0)
+;; !(normalize-value 9.0)
+!(get-atoms &modulator-space)

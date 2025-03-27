@@ -20,3 +20,4 @@
 ;; (= (peanoMult' (S $Z1) Z (S $Z3)) Z)
 (= (peanoMult $exp1 $exp2) (peanoMult' $exp1 $exp2 $exp1))
 !(numConv (peanoMult (peanoGen 5) (peanoGen 5)))
+;; (= (curr $a $b $c)((curr $a) $b) $c) 
