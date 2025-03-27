@@ -15,3 +15,8 @@
 (= (peanoSum (S $Z1) Z) (S (peanoSum $Z1 Z)))
 (= (peanoSum Z (S $Z2)) (S (peanoSum Z $Z2)))
 !(numConv (peanoSum (peanoGen 15) (peanoGen 13)))
+(= (peanoMult' (S $Z1) (S $Z2) (S $Z3)) (peanoMult' (peanoSum (S $Z1) (S $Z3)) $Z2 (S $Z3)))
+(= (peanoMult' (S $Z1) (S Z) (S $Z3)) (S $Z1))
+;; (= (peanoMult' (S $Z1) Z (S $Z3)) Z)
+(= (peanoMult $exp1 $exp2) (peanoMult' $exp1 $exp2 $exp1))
+!(numConv (peanoMult (peanoGen 5) (peanoGen 5)))
