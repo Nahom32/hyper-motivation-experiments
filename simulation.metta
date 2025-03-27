@@ -2,6 +2,9 @@
 (: modulator (-> Symbol Number Modulator))
 (: Category Type)
 (: category (-> Symbol Category))
+(: Goal Type)
+(: goal (-> Symbol Goal))
+(goal Ping)
 !(bind! &modulator-space (new-space))
 
 (: insert-modulators (-> Atom empty))
