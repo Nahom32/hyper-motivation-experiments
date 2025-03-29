@@ -15,7 +15,4 @@
     (get-type $schema)
 )
 
-(= (get-schemas-with-time-cycle $kb $time-cycle)
-    (collapse (match $kb (TemporalImplicationLink $schema $goal $time $truthValue) $schema))
-    
-)
+(= (get-schemas-with-time-cycle $kb $time-cycle) (collapse (match $kb (TemporalImplicationLink $schema $goal $time $truthValue) $schema)))

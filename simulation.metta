@@ -4,9 +4,12 @@
 (: category (-> Symbol Category))
 (: Goal Type)
 (: goal (-> Symbol Goal))
+(: Link Type)
+(: link (-> Category Symbol Link))
+
 (goal Ping)
 !(bind! &modulator-space (new-space))
-
+!(bind! &relation-space (new-space))
 (: insert-modulators (-> Atom empty))
 (= (insert-modulators $space) (add-reduct $space (superpose (
         (modulator arousal 0.5)
@@ -36,6 +39,7 @@
 (= (add-modulator $space (modulator $name $value))
     (if (isInBetween $value 0 1) (add-atom $space (modulator $name $value)) (Error (value is incorrect))))
 
+(= (add-category $name) (add-atom &self (category $name)))
 !(insert-modulators &modulator-space)
 !(fetch-modulator &modulator-space securing-threshold)
 !(fetch-modulator-val &modulator-space securing-threshold)
