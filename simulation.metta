@@ -9,7 +9,10 @@
 
 (goal Ping)
 !(bind! &modulator-space (new-space))
-!(bind! &relation-space (new-space))
+!(bind! &relation-space (new-space)) ;; a relation-space for adding links between categories and modulators
+!(bind! &category-space (new-space)) ;; a space for adding new categories
+
+
 (: insert-modulators (-> Atom empty))
 (= (insert-modulators $space) (add-reduct $space (superpose (
         (modulator arousal 0.5)
@@ -21,8 +24,9 @@
     
 ))))
 
+(: fetch-modulator (-> hyperon::space::DynSpace Symbol Expression))
 (= (fetch-modulator $space $name)
-    (match $space (modulator $name $x) (modulator $name $x))
+    (collapse (match $space (modulator $name $x) (modulator $name $x)))
 )
 (: fetch-modulator-val (-> hyperon::space::DynSpace Symbol Number))
 (= (fetch-modulator-val $space $name)
@@ -39,7 +43,9 @@
 (= (add-modulator $space (modulator $name $value))
     (if (isInBetween $value 0 1) (add-atom $space (modulator $name $value)) (Error (value is incorrect))))
 
-(= (add-category $name) (add-atom &self (category $name)))
+(: add-category (-> hyperon::space::DynSpace Symbol empty))
+
+(= (add-category $space $name) (add-atom $space (category $name)))
 !(insert-modulators &modulator-space)
 !(fetch-modulator &modulator-space securing-threshold)
 !(fetch-modulator-val &modulator-space securing-threshold)
