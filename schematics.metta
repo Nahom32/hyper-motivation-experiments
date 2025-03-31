@@ -1,4 +1,5 @@
 !(bind! &kb (new-space))
+!(bind! &category-space (new-space)) ;; a space for adding new categories
 (: Schema Type)
 ;;Time dependent schematics
 ;; schema constructor
@@ -16,3 +17,6 @@
 )
 
 (= (get-schemas-with-time-cycle $kb $time-cycle) (collapse (match $kb (TemporalImplicationLink $schema $goal $time $truthValue) $schema)))
+
+(: add-category (-> hyperon::space::DynSpace Symbol empty))
+(= (add-category $space $name) (add-atom $space (category $name)))

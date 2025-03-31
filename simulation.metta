@@ -10,7 +10,7 @@
 (goal Ping)
 !(bind! &modulator-space (new-space))
 !(bind! &relation-space (new-space)) ;; a relation-space for adding links between categories and modulators
-!(bind! &category-space (new-space)) ;; a space for adding new categories
+
 
 
 (: insert-modulators (-> Atom empty))
@@ -39,13 +39,14 @@
         (ERROR (provide unique values))
     )
 )
+(: isInBetween (-> Number Number Number Bool))
 (= (isInBetween $val $a $b) (if (and (>= $val $a) (<= $val $b)) True False))
+
+
 (= (add-modulator $space (modulator $name $value))
     (if (isInBetween $value 0 1) (add-atom $space (modulator $name $value)) (Error (value is incorrect))))
 
-(: add-category (-> hyperon::space::DynSpace Symbol empty))
 
-(= (add-category $space $name) (add-atom $space (category $name)))
 !(insert-modulators &modulator-space)
 !(fetch-modulator &modulator-space securing-threshold)
 !(fetch-modulator-val &modulator-space securing-threshold)
