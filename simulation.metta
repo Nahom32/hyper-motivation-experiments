@@ -1,15 +1,8 @@
 (: Modulator Type)
 (: modulator (-> Symbol Number Modulator))
-(: Category Type)
-(: category (-> Symbol Category))
-(: Goal Type)
-(: goal (-> Symbol Goal))
-(: Link Type)
-(: link (-> Category Symbol Link))
 
-(goal Ping)
-!(bind! &modulator-space (new-space))
-!(bind! &relation-space (new-space)) ;; a relation-space for adding links between categories and modulators
+
+!(bind! &modulator-space (new-space)) ;; a relation-space for adding links between categories and rules
 
 
 
