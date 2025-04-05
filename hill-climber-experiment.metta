@@ -1,5 +1,6 @@
 !(bind! &action-space (new-space))
 !(bind! &rule-space (new-space))
+
 ;; A proof of concept for the hill climbing algorithm
 
 (: Action Type)
@@ -16,10 +17,18 @@
             )
     )
 )
-
-(= (hill-climbing $space)
-    ()
+(= (add-states $space)
+    (add-reduct $space (superpose (
+                    (state hungry)
+                    (state satisfied)
+            )
+        )
+    )
 )
+
+;; (= (hill-climbing $space)
+;;     ()
+;; )
 
 (= (add-action $space $verb)
     (add-atom $space (action $verb))
