@@ -3,6 +3,7 @@
 !(bind! &state-space (new-space))
 
 ;; A proof of concept for the hill climbing algorithm
+;; I took operators as actions
 
 (: Action Type)
 (: State Type)
@@ -39,13 +40,16 @@
     )))
 )
 
-;; (= (hill-climbing $space)
-;;     ()
-;; )
-
 (= (add-action $space $verb)
     (add-atom $space (action $verb))
 )
+(= (hill-climb-planner $init-state $init-action $goal)
+    (let $goals (collapse (match &rule-space (rule (state $init-state) (action $init-action) $x $y)))
+
+    )
+
+)
+
 !(add-actions &action-space)
 !(add-action &action-space write)
 !(get-atoms &action-space)
