@@ -12,9 +12,10 @@
 (: action (-> Symbol Action))
 (= (add-actions $space)
     (add-reduct $space (superpose ( 
-                            (action eat)
+                            (action idle)
                             (action walk)
                             (action turn)
+                            (action eat)
 
                             )
             )
@@ -23,10 +24,19 @@
 (= (add-states $space)
     (add-reduct $space (superpose (
                     (state hungry)
+                    (state hope)
                     (state satisfied)
             )
         )
     )
+)
+(= (add-rules $space)
+    (add-reduct $space (superpose (
+        (rule (state hungry) (action idle) (state hungry) 0)
+        (rule (state hungry) (action walk) (state hope) 0.3)
+        (rule (state hope) (action eat) (state satisfied) 0.7)
+
+    )))
 )
 
 ;; (= (hill-climbing $space)
