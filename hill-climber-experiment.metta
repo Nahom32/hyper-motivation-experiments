@@ -43,11 +43,12 @@
 (= (add-action $space $verb)
     (add-atom $space (action $verb))
 )
+(: hill-climb-planner (-> Symbol Symbol Symbol Expression Expression))
 (= (hill-climb-planner $init-state $init-action $goal $accum)
     (if ( == $init-action $goal)
         $accum
         (let* ( 
-            ($goal-vals (collapse (match &rule-space (rule (state $init-state) (action $init-action) $x $y) ($x $y)))) 
+            ($goal-vals (collapse (match &rule-space (rule (state $init-state) (action $init-action) (state $x) $y) ($x $y)))) 
         )
             $goal-vals
         )
@@ -55,11 +56,14 @@
 
 )
 
+
 !(add-actions &action-space)
 !(add-action &action-space write)
 !(add-rules &rule-space)
 !(add-states &state-space)
+!(collapse (match &rule-space 
+                    (rule (state $init-state) (action $init-action) (state $x) $y) ($x $y)))
 ;; !(get-atoms &action-space)
-!(hill-climb-plannner hungry idle satisfied ())
+!(hill-climb-planner hungry idle satisfied ())
 ;; (= (blend $concept1 $concept2) (union-atom $concept1 $concept2))
 ;; !(blend (fir) (sec))
