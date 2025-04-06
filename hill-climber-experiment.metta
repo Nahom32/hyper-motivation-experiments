@@ -8,7 +8,7 @@
 (: Action Type)
 (: State Type)
 (: Rule Type)
-(: rule (-> State Action Number Rule))
+(: rule (-> State Action State Number Rule))
 (: state (-> Symbol State))
 (: action (-> Symbol Action))
 (= (add-actions $space)
@@ -43,16 +43,23 @@
 (= (add-action $space $verb)
     (add-atom $space (action $verb))
 )
-(= (hill-climb-planner $init-state $init-action $goal)
-    (let $goals (collapse (match &rule-space (rule (state $init-state) (action $init-action) $x $y)))
-
+(= (hill-climb-planner $init-state $init-action $goal $accum)
+    (if ( == $init-action $goal)
+        $accum
+        (let* ( 
+            ($goal-vals (collapse (match &rule-space (rule (state $init-state) (action $init-action) $x $y) ($x $y)))) 
+        )
+            $goal-vals
+        )
     )
 
 )
 
 !(add-actions &action-space)
 !(add-action &action-space write)
-!(get-atoms &action-space)
-
+!(add-rules &rule-space)
+!(add-states &state-space)
+;; !(get-atoms &action-space)
+!(hill-climb-plannner hungry idle satisfied ())
 ;; (= (blend $concept1 $concept2) (union-atom $concept1 $concept2))
 ;; !(blend (fir) (sec))
