@@ -59,6 +59,12 @@
         )
     )
 )
+(= (car-atom' $expr)
+    (if (== $expr ())
+        ()
+        (car-atom $expr)
+    )
+)
 
 (: hill-climb-planner (-> Symbol Symbol Symbol Expression Expression))
 (= (hill-climb-planner $init-state $init-action $goal $accum)
