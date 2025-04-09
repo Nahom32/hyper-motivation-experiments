@@ -71,7 +71,7 @@
             ($actions (collapse (match &rule-space (rule (state $best-goal) (action $x) (state $y) $z) ($x $z))))
             ($head-action (car-atom $actions))
             ($best-action (select-max $actions $head-action))
-            ($newAccum (union-atom $accum $init-action))
+            ($newAccum (union-atom $accum ($init-action)))
         )
             (hill-climb-planner $best-goal $best-action $goal $newAccum)
         )
