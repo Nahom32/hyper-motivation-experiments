@@ -22,23 +22,21 @@
 ;; like python. It checks if it is an instance of a type
 (= (isType $data $type)
     (let* (
-        ($data-types (get-type $data))
-        ($isType (collapse (== $data-types $type)))
-        ;; (() (println! (isType $isType)))
+        ($data-types (collapse (get-type $data)))
+        ($isType (collapse (== (superpose $data-types) $type)))
         ($data-type (any $isType))
-        (() (println! (get-type $data-type)))
     )
-        ;; (if (== $data-type ())
-        ;;     False
-        ;;     True
-        ;; )
+        
         $data-type
     )
     
 
 )
-;; !(isType New shit)
-!(any (False False False False))
+;; !(get-type New)
+!(isType New data)
+;; (= (if (isType data Symbol)
+;; ))
+;; !(any (False False False False))
 
 
 ;; !(fuzzy-equal 3.2 3.1)
