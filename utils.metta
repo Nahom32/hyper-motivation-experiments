@@ -5,12 +5,17 @@
 (: New (superpose (Number Expression Symbol)))
 (: New shit)
 !(get-type New)
-(= (any $list)
+(= (any' $list)
     (let $elem (superpose $list) 
         (if (== $elem True)
             True
             Empty
         )
+    )
+)
+(= (any $list)
+    (let $val (collapse (any' $list))
+        (if (== $val ()) False True)
     )
 )
 ;; This function works like isInstance in other languages
@@ -19,7 +24,8 @@
     (let* (
         ($data-types (get-type $data))
         ($isType (collapse (== $data-types $type)))
-        ($data-type (collapse (any $isType)))
+        ;; (() (println! (isType $isType)))
+        ($data-type (any $isType))
         (() (println! (get-type $data-type)))
     )
         ;; (if (== $data-type ())
@@ -31,8 +37,8 @@
     
 
 )
-!(isType New shit)
-;; !(any (False False True False))
+;; !(isType New shit)
+!(any (False False False False))
 
 
 ;; !(fuzzy-equal 3.2 3.1)
