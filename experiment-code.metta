@@ -1,11 +1,11 @@
-;; !(let* (
-;;     (($x $y $z) $ada)
-;;     (X $x)
-;;     ($y Y)
-;;     ($z Z)
-;; )
-;;     $ada
-;; )
+!(let* (
+    (($x $y $z) $ada)
+    (X $x)
+    ($y Y)
+    ($z Z)
+)
+    $ada
+)
 ;; (= (AndLink $val1 $val2)
 ;;   (if (and (== $val1 True) (== $val2 True))
 ;;     True
