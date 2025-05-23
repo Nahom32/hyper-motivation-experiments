@@ -1,4 +1,4 @@
-from hyperon import MeTTa
+from hyperon import MeTTa,E,S,V
 from numpy import random
 
 metta = MeTTa()
