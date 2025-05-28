@@ -1,0 +1,15 @@
+!(bind! &newSpace (new-space))
+(: compareChanges (-> hyperon::space::DynSpace hyperon::space::DynSpace Number))
+(= (compareChanges $space1 $space2)
+    (let* (
+        ($space_val_1 (collapse (get-atoms $space1)))
+        ($space_val_2 (collapse (get-atoms $space2)))
+        ($net (collapse (subtraction (superpose $space_val_1) (superpose $space_val_2))))
+    )
+        (size-atom $net)
+
+    )
+)
+!(compareChanges &self &newSpace)
+!(get-atoms &self)
+!(get-type &newSpace)
