@@ -19,9 +19,3 @@ for i in range(10):
     
     metta.space().add_atom(atom)
 query_result = metta.space().query(query_var)
-print(query_result)
-print(type(query_result))
-
-
-    
-
