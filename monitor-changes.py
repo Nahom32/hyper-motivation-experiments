@@ -1,6 +1,8 @@
 from numpy import random
 from time import sleep
 from hyperon import E,S,V,MeTTa
+import monitor-changes
+
 def loop(func, pred_space, curr_space):
     while True:
         wait = random.randint(2,5)
