@@ -1,5 +1,6 @@
 !(bind! &newSpace (new-space))
 !(bind! &sngSpace (new-space))
+;; !(import! &self monitorChanges)
 (: NetDifference Type)
 (: netDiff (-> Number Expression NetDifference))
 !(get-type (netDiff 7 (a b c))) 
@@ -27,17 +28,27 @@
 ;; One option here could be to wrap the timer function
 ;; But do the logic using the meTTa language. 
 
-(: monitorChanges (-> hyperon::space::DynSpace Expression Expression))
+;; (: monitorChanges (-> hyperon::space::DynSpace Expression Expression))
 (= (monitorChanges $space $prev)
 	(let* (
 		($amt (random-int 2 5))
-		($_ (timer $amt))
+		($_ (sleep $amt))
 		($currValues (collapse (get-atoms $space)))
 		($res (compareSpaceToList $space $currValues))
+		($_ (println! (The result is $res)))
 
 	)
 		(monitorChanges $space $currValues)
 	)
 )
-
-
+;;The following function is written for checking 
+;; the state of the atomspace. This is between two consecutive time cycles.
+(: detectChanges (-> $aa $aa $aa))
+(= (detectChanges $prev_times $latest_times $delta $accum)
+	(if (or (== $prev_times ()) (== $latest_times ()))
+		$accum
+		(let* (
+			(($prev $prev_tail) (decons-atom $prev_times))
+			(($latest $latest_times) (decons-atom $latest_times))
+		)
+		)))
