@@ -41,14 +41,36 @@
 		(monitorChanges $space $currValues)
 	)
 )
+
 ;;The following function is written for checking 
 ;; the state of the atomspace. This is between two consecutive time cycles.
-(: detectChanges (-> $aa $aa $aa))
+(: detectChanges (-> Expression Expression Number Expression))
 (= (detectChanges $prev_times $latest_times $delta $accum)
 	(if (or (== $prev_times ()) (== $latest_times ()))
 		$accum
 		(let* (
 			(($prev $prev_tail) (decons-atom $prev_times))
-			(($latest $latest_times) (decons-atom $latest_times))
+			(($latest $latest_tail) (decons-atom $latest_times))
+			($prevTv (getTruthValue $prev))
+			($latestTv (getTruthValue $latest))
+
 		)
+			(if (== $prev $latest)
+				(if (< (abs-math (- $latestTv $prevTv)) $delta)
+					(let* (
+						($newAccum (union-atom $accum (($prev $latest))))
+
+
+					)
+						
+						(detectChanges $prev_tail $latest_tail $delta $newAccum)
+					)
+						(detectChanges $prev_tail $latest_tail $delta $accum)
+
+				
+				)
+
+						(detectChanges $prev_tail $latest_tail $delta $accum)
+
+
 		)))
