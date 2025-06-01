@@ -53,10 +53,12 @@
 			(($latest $latest_tail) (decons-atom $latest_times))
 			($prevTv (getTruthValue $prev))
 			($latestTv (getTruthValue $latest))
+			($prevTvMean (tvMean $prevTv))
+			($latestTvMean (tvMean $latestTv))
 
 		)
 			(if (== $prev $latest)
-				(if (< (abs-math (- $latestTv $prevTv)) $delta)
+				(if (< (abs-math (- $latestTvMean $prevTvMean)) $delta)
 					(let* (
 						($newAccum (union-atom $accum (($prev $latest))))
 
