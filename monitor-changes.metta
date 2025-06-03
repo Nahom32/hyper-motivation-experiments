@@ -41,7 +41,25 @@
 		(monitorChanges $space $currValues)
 	)
 )
+(= (detectChangesHelper $time $previous_times $delta $accum)
+	(if (== $prev_times ())
+	  	$accum
+		(let* (
+		       (($head $tail) (decons-atom $previous_times))
+		       ($timeTv (getTruthValue $time))
+		       ($latestTv (getTruthValue $head))
+			($prevTvMean (stvMean $timeTv))
+			($latestTvMean (stvMean $latestTv))
+			($diff (- $latestTvMean $prevTvMean))
 
+		)
+		  (if (< (abs-math $diff) $delta)
+		    (let $accum' (union-atom $accum (($time $head)))
+		      (detectChangesHelper' $time $tail $delta $accum')
+		      )	
+		      (detectChangesHelper' $time $tail $delta $accum)
+		  )
+	  )))
 ;;The following function is written for checking 
 ;; the state of the atomspace. This is between two consecutive time cycles.
 (: detectChanges (-> Expression Expression Number Expression))
@@ -53,8 +71,8 @@
 			(($latest $latest_tail) (decons-atom $latest_times))
 			($prevTv (getTruthValue $prev))
 			($latestTv (getTruthValue $latest))
-			($prevTvMean (tvMean $prevTv))
-			($latestTvMean (tvMean $latestTv))
+			($prevTvMean (stvMean $prevTv))
+			($latestTvMean (stvMean $latestTv))
 
 		)
 			(if (== $prev $latest)
