@@ -28,6 +28,7 @@
 ;; One option here could be to wrap the timer function
 ;; But do the logic using the meTTa language. 
 
+(= (getTv (construct (stv $x $y))) (stv $x $y))
 ;; (: monitorChanges (-> hyperon::space::DynSpace Expression Expression))
 (= (monitorChanges $space $prev)
 	(let* (
@@ -41,15 +42,17 @@
 		(monitorChanges $space $currValues)
 	)
 )
+
+(: detectChangesHelper (-> Expression Expression Number Expression Expression))
 (= (detectChangesHelper $time $previous_times $delta $accum)
 	(if (== $prev_times ())
 	  	$accum
 		(let* (
 		       (($head $tail) (decons-atom $previous_times))
-		       ($timeTv (getTruthValue $time))
-		       ($latestTv (getTruthValue $head))
-			($prevTvMean (stvMean $timeTv))
-			($latestTvMean (stvMean $latestTv))
+		       ($timeTv (getTV $time))
+		       ($latestTv (getTV $head))
+			($prevTvMean (cogTvMean $timeTv))
+			($latestTvMean (cogTvMean $latestTv))
 			($diff (- $latestTvMean $prevTvMean))
 
 		)
@@ -79,6 +82,5 @@
 
 						
 				
-
 		
 
