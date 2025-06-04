@@ -67,7 +67,7 @@
 	  )))
 ;;The following function is written for checking 
 ;; the state of the atomspace. This is between two consecutive time cycles.
-(: detectChanges (-> Expression Expression Number Expression))
+(: detectChanges (-> Expression Expression Number Expression Expression))
 (= (detectChanges $prev_times $latest_times $delta $accum)
 	(if (or (== $prev_times ()) (== $latest_times ()))
 		$accum
@@ -86,4 +86,4 @@
 						
 				
 		
-
+!(detectChanges ((constructor (stv 0.1 0.1)) (constructor (stv 0.2 0.3)) (constructor (stv 0.3 0.5))) ((constructor (stv 0.3 0.5)) (constructor (stv 0.4 0.6))) 0.5 ()) 
