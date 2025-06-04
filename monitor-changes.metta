@@ -67,31 +67,18 @@
 	(if (or (== $prev_times ()) (== $latest_times ()))
 		$accum
 		(let* (
-			(($prev $prev_tail) (decons-atom $prev_times))
-			(($latest $latest_tail) (decons-atom $latest_times))
-			($prevTv (getTruthValue $prev))
-			($latestTv (getTruthValue $latest))
-			($prevTvMean (stvMean $prevTv))
-			($latestTvMean (stvMean $latestTv))
-
+		       (($head $tail) (decons-atom $latest_times))
+			($accum' (detectChangesHelper $head $prev_times $delta $accum))
 		)
-			(if (== $prev $latest)
-				(if (< (abs-math (- $latestTvMean $prevTvMean)) $delta)
-					(let* (
-						($newAccum (union-atom $accum (($prev $latest))))
+		  (detectChanges $prev_times $tail $delta $accum')
+		)
+		
+	)
+)
+	
 
-
-					)
 						
-						(detectChanges $prev_tail $latest_tail $delta $newAccum)
-					)
-						(detectChanges $prev_tail $latest_tail $delta $accum)
-
 				
-				)
 
-						(detectChanges $prev_tail $latest_tail $delta $accum)
-
-
-		))))
+		
 
