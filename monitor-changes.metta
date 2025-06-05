@@ -80,6 +80,15 @@
 		
 	)
 )
+
+
+(: changeTruthValue (-> Expression Expression Expression))
+(= (changeTruthValue $rule (STV $x $y))
+	(let (: $handle ((TTV $time (STV $bel $conf))  (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $rule 
+	  	(: $handle ((TTV $time (STV $x $y)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))))
+)
+
+
 (: flipTruthValue (-> hyperon::space::DynSpace Expression Expression))
 (= (flipTruthValue &space $atom)
    	(let* (
