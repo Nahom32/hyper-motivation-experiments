@@ -80,7 +80,16 @@
 		
 	)
 )
+(: flipTruthValue (-> hyperon::space::DynSpace Expression Expression))
+(= (flipTruthValue &space $atom)
+   	(let* (
+		($_ (remove-atom $space $atom))
+		($newAtom (changeTruthValue $atom (stv 1 1)))
 
+	)
+	  	(add-atom $space $newAtom)
+	  )
+)
 !(detectChangesHelper (constructor (stv 0.3 0.5)) ((constructor (stv 0.3 0.5)) (constructor (stv 0.4 0.6))) 0.5 ()) 
 
 						
