@@ -31,6 +31,7 @@
         )
     )
 )
+
 (= (add-rules $space)
     (add-reduct $space (superpose (
         (rule (state hungry) (action idle) (state hungry) 0)

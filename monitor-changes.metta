@@ -62,7 +62,7 @@
 		    (let $accum' (union-atom $accum (($time $head)))
 		      (detectChangesHelper $time $tail $delta $accum')
 		      )	
-		      (detectChangesHelper' $time $tail $delta $accum)
+		      (detectChangesHelper $time $tail $delta $accum)
 		  )
 	  )))
 ;;The following function is written for checking 
