@@ -80,6 +80,14 @@
 		
 	)
 )
+(: symmetricDifference (-> Expression Expression Expression))
+(= (symmetricDifference $exp1 $exp2)
+   (let* (
+	  ($res1 (subtraction-atom $exp1 $exp2))
+	  ($res2 (subtraction-atom $exp2 $exp1))
+	)
+     (union-atom $res1 $res2)
+))
 
 
 (: changeTruthValue (-> Expression Expression Expression))
