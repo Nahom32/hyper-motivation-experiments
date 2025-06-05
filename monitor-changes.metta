@@ -44,7 +44,7 @@
 )
 
 (: cogTvMean (-> Expression Number))
-(= (cogTvMean (stv $x $y)) (/ (+ $x $y) 2))
+(= (cogTvMean (STV $x $y)) (/ (+ $x $y) 2))
 (: detectChangesHelper (-> Expression Expression Number Expression Expression))
 (= (detectChangesHelper $time $previous_times $delta $accum)
 	(if (== $previous_times ())
@@ -101,15 +101,15 @@
 (= (flipTruthValue &space $atom)
    	(let* (
 		($_ (remove-atom $space $atom))
-		($newAtom (changeTruthValue $atom (stv 1 1)))
+		($newAtom (changeTruthValue $atom (STV 1 1)))
 
 	)
 	  	(add-atom $space $newAtom)
 	  )
 )
-!(detectChangesHelper (constructor (stv 0.3 0.5)) ((constructor (stv 0.3 0.5)) (constructor (stv 0.4 0.6))) 0.5 ()) 
+!(detectChangesHelper (constructor (STV 0.3 0.5)) ((constructor (STV 0.3 0.5)) (constructor (STV 0.4 0.6))) 0.5 ()) 
 
 						
 				
 		
-!(detectChanges ((constructor (stv 0.1 0.1)) (constructor (stv 0.2 0.3)) (constructor (stv 0.3 0.5))) ((constructor (stv 0.3 0.5)) (constructor (stv 0.4 0.6))) 0.5 ()) 
+!(detectChanges ((constructor (STV 0.1 0.1)) (constructor (STV 0.2 0.3)) (constructor (STV 0.3 0.5))) ((constructor (STV 0.3 0.5)) (constructor (STV 0.4 0.6))) 0.5 ()) 
