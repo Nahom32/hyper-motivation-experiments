@@ -43,7 +43,7 @@
 	)
 )
 
-
+(: cogTvMean (-> Expression Number))
 (= (cogTvMean (stv $x $y)) (/ (+ $x $y) 2))
 (: detectChangesHelper (-> Expression Expression Number Expression Expression))
 (= (detectChangesHelper $time $previous_times $delta $accum)
