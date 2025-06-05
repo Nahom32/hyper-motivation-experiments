@@ -28,7 +28,7 @@
 ;; One option here could be to wrap the timer function
 ;; But do the logic using the meTTa language. 
 
-(= (getTV (constructor (stv $x $y))) (stv $x $y))
+(= (getTV (constructor (STV $x $y))) (STV $x $y))
 ;; (: monitorChanges (-> hyperon::space::DynSpace Expression Expression))
 (= (monitorChanges $space $prev)
 	(let* (
@@ -112,4 +112,5 @@
 						
 				
 		
-!(detectChanges ((constructor (STV 0.1 0.1)) (constructor (STV 0.2 0.3)) (constructor (STV 0.3 0.5))) ((constructor (STV 0.3 0.5)) (constructor (STV 0.4 0.6))) 0.5 ()) 
+!(detectChanges ((constructor (STV 0.1 0.1)) (constructor (STV 0.2 0.3)) (constructor (STV 0.3 0.5))) ((constructor (STV 0.3 0.5)) (constructor (STV 0.4 0.6))) 0.5 ())
+!(symmetricDifference (a b c) (d a b))
