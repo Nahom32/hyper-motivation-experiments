@@ -80,6 +80,9 @@
 		
 	)
 )
+
+;; This function is for implementing the symmetric difference of two s-expressions
+;; The symmetric difference is calculated as ((A-B) U (B-A))
 (: symmetricDifference (-> Expression Expression Expression))
 (= (symmetricDifference $exp1 $exp2)
    (let* (
@@ -89,14 +92,14 @@
      (union-atom $res1 $res2)
 ))
 
-
+;;This function changes the truth value of a rule
 (: changeTruthValue (-> Expression Expression Expression))
 (= (changeTruthValue $rule (STV $x $y))
 	(let (: $handle ((TTV $time (STV $bel $conf))  (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $rule 
 	  	(: $handle ((TTV $time (STV $x $y)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))))
 )
 
-
+;;This function filps the truth-value of a rule and updates the atomspace.
 (: flipTruthValue (-> hyperon::space::DynSpace Expression Expression))
 (= (flipTruthValue &space $atom)
    	(let* (
