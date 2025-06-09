@@ -1,6 +1,9 @@
-#Notes on Integration of OpenPsi
+# Notes on Integration of OpenPsi
 How are going to compose the separate atomspace used in our implementations. 
+
 Since the design of the OpenPsi was intended to use one atomspace while the mind agents update that. We are implementing different atomspaces for one case. Should we implement a hierarchy of atomspaces where each mind agent has its own and grand database holding the atom. 
 Shoud we implement a controller in another programming language to parallelize them?
-How are we going to integrate a learning component for OpenPsi. Is the thompson sampling based action selection enough to simulate learning? This is because there is experiential change the goal values and the modulator values which the feeling component changes as the result of the previous changes. But inorder to fulfill learning as a black box model there must be a performance increase in taking better decisions given an identical state. Let us say an agent $A$ has a configuration $C$, then learning can happen if an experience $E$ on an agent $A$ changes the configuration $C \rightArrow C'$. But due to $C'$ the performance of $A$ should increase by some metric $M$. 
-\par OpenPsi in this scenario doesn't have that even if it is an integrated agent. So inorder for this agent to learn reinforcement learning techniques should be incorporated to openpsi or goal stability learning should take place in OpenPsi. 
+How are we going to integrate a learning component for OpenPsi. Is the thompson sampling based action selection enough to simulate learning? This is because there is experiential change the goal values and the modulator values which the feeling component changes as the result of the previous changes. But inorder to fulfill learning as a black box model there must be a performance increase in taking better decisions given an identical state. Let us say an agent $A$ has a configuration $C$, then learning can happen if an experience $E$ on an agent $A$ changes the configuration $C \longrightarrow C'$. But due to $C'$ the performance of $A$ should increase by some metric $M$. 
+
+
+OpenPsi in this scenario doesn't have that even if it is an integrated agent. So inorder for this agent to learn reinforcement learning techniques should be incorporated to openpsi or goal stability learning should take place in OpenPsi. 
