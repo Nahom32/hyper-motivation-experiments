@@ -110,6 +110,7 @@
 	  	(add-atom $space $newAtom)
 	  )
 )
+
 !(detectChangesHelper (constructor (STV 0.3 0.5)) ((constructor (STV 0.3 0.5)) (constructor (STV 0.4 0.6))) 0.5 ()) 
 
 						
