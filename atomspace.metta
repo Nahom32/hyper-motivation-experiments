@@ -49,13 +49,17 @@
 		)
 	)
 )
+;; A one to one relationship between a demand and a goal.
+;; This goal selector maps from the demand and applies the goal to it
+(= (goalSelector $demand)
+   (case $demand(
+		 ((demand Affiliation $y) (Goal $x $y))
+		 )))
 
 (= (demandSelector $demands)
    	(if (== $demands ())
 	  	(Error "No Demands Available")
 		(demandSelector' $demands (car-atom $demands))))
-
-
 ;; The main loop of the OpenPsi code base will consist of the following
 ;; The number of cycles which can be a big number or an infinite loop
 ;; functions that initialize the agents or the agents themselves
@@ -66,10 +70,13 @@
 ;; The action planner: (planner $ruleSpace $initState $goal)
 ;; The action planner v2: (hillClimbingPlanner $initialState $testedAction $plan $ruleSpace)
 ;; The feeling updater will have the following function call mechanism
-(= (psi-agent $kb $goals $actions)
+(= (psi-agent-loop $state $kb)
 	(let* (
 	       	($demands (query $kb (demand $x $y)))
-		()
+		($currDemand (demandSelector $demands))
+		($goal (goalSelector $currDemand))
+		($actions (planner (ruleSpace) $state $goal))
+		)))
 
 	
 	       )
