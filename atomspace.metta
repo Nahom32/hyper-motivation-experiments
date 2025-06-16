@@ -100,7 +100,7 @@
 		($currDemand (demandSelector $demands))
 		($goal (goalSelector $currDemand))
 		($actions (planner (ruleSpace) $state $goal))
-		($resolutionVal (fetch-modulator-val (modulatorSpace) resoultion)
+		($resolutionVal (fetch-modulator-val (modulatorSpace) resoultion))
 		($_ (applyActions $actions))
 
 	)
