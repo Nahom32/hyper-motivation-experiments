@@ -55,11 +55,35 @@
    (case $demand(
 		 ((demand Affiliation $y) (Goal $x $y))
 		 )))
+(= (applyActions $actions)
+        (if (== $actions ())
+     		()
 
+	
+	)
+)
 (= (demandSelector $demands)
    	(if (== $demands ())
 	  	(Error "No Demands Available")
 		(demandSelector' $demands (car-atom $demands))))
+;; A non-deterministic implementation of demand selection refer 
+;; OpenPsi: A Novel Computational Affective Model and its Application in Video Games by Goertzel,Ben et. al (2013)
+(: selectDemand (-> Expression Expression))
+(= (selectDemand $demands)
+   (let* (
+	  ($selectionVal (fetch-modulator-val (modulatorSpace) selection-threshold))
+	  ($randomVal (random-float 0 1))
+	)
+     	(if (> $selectionVal $randomVal)
+	  	(demandSelector $demands)
+		(let* (
+			($length (size-atom $demands))
+			($randIndex (random-int 0 (- $length 1)))
+			($demand (index-atom $deamnds $randIndex))
+		)
+		  $demand))))
+
+
 ;; The main loop of the OpenPsi code base will consist of the following
 ;; The number of cycles which can be a big number or an infinite loop
 ;; functions that initialize the agents or the agents themselves
@@ -76,10 +100,14 @@
 		($currDemand (demandSelector $demands))
 		($goal (goalSelector $currDemand))
 		($actions (planner (ruleSpace) $state $goal))
-		)))
+		($resolutionVal (fetch-modulator-val (modulatorSpace) resoultion)
+		($_ (applyActions $actions))
 
-	
-	       )
 	)
+	  ()
+	)	
+
 )
+	
+
 
