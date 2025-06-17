@@ -74,14 +74,16 @@
 	  ($selectionVal (fetch-modulator-val (modulatorSpace) selection-threshold))
 	  ($randomVal (random-float 0 1))
 	)
-     	(if (> $selectionVal $randomVal)
+     	(if (>= $selectionVal $randomVal)
 	  	(demandSelector $demands)
 		(let* (
 			($length (size-atom $demands))
 			($randIndex (random-int 0 (- $length 1)))
-			($demand (index-atom $deamnds $randIndex))
+			($demand (index-atom $demands $randIndex))
 		)
 		  $demand))))
+;;What happens when actions are applied?
+;;How are we going to solve the problem?
 
 
 ;; The main loop of the OpenPsi code base will consist of the following
@@ -94,13 +96,17 @@
 ;; The action planner: (planner $ruleSpace $initState $goal)
 ;; The action planner v2: (hillClimbingPlanner $initialState $testedAction $plan $ruleSpace)
 ;; The feeling updater will have the following function call mechanism
+;; The last schema is required to get the next state of the agent.
+;; So the action selector agent should return that schema or should be searched by an alternative function
+;; This fails if there are multiple cognitive schemas for one actions. There is a possibility for selecting the wrong rule while searching by action.
+;; But can't that be prevented by leveraging the calculated heuristic?
+(: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
 	       	($demands (query $kb (demand $x $y)))
 		($currDemand (demandSelector $demands))
 		($goal (goalSelector $currDemand))
-		($actions (planner (ruleSpace) $state $goal))
-		($resolutionVal (fetch-modulator-val (modulatorSpace) resoultion))
+		($actions (planner (ruleSpace) $state $goal))	
 		($_ (applyActions $actions))
 
 	)
