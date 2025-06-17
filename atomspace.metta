@@ -55,12 +55,14 @@
    (case $demand(
 		 ((demand Affiliation $y) (Goal $x $y))
 		 )))
-(= (applyActions $actions)
-        (if (== $actions ())
-     		()
+
+(= (applyActions $actions) 
+   (if (== $actions ())
+     		(empty)
 
 	
-	)
+	
+	))
 )
 (= (demandSelector $demands)
    	(if (== $demands ())
@@ -72,13 +74,13 @@
 (= (selectDemand $demands)
    (let* (
 	  ($selectionVal (fetch-modulator-val (modulatorSpace) selection-threshold))
-	  ($randomVal (random-float 0 1))
+	  ($randomVal (random-float $rng 0 1))
 	)
      	(if (>= $selectionVal $randomVal)
 	  	(demandSelector $demands)
 		(let* (
 			($length (size-atom $demands))
-			($randIndex (random-int 0 (- $length 1)))
+			($randIndex (random-int &rng 0 (- $length 1)))
 			($demand (index-atom $demands $randIndex))
 		)
 		  $demand))))
