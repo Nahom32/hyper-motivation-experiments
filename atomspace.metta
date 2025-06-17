@@ -84,6 +84,11 @@
 		  $demand))))
 ;;What happens when actions are applied?
 ;;How are we going to solve the problem?
+;;(: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
+;; we  can write a function that selects rules based on actions, then we can take the function that has the biggest heuristic
+(: selectRuleByAction (-> hyperon::space::DynSpace Symbol)) 
+(= (selectRuleByAction $ruleSpace $action)
+   	(collapse (match $ruleSpace (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))))))
 
 
 ;; The main loop of the OpenPsi code base will consist of the following
