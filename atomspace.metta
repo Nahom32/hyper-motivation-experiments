@@ -90,7 +90,25 @@
 ;; we  can write a function that selects rules based on actions, then we can take the function that has the biggest heuristic
 (: selectRuleByAction (-> hyperon::space::DynSpace Symbol)) 
 (= (selectRuleByAction $ruleSpace $action)
-   	(collapse (match $ruleSpace (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))))))
+   	(collapse (match $ruleSpace ((:$handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $val) ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $val))))
+
+;; A temporary selector of rules which are selected based on having the same actions. 
+(: selectMaxRule (-> Expression Expression Expression))
+(= (selectMaxRule $rules $maxRule)
+   	(if (== $rules ())
+	  $maxRule
+	(let* (
+	       ((($rule $weight) $tail) (decons-atom $rules))
+		(($maxRule' $maxWeight) $maxRule)
+	       )
+	  	(if (> $maxWeight $weight)
+		  	()
+			(selectMaxRule $tail $maxRule)
+			(selectMaxRule $tail $rule)
+
+		)
+	  	
+	)))
 
 
 ;; The main loop of the OpenPsi code base will consist of the following
