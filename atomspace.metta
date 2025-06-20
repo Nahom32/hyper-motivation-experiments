@@ -112,15 +112,18 @@
    (let* (
 	  ($selectionVal (fetch-modulator-val (modulatorSpace) selection-threshold))
 	  ($randomVal (random-float &rng 0 1))
+	  ($length (size-atom $demands))
 	)
      	(if (>= $selectionVal $randomVal)
 	  	(demandSelector $demands)
+		(if (== $length 0)
+		  ()
 		(let* (
-			($length (size-atom $demands))
+			
 			($randIndex (random-int &rng 0 (- $length 1)))
 			($demand (index-atom $demands $randIndex))
 		)
-		  $demand))))
+		  $demand)))))
 ;;What happens when actions are applied?
 ;;How are we going to solve the problem?
 ;;(: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
@@ -176,7 +179,8 @@
 	)	
 
 )
-	
+
+!(selectDemand ())
 
 !(selectDemand ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
 !(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
