@@ -6,15 +6,42 @@
 
 ;; This function removes all occurences of an existing pattern
 ;; how would we evaluate it? The action is planned, then the demand updater should update based on the plan
+
+;; A function to be removed later on
+
+(= (remove-atoms' $space $expression)
+    (if (== $expression ())
+        ()
+        (let* (
+            (($head $tail) (decons-atom $expression))
+            ($_ (remove-atom $space $head))
+        )
+            (remove-atoms' $space $tail)
+        )
+    )
+)
+(= (remove-atoms $space)
+    (let $atoms (collapse (get-atoms $space))
+        (remove-atoms' $space $atoms)
+    )
+)
+;; Remove The remove occurrences function removes values based on a given 
+;;pattern for instance a perception updater value can be stored as 
+;;(perception value time)
+(: remove-occurrences (-> hyperon::space::DynSpace Expression Expression)) 
+(= (remove-occurrences $space $pattern)
+   	(let $atoms (collapse (match $space $pattern $pattern))
+	  	(remove-atoms $space $atoms)))
+
+
+
+
+
 (= (ruleSpace) (&rule-space))
 (= (modulatorSpace) (&modulator-space))
 (= (demandSpace) (&demand-space))
 (= (add-atoms $space $values)
 	(add-reduct $space (superpose $values)))
-(= (remove-occurrences $space $pattern)
-   	(let $atoms (collapse (match $space $pattern $pattern))
-	  	(remove-atoms $space $atoms)))
-
 (= (update-atoms $pattern $updater $updated)
    	(let* (
 	       ($updater-atoms (collapse (get-atoms $updater)))
@@ -49,6 +76,13 @@
 		)
 	)
 )
+
+(: demandSelector (-> Expression Expression))
+(= (demandSelector $demands)
+   	(if (== $demands ())
+	  	(Error "No Demands Available")
+		(demandSelector' $demands (car-atom $demands))))
+;
 ;; A one to one relationship between a demand and a goal.
 ;; This goal selector maps from the demand and applies the goal to it
 ;; This is an unfinished function
@@ -59,7 +93,9 @@
 	)
 )
 )
-
+;;a simulation for fetch-modulator-val, This function is in the modulator file from the main code
+(= (fetch-modulator-val $space $name)
+   	(random-float &rng 0 1))
 (= (applyActions $actions) 
    (if (== $actions ())
      		(empty)
@@ -67,18 +103,13 @@
 	
 	
 	))
-)
-(= (demandSelector $demands)
-   	(if (== $demands ())
-	  	(Error "No Demands Available")
-		(demandSelector' $demands (car-atom $demands))))
-;; A non-deterministic implementation of demand selection refer 
+; A non-deterministic implementation of demand selection refer 
 ;; OpenPsi: A Novel Computational Affective Model and its Application in Video Games by Goertzel,Ben et. al (2013)
 (: selectDemand (-> Expression Expression))
 (= (selectDemand $demands)
    (let* (
 	  ($selectionVal (fetch-modulator-val (modulatorSpace) selection-threshold))
-	  ($randomVal (random-float $rng 0 1))
+	  ($randomVal (random-float &rng 0 1))
 	)
      	(if (>= $selectionVal $randomVal)
 	  	(demandSelector $demands)
@@ -145,4 +176,5 @@
 )
 	
 
-
+!(selectDemand ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
+!(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
