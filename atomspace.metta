@@ -8,7 +8,7 @@
 ;; how would we evaluate it? The action is planned, then the demand updater should update based on the plan
 
 ;; A function to be removed later on
-
+(: remove-atoms' (-> hyperon::space::DynSpace Expression Expression)) 
 (= (remove-atoms' $space $expression)
     (if (== $expression ())
         ()
@@ -20,6 +20,8 @@
         )
     )
 )
+
+(: remove-atoms (-> hyperon::space::DynSpace Expression)) 
 (= (remove-atoms $space)
     (let $atoms (collapse (get-atoms $space))
         (remove-atoms' $space $atoms)
