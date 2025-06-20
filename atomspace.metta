@@ -42,7 +42,7 @@
 		       	((demand $maxName $maxVal) $maxDemand)
 		       	(((demand $currName $currVal) $tail) (decons-atom $demands))
 		       )
-		  	(if (> $currVal $maxVal)
+		  	(if (>= $currVal $maxVal)
 			  	(demandSelector' $tail (demand $currName $currVal))
 				(demandSelector' $tail $maxDemand)
 			)
@@ -51,10 +51,14 @@
 )
 ;; A one to one relationship between a demand and a goal.
 ;; This goal selector maps from the demand and applies the goal to it
+;; This is an unfinished function
 (= (goalSelector $demand)
    (case $demand(
-		 ((demand Affiliation $y) (Goal $x $y))
-		 )))
+		 ((demand Affiliation $y) (Goal $x $y $z))
+		 
+	)
+)
+)
 
 (= (applyActions $actions) 
    (if (== $actions ())
@@ -101,7 +105,7 @@
 	       ((($rule $weight) $tail) (decons-atom $rules))
 		(($maxRule' $maxWeight) $maxRule)
 	       )
-	  	(if (> $maxWeight $weight)
+	  (if (>= $maxWeight $weight)
 		  	()
 			(selectMaxRule $tail $maxRule)
 			(selectMaxRule $tail $rule)
