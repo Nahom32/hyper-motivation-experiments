@@ -8,7 +8,7 @@
 ;; how would we evaluate it? The action is planned, then the demand updater should update based on the plan
 
 ;; A function to be removed later on
-(: remove-atoms' (-> hyperon::space::DynSpace Expression Expression)) 
+
 (= (remove-atoms' $space $expression)
     (if (== $expression ())
         ()
@@ -20,8 +20,6 @@
         )
     )
 )
-
-(: remove-atoms (-> hyperon::space::DynSpace Expression)) 
 (= (remove-atoms $space)
     (let $atoms (collapse (get-atoms $space))
         (remove-atoms' $space $atoms)
@@ -63,7 +61,7 @@
 (= (query $space (perception $x $y)) (collapse (match $space (perception $x $y) (perception $x $y))))
 (= (query $space (demand $x $y)) (collapse (match $space (demand $x $y) (demand $x $y))))
 
-
+(: demandSelector' (-> Expression Number Demand))
 (= (demandSelector' $demands $maxDemand)
    	(if (== $demands ()) 
 	  	$maxDemand
@@ -79,7 +77,7 @@
 	)
 )
 
-(: demandSelector (-> Expression Expression))
+(: demandSelector (-> Expression Demand))
 (= (demandSelector $demands)
    	(if (== $demands ())
 	  	(Error "No Demands Available")
@@ -95,35 +93,36 @@
 	)
 )
 )
-;;a simulation for fetch-modulator-val, This function is in the modulator file from the main code
-(= (fetch-modulator-val $space $name)
-   	(random-float &rng 0 1))
+
 (= (applyActions $actions) 
    (if (== $actions ())
-     		(empty)
+     		()
+		(let* (
+		       	($length (size-atom $actions))
+			($finalAction (index-atom $actions (- $length 1)))
+			($bestGoal (matchGoal $actions (ruleSpace)))
+			)
+		  	
 
 	
 	
-	))
+	)))
 ; A non-deterministic implementation of demand selection refer 
 ;; OpenPsi: A Novel Computational Affective Model and its Application in Video Games by Goertzel,Ben et. al (2013)
 (: selectDemand (-> Expression Expression))
 (= (selectDemand $demands)
    (let* (
 	  ($selectionVal (fetch-modulator-val (modulatorSpace) selection-threshold))
-	  ($randomVal (random-float &rng 0 1))
-	  ($length (size-atom $demands))
+	  ($randomVal (random-float $rng 0 1))
 	)
      	(if (>= $selectionVal $randomVal)
 	  	(demandSelector $demands)
-		(if (== $length 0)
-		  ()
 		(let* (
-			
+			($length (size-atom $demands))
 			($randIndex (random-int &rng 0 (- $length 1)))
 			($demand (index-atom $demands $randIndex))
 		)
-		  $demand)))))
+		  $demand))))
 ;;What happens when actions are applied?
 ;;How are we going to solve the problem?
 ;;(: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
@@ -179,8 +178,6 @@
 	)	
 
 )
-
-!(selectDemand ())
-
-!(selectDemand ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
+	
+!(goalSelector (demand Affiliation 2))
 !(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))

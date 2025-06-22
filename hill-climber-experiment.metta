@@ -38,8 +38,7 @@
         (rule (state hungry) (action walk) (state hope) 0.3)
         (rule (state hope) (action eat) (state satisfied) 0.7)
 
-    )))
-)
+    ))))
 
 (= (add-action $space $verb)
     (add-atom $space (action $verb))
