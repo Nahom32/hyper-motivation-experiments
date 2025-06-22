@@ -8,7 +8,7 @@
 ;; how would we evaluate it? The action is planned, then the demand updater should update based on the plan
 
 ;; A function to be removed later on
-
+(: remove-atoms' (-> hyperon::space::DynSpace Expression Expression))
 (= (remove-atoms' $space $expression)
     (if (== $expression ())
         ()
@@ -20,6 +20,8 @@
         )
     )
 )
+
+(:remove-atoms (-> hyperon::space::DynSpace))
 (= (remove-atoms $space)
     (let $atoms (collapse (get-atoms $space))
         (remove-atoms' $space $atoms)
@@ -93,7 +95,7 @@
 	)
 )
 )
-
+(: applyActions (-> Expression Expression))
 (= (applyActions $actions) 
    (if (== $actions ())
      		()
@@ -101,12 +103,10 @@
 		       	($length (size-atom $actions))
 			($finalAction (index-atom $actions (- $length 1)))
 			($bestGoal (matchGoal $actions (ruleSpace)))
-			)
+		)
+		  ()
 		  	
-
-	
-	
-	)))
+		)))
 ; A non-deterministic implementation of demand selection refer 
 ;; OpenPsi: A Novel Computational Affective Model and its Application in Video Games by Goertzel,Ben et. al (2013)
 (: selectDemand (-> Expression Expression))
