@@ -95,6 +95,12 @@
 	)
 )
 )
+
+;; A for the matched llm value
+(: matchGoal (-> hyperon::space::DynSpace Expression Expression)) 
+(= (matchGoal $ruleSpace $actions)
+   	(goal1 context1)
+)
 (: applyActions (-> Expression Expression))
 (= (applyActions $actions) 
    (if (== $actions ())
@@ -102,7 +108,8 @@
 		(let* (
 		       	($length (size-atom $actions))
 			($finalAction (index-atom $actions (- $length 1)))
-			($bestGoal (matchGoal $actions (ruleSpace)))
+			(($bestGoal $context) (matchGoal (ruleSpace) $actions))
+			
 		)
 		  ()
 		  	
