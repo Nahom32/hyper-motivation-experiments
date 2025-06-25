@@ -156,7 +156,8 @@
 	  	
 	)))
 
-
+(= (extractGoalFromRule $rule)
+	(unify $rule (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $goal ()))
 
 ;; This function is taken from the action planner in version 1. It will be removed
 (= (findRulesWithAction $space $action)
