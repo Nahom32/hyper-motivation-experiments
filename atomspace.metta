@@ -157,6 +157,42 @@
 	)))
 
 
+
+;; This function is taken from the action planner in version 1. It will be removed
+(= (findRulesWithAction $space $action)
+    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
+        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
+        
+    ))
+
+(:isGoalMet' (-> Expression Goal Bool))
+(= (isGoalMet' $rules $goal)
+   	(if (== $rules ())
+		False
+		(let* (
+			(($rule $tail) (decons-atom $rules))
+			($ruleGoal (extractGoalFromRule $rule))
+		)
+		  (if (== $ruleGoal $goal)
+		    	True
+		    	(isGoalMet' $tail $goal)
+		  )
+		)
+	)
+   )
+
+
+;; How would this function work? how can I check whether the goal is met?
+(: isGoalMet? (-> Expression Goal Bool))
+(= (isGoalMet? $actions $goal)
+	(let* (
+	       ($length (size-atom $actions))
+	       ($lastAction (index-atom $actions (- $length 1)))
+	       ($rules' (findRulesWithAction (ruleSpace) $lastAction)) 
+	)
+		(isGoalMet' $rules' $goal)
+	)	
+)
 ;; The main loop of the OpenPsi code base will consist of the following
 ;; The number of cycles which can be a big number or an infinite loop
 ;; functions that initialize the agents or the agents themselves
