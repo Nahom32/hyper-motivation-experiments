@@ -192,6 +192,8 @@
 
 
 ;; How would this function work? how can I check whether the goal is met?
+;; This function is used for a follow-up after the action-selection mind agent
+;; is applied.
 (: isGoalMet? (-> Expression Goal Bool))
 (= (isGoalMet? $actions $goal)
 	(let* (
@@ -226,11 +228,15 @@
 	       	($demands (query $kb (demand $x $y)))
 		($currDemand (demandSelector $demands))
 		($goal (goalSelector $currDemand))
-		($actions (planner (ruleSpace) $state $goal))	
-		($_ (applyActions $actions))
+		($actions (planner (ruleSpace) $state $goal))
+		($isSuccessful? (isGoalMet? $actions $goal))
+		;;($_ (applyActions $actions))
 
 	)
-	  ()
+	  (if $isSuccessful?
+	    	(applyActions $actions)
+		()
+	  )
 	)	
 
 )
