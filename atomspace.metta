@@ -44,6 +44,12 @@
 (= (demandSpace) (&demand-space))
 (= (add-atoms $space $values)
 	(add-reduct $space (superpose $values)))
+
+
+;;The below function is used to synchronize two atomspaces for having the same
+;;Replicated value. The updater space belongs to the mind-agent while the atomspace to be synchronized is the 
+;; knowledge base atomspace.
+(: update-atoms (-> Expression hyperon::space::DynSpace hyperon::space::DynSpace Expression ))
 (= (update-atoms $pattern $updater $updated)
    	(let* (
 	       ($updater-atoms (collapse (get-atoms $updater)))
@@ -210,6 +216,10 @@
 ;; So the action selector agent should return that schema or should be searched by an alternative function
 ;; This fails if there are multiple cognitive schemas for one actions. There is a possibility for selecting the wrong rule while searching by action.
 ;; But can't that be prevented by leveraging the calculated heuristic?
+;; How can we use the demand updater agent in this usecase?
+
+
+
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
