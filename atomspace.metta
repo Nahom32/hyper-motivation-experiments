@@ -1,4 +1,5 @@
 !(import! &self demand-functions)
+!(import! &self modulator-updaters)
 !(bind! &kb (new-space))
 !(bind! &modulator-space (new-space))
 ;;!(bind! &demand-space (new-space))
@@ -115,7 +116,7 @@
      		()
 		(let $isGoalMet? (isGoalMet? $actions $goal)
 		  	(if $isGoalMet? 
-			  	(setDemandValue $&demandspace $demandName 1.0)
+			  	(setDemandValue &demandspace $demandName 1.0)
 				()
 			)
 		)))
@@ -203,7 +204,18 @@
 		(isGoalMet' $rules' $goal)
 	)	
 )
+(: modulator-updater-agent (-> Demand Demand Demand Expression))
+(= (modulator-updater-agent $competence-demand $affiliation-demand $energy-demand)
 
+(let* (
+       	((demand competence $competenceValue) $competence-demand)
+	((demand affiliation $affiliationValue) $affiliation-demand)
+	((demand energy $energyValue) $energy-demand)
+
+	)
+
+)
+)
 ;; The main loop of the OpenPsi code base will consist of the following
 ;; The number of cycles which can be a big number or an infinite loop
 ;; functions that initialize the agents or the agents themselves
@@ -230,14 +242,13 @@
 		($currDemand (demandSelector $demands))
 		($goal (goalSelector $currDemand))
 		($actions (planner (ruleSpace) $state $goal))
-		($isSuccessful? (isGoalMet? $actions $goal))
-		;;($_ (applyActions $actions))
+		($_ (applyActions $actions $goal $currDemand))
+		($_ ())
+		($_ ())
+		($_ ())
 
 	)
-	  (if $isSuccessful?
-	    	(applyActions $actions)
-		()
-	  )
+	  
 	)	
 
 )
