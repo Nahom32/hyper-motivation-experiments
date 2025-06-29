@@ -1,3 +1,4 @@
+!(import! &self demand-functions)
 !(bind! &kb (new-space))
 !(bind! &modulator-space (new-space))
 !(bind! &demand-space (new-space))
@@ -57,7 +58,7 @@
 	       ($_ (remove-occurrences $updated $pattern))
 		($_ (collapse (add-atoms $space $updated)))
 	       )
-	  	
+	  	()	
 	  )
 )
 ;; a querying mechanism of the knowledge base.
@@ -97,7 +98,7 @@
 ;; This is an unfinished function
 (= (goalSelector $demand)
    (case $demand(
-		 ((demand Affiliation $y) (Goal $x $y $z))
+		 ((demand Affiliation $y) (Goal terminate 0.4 0.3))
 		 
 	)
 )
@@ -108,11 +109,11 @@
 (= (matchGoal $ruleSpace $actions)
    	(goal1 context1)
 )
-(: applyActions (-> Expression Expression))
-(= (applyActions $actions) 
+(: applyActions (-> Expression Goal Expression))
+(= (applyActions $actions $goal) 
    (if (== $actions ())
      		()
-		(let $isGoalMet? ())))
+		(let $isGoalMet? (isGoalMet? $actions $goal))))
 ; A non-deterministic implementation of demand selection refer 
 ;; OpenPsi: A Novel Computational Affective Model and its Application in Video Games by Goertzel,Ben et. al (2013)
 (: selectDemand (-> Expression Expression))
