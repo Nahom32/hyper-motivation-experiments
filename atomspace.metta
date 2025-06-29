@@ -2,7 +2,8 @@
 !(bind! &modulator-space (new-space))
 !(bind! &demand-space (new-space))
 !(bind! &rule-space (new-space))
-
+!(bind! &cache-space (new-space))
+;; Line 2 to Line 5 are expected to be removed.
 
 ;; This function removes all occurences of an existing pattern
 ;; how would we evaluate it? The action is planned, then the demand updater should update based on the plan
@@ -111,15 +112,7 @@
 (= (applyActions $actions) 
    (if (== $actions ())
      		()
-		(let* (
-		       	($length (size-atom $actions))
-			($finalAction (index-atom $actions (- $length 1)))
-			(($bestGoal $context) (matchGoal (ruleSpace) $actions))
-			
-		)
-		  ()
-		  	
-		)))
+		(let $isGoalMet? ())))
 ; A non-deterministic implementation of demand selection refer 
 ;; OpenPsi: A Novel Computational Affective Model and its Application in Video Games by Goertzel,Ben et. al (2013)
 (: selectDemand (-> Expression Expression))
@@ -204,6 +197,7 @@
 		(isGoalMet' $rules' $goal)
 	)	
 )
+
 ;; The main loop of the OpenPsi code base will consist of the following
 ;; The number of cycles which can be a big number or an infinite loop
 ;; functions that initialize the agents or the agents themselves
@@ -219,9 +213,10 @@
 ;; This fails if there are multiple cognitive schemas for one actions. There is a possibility for selecting the wrong rule while searching by action.
 ;; But can't that be prevented by leveraging the calculated heuristic?
 ;; How can we use the demand updater agent in this usecase?
-
-
-
+;; I'm assuming the following functions are implemented fetchDemand or its equivalent fetch-modulator emotion-calculator.
+;; How will the demand-updation process will be incorporated to the psi-agent-loop
+;; In this case the best option would be to define a decoy updater that might emulate the demand updater agent 
+;; Which is friendly with the action and goal selection
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
@@ -240,6 +235,7 @@
 	)	
 
 )
+
 	
 !(goalSelector (demand Affiliation 2))
 !(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
