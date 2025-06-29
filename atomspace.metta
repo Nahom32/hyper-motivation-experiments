@@ -1,7 +1,7 @@
 !(import! &self demand-functions)
 !(bind! &kb (new-space))
 !(bind! &modulator-space (new-space))
-!(bind! &demand-space (new-space))
+;;!(bind! &demand-space (new-space))
 !(bind! &rule-space (new-space))
 !(bind! &cache-space (new-space))
 ;; Line 2 to Line 5 are expected to be removed.
@@ -43,7 +43,7 @@
 
 (= (ruleSpace) (&rule-space))
 (= (modulatorSpace) (&modulator-space))
-(= (demandSpace) (&demand-space))
+(= (demandSpace) (&demandspace))
 (= (add-atoms $space $values)
 	(add-reduct $space (superpose $values)))
 
@@ -110,13 +110,13 @@
    	(goal1 context1)
 )
 (: applyActions (-> Expression Goal Expression))
-(= (applyActions $actions $goal) 
+(= (applyActions $actions $goal $demand) 
    (if (== $actions ())
      		()
 		(let $isGoalMet? (isGoalMet? $actions $goal)
 		  	(if $isGoalMet? 
-			  	(todo)
-				(todo2)
+			  	(setDemandValue $&demandspace $demandName 1.0)
+				()
 			)
 		)))
 ; A non-deterministic implementation of demand selection refer 
@@ -242,6 +242,6 @@
 
 )
 
-	
+!(getAllDemands &demandspace)	
 !(goalSelector (demand Affiliation 2))
 !(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
