@@ -113,7 +113,12 @@
 (= (applyActions $actions $goal) 
    (if (== $actions ())
      		()
-		(let $isGoalMet? (isGoalMet? $actions $goal))))
+		(let $isGoalMet? (isGoalMet? $actions $goal)
+		  	(if $isGoalMet? 
+			  	(todo)
+				(todo2)
+			)
+		)))
 ; A non-deterministic implementation of demand selection refer 
 ;; OpenPsi: A Novel Computational Affective Model and its Application in Video Games by Goertzel,Ben et. al (2013)
 (: selectDemand (-> Expression Expression))
@@ -166,7 +171,7 @@
     (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
         
-    ))
+    )))
 
 (:isGoalMet' (-> Expression Goal Bool))
 (= (isGoalMet' $rules $goal)
