@@ -1,7 +1,8 @@
 !(import! &self demand-functions)
 !(import! &self modulator-updaters)
+!(import! &self modulator)
 !(bind! &kb (new-space))
-!(bind! &modulator-space (new-space))
+;;!(bind! &modulator-space (new-space))
 ;;!(bind! &demand-space (new-space))
 !(bind! &rule-space (new-space))
 !(bind! &cache-space (new-space))
@@ -252,7 +253,7 @@
 	)	
 
 )
-
+!(get-atoms &modulator-space)
 !(getAllDemands &demandspace)	
 !(goalSelector (demand Affiliation 2))
 !(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
