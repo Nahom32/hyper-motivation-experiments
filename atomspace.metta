@@ -117,7 +117,7 @@
 (= (matchGoal $ruleSpace $actions)
    	(goal1 context1)
 )
-(: applyActions (-> Expression Goal Expression))
+(: applyActions (-> Expression Goal Expression Expression))
 (= (applyActions $actions $goal $demand) 
    (if (== $actions ())
      		()
