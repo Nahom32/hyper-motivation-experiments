@@ -205,17 +205,35 @@
 		(isGoalMet' $rules' $goal)
 	)	
 )
+
+
+;; This function updates the modulator values in the atomspace.
+(:update-modulator (-> Symbol Number Expression)
+(= (update-modulator $modulatorName $modulatorValue)
+	(let* (
+	       ($modulator (fetch-modulator (modulatorSpace) $modulatorName))
+	       ($_ (update-atomspace (modulatorSpace) $modulatorName ($modulatorName $modulatorValue) ))
+	)
+	  	()
+	)
+)
+
+
+;; This function updates the modulators after retrieving the values from the demand space.
 (: modulator-updater-agent (-> Demand Demand Demand Expression))
 (= (modulator-updater-agent $competence-demand $affiliation-demand $energy-demand)
 
-(let* (
-       	((demand competence $competenceValue) $competence-demand)
-	((demand affiliation $affiliationValue) $affiliation-demand)
-	((demand energy $energyValue) $energy-demand)
+	(let* (
+       		((demand competence $competenceValue) $competence-demand)
+		((demand affiliation $affiliationValue) $affiliation-demand)
+		((demand energy $energyValue) $energy-demand)
+		($activationValue (ActivatingHelper $competenceValue $energyValue $stimulus))
+		($securingValue (SecuringThresholdHelper $stimulus))
+	
+ 	)
+
 
 	)
-
-)
 )
 ;; The main loop of the OpenPsi code base will consist of the following
 ;; The number of cycles which can be a big number or an infinite loop
