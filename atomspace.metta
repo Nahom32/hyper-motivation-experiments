@@ -231,8 +231,8 @@
 ;; there are also additinal ubergoals the system has for demand computation
 ;; I think the best possible thing to do here is to implement them while also 
 
-(: modulator-updater-agent (-> Demand Demand Demand Expression))
-(= (modulator-updater-agent $competence-demand $affiliation-demand $energy-demand)
+(: modulatorUpdaterAgent (-> Demand Demand Demand Expression))
+(= (modulatorUpdaterAgent $competence-demand $affiliation-demand $energy-demand)
 
 	(let* (
 	       	($stimulus (random-float &rng 0 1))
