@@ -12,6 +12,12 @@
 ;; how would we evaluate it? The action is planned, then the demand updater should update based on the plan
 
 ;; A function to be removed later on
+
+
+(: update-atom (-> Grounded Atom Atom (->)))
+(= (update-atom $space $oatom $natom) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
+
+
 (: remove-atoms' (-> hyperon::space::DynSpace Expression Expression))
 (= (remove-atoms' $space $expression)
     (if (== $expression ())
@@ -24,7 +30,7 @@
         )
     )
 )
-
+;; This function removes values from a given atomspace
 (:remove-atoms (-> hyperon::space::DynSpace))
 (= (remove-atoms $space)
     (let $atoms (collapse (get-atoms $space))
@@ -212,7 +218,7 @@
 (= (update-modulator $modulatorName $modulatorValue)
 	(let* (
 	       ($modulator (fetch-modulator (modulatorSpace) $modulatorName))
-	       ($_ (update-atomspace (modulatorSpace) $modulatorName ($modulatorName $modulatorValue) ))
+	       ($_ (update-atom (modulatorSpace) $modulator ($modulatorName $modulatorValue) ))
 	)
 	  	()
 	)
@@ -220,17 +226,32 @@
 
 
 ;; This function updates the modulators after retrieving the values from the demand space.
+;;============================================================================
+;; misc what is the stimulus value here?
+;; there are also additinal ubergoals the system has for demand computation
+;; I think the best possible thing to do here is to implement them while also 
+
 (: modulator-updater-agent (-> Demand Demand Demand Expression))
 (= (modulator-updater-agent $competence-demand $affiliation-demand $energy-demand)
 
 	(let* (
+	       	($stimulus (random-float &rng 0 1))
+		($integrity (random-float &rng 0 1))
        		((demand competence $competenceValue) $competence-demand)
 		((demand affiliation $affiliationValue) $affiliation-demand)
 		((demand energy $energyValue) $energy-demand)
 		($activationValue (ActivatingHelper $competenceValue $energyValue $stimulus))
-		($securingValue (SecuringThresholdHelper $stimulus))
+		($securingValue (SecuringThresholdHelper $integrity $stimulus))
+		($selectionValue (SelectionThresholdHelper $competenceValue $stimulus))
+		($activationModulator (fetch-modulator (modulatorSpace) arousal))
+		($securingModulator (fetch-modulator (modulatorSpace) securing-threshold))
+		($selectionModulator (fetch-modulator (modulatorSpace) selection-threshold))
+		($_ (update-modulator $activationModulator (modulator arousal $activationValue)))
+		($_ (update-modulator $securingModulator (modulator securing-threshold $securingValue)))
+		($_ (update-modulator $selectionModulator (modulator selection-threshold $selectionValue)))
 	
  	)
+	  ()
 
 
 	)
