@@ -225,6 +225,9 @@
 )
 
 
+(: getDemandByName (-> hyperon::space::DynSpace Symbol Demand))
+(= (getDemandByName $space $name) (match $space (demand $name $x) (demand $name $x)))
+
 ;; This function updates the modulators after retrieving the values from the demand space.
 ;;============================================================================
 ;; misc what is the stimulus value here?
@@ -283,7 +286,10 @@
 		($goal (goalSelector $currDemand))
 		($actions (planner (ruleSpace) $state $goal))
 		($_ (applyActions $actions $goal $currDemand))
-		($_ ())
+		($competenceDemand (getDemandByName (demandSpace) competence))
+		($affiliationDemand (getDemandByName (demandSpace) affiliation))
+		($energyDemand (getDemandByName (demandSpace) energy))
+		($_ (modulatorUpdaterAgent $competenceDemand $affiliationDemand $energyDemand))
 		($_ ())
 		($_ ())
 
