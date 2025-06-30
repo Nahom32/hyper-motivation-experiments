@@ -14,7 +14,7 @@
 ;; A function to be removed later on
 
 
-(: update-atom (-> Grounded Atom Atom (->)))
+;;(: update-atom (-> Grounded Atom Atom (->)))
 (= (update-atom $space $oatom $natom) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
 
 
@@ -95,7 +95,7 @@
 	)
 )
 
-(: demandSelector (-> Expression Demand))
+;; (: demandSelector (-> Expression Demand))
 (= (demandSelector $demands)
    	(if (== $demands ())
 	  	(Error "No Demands Available")
@@ -147,7 +147,7 @@
 ;;How are we going to solve the problem?
 ;;(: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
 ;; we  can write a function that selects rules based on actions, then we can take the function that has the biggest heuristic
-(: selectRuleByAction (-> hyperon::space::DynSpace Symbol)) 
+(: selectRuleByAction (-> hyperon::space::DynSpace Symbol Expression)) 
 (= (selectRuleByAction $ruleSpace $action)
    	(collapse (match $ruleSpace ((:$handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $val) ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $val))))
 
@@ -214,18 +214,18 @@
 
 
 ;; This function updates the modulator values in the atomspace.
-(:update-modulator (-> Symbol Number Expression)
+(:update-modulator (-> Symbol Number Expression))
 (= (update-modulator $modulatorName $modulatorValue)
 	(let* (
-	       ($modulator (fetch-modulator (modulatorSpace) $modulatorName))
-	       ($_ (update-atom (modulatorSpace) $modulator ($modulatorName $modulatorValue) ))
+	       ($modulator (fetch-modulator &modulator-space $modulatorName))
+	       ($_ (update-atom &modulator-space $modulator ($modulatorName $modulatorValue) ))
 	)
 	  	()
 	)
 )
 
 
-(: getDemandByName (-> hyperon::space::DynSpace Symbol Demand))
+;(: getDemandByName (-> hyperon::space::DynSpace Symbol Demand))
 (= (getDemandByName $space $name) (match $space (demand $name $x) (demand $name $x)))
 
 ;; This function updates the modulators after retrieving the values from the demand space.
@@ -234,7 +234,7 @@
 ;; there are also additinal ubergoals the system has for demand computation
 ;; I think the best possible thing to do here is to implement them while also 
 
-(: modulatorUpdaterAgent (-> Demand Demand Demand Expression))
+;(: modulatorUpdaterAgent (-> Demand Demand Demand Expression))
 (= (modulatorUpdaterAgent $competence-demand $affiliation-demand $energy-demand)
 
 	(let* (
@@ -243,15 +243,15 @@
        		((demand competence $competenceValue) $competence-demand)
 		((demand affiliation $affiliationValue) $affiliation-demand)
 		((demand energy $energyValue) $energy-demand)
-		($activationValue (ActivatingHelper $competenceValue $energyValue $stimulus))
+		($activationValue (ActivationHelper $competenceValue $energyValue $stimulus))
 		($securingValue (SecuringThresholdHelper $integrity $stimulus))
 		($selectionValue (SelectionThresholdHelper $competenceValue $stimulus))
-		($activationModulator (fetch-modulator (modulatorSpace) arousal))
-		($securingModulator (fetch-modulator (modulatorSpace) securing-threshold))
-		($selectionModulator (fetch-modulator (modulatorSpace) selection-threshold))
-		($_ (update-modulator $activationModulator (modulator arousal $activationValue)))
-		($_ (update-modulator $securingModulator (modulator securing-threshold $securingValue)))
-		($_ (update-modulator $selectionModulator (modulator selection-threshold $selectionValue)))
+		($activationModulator (fetch-modulator &modulator-space arousal))
+		($securingModulator (fetch-modulator &modulator-space securing-threshold))
+		($selectionModulator (fetch-modulator &modulator-space selection-threshold))
+		($_ (update-atom &modulator-space $activationModulator (modulator arousal $activationValue)))
+		($_ (update-atom &modulator-space $securingModulator (modulator securing-threshold $securingValue)))
+		($_ (update-atom &modulator-space $selectionModulator (modulator selection-threshold $selectionValue)))
 	
  	)
 	  ()
@@ -298,6 +298,10 @@
 	)	
 
 )
+!(get-type (demand competence 0.5))
+!(get-atoms &modulator-space)
+!(fetch-modulator &modulator-space securing-threshold) 
+!(modulatorUpdaterAgent (demand competence 0.5) (demand affiliation 0.5) (demand energy 0.5))
 !(get-atoms &modulator-space)
 !(getAllDemands &demandspace)	
 !(goalSelector (demand Affiliation 2))

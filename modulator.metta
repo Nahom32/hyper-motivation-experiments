@@ -20,7 +20,7 @@
 
 (: fetch-modulator (-> hyperon::space::DynSpace Symbol Expression))
 (= (fetch-modulator $space $name)
-    (collapse (match $space (modulator $name $x) (modulator $name $x)))
+    (match $space (modulator $name $x) (modulator $name $x))
 )
 (: fetch-modulator-val (-> hyperon::space::DynSpace Symbol Number))
 (= (fetch-modulator-val $space $name)
