@@ -1,6 +1,7 @@
 !(import! &self demand-functions)
 !(import! &self modulator-updaters)
 !(import! &self feeling-updaters)
+!(import! &self psi-utils)
 !(import! &self modulator)
 !(bind! &kb (new-space))
 ;;!(bind! &modulator-space (new-space))
@@ -279,6 +280,12 @@
 ;; How will the demand-updation process will be incorporated to the psi-agent-loop
 ;; In this case the best option would be to define a decoy updater that might emulate the demand updater agent 
 ;; Which is friendly with the action and goal selection
+;;(feeling_calculator $activation_indicator 
+;;                      $resolution_indicator 
+;;                     $securing_threshold_indicator 
+;;                       $selection_threshold_indicator 
+;;                       $pleasure_indicator 
+;;                       $number_of_used_modulators)
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
@@ -291,10 +298,18 @@
 		($affiliationDemand (getDemandByName &demand-space affiliation))
 		($energyDemand (getDemandByName &demand-space energy))
 		($_ (modulatorUpdaterAgent $competenceDemand $affiliationDemand $energyDemand))
-		($_ ())
-		($_ ())
+		($happinessValue (happinessFeelingUpdater))
+		($sadnessValue (sadnessFeelingUpdater))
+		($angerValue (angerFeelingUpdater))
+		($fearValue (fearFeelingUpdater))
+		($excitementValue (excitementFeelingUpdater))
+		($loveValue (loveFeelingUpdater))
+		($hateValue (hateFeelingUpdater))
+		($gratitude (gratitudeFeelingUpdater))
+		
 
 	)
+	  (hateValue $hateValue happinessValue $happinessValue sadnessValue $sadnessValue angerValue $angerValue)
 	  
 	)	
 
