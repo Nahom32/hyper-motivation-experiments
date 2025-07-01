@@ -1,5 +1,6 @@
 !(import! &self demand-functions)
 !(import! &self modulator-updaters)
+!(import! &self feeling-updaters)
 !(import! &self modulator)
 !(bind! &kb (new-space))
 ;;!(bind! &modulator-space (new-space))
@@ -14,7 +15,7 @@
 ;; A function to be removed later on
 
 
-;;(: update-atom (-> Grounded Atom Atom (->)))
+(: update-atom (-> Grounded Atom Atom (->)))
 (= (update-atom $space $oatom $natom) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
 
 

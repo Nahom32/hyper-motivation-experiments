@@ -132,10 +132,14 @@
                        $pleasure_indicator 
                        $number_of_used_modulators)
     (let* (
-        ($activation-value 0.3)
-        ($resolution-value 0.4)
-        ($securing-value 0.7)
-        ($selection-value 0.4)
+	((modulator arousal $activation-value) (fetch-modulator &modulator-space arousal))
+	((modulator securing-threshold $securing-value) (fetch-modulator &modulator-space securing-threshold))
+	((modulator selection-threshold $selection-value) (fetch-modulator &modulator-space selection-threshold))
+	((modulator resolution-level $resoultion-value) (fetch-modulator &modulator-space resolution-level))
+        ;($activation-value 0.3)
+        ;($resolution-value 0.4)
+        ;($securing-value 0.7)
+        ;($selection-value 0.4)
         ($feeling-activation (modulator_to_feeling_dimension $activation-value $activation_indicator))
         ($feeling-resolution (modulator_to_feeling_dimension
               $resolution-value 
