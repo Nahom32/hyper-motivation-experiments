@@ -13,18 +13,27 @@ def feeling_parser(sexp: str) -> Dict[str,Any]:
     lexp = sexp.split()
     print(lexp)
     feeling_dict = {}
-    for i in lexp:
-        if i in ('(',')'):
-            continue
+    
+    while len(lexp) >= 2:
         try:
             head = lexp.pop(0)
+            tail = lexp.pop(0)
             if head.startswith('('):
                 head = head[1:]
-            tail = lexp.pop(0)
-            if head.endswith(')'):
+            if tail.endswith(')'):
                 tail = tail[:-1]
             feeling_dict[head] = float(tail)
-        except:
-            raise Exception(f'{feeling_dict}')
+            
+        except ValueError:
+            raise Exception(f"Error parsing value for key '{head}'. Current dictionary: {feeling_dict}")
+        except IndexError:
+            # This should ideally not happen if len(lexp) >= 2 is checked, but good for robustness
+            raise Exception(f"Unexpected end of input. Current dictionary: {feeling_dict}")
+            
+    # After the loop, if there's any remaining element, it's an error
+    if len(lexp) > 0:
+        raise Exception(f"Unparsed elements remaining: {lexp}. Current dictionary: {feeling_dict}")
+
     return feeling_dict
 print(feeling_parser('(hateValue 0.5 happinessValue 0.4 sadnessValue 0.3 angerValue 0.2)'))
+
