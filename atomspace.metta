@@ -286,6 +286,22 @@
 ;;                       $selection_threshold_indicator 
 ;;                       $pleasure_indicator 
 ;;                       $number_of_used_modulators)
+;; I think we need the kb initializer for this to work.
+(: kb-initializer (-> hyperon::space::DynSpace Expression))
+(= (kb-initializer $kb)
+   (let* (
+	  	($rules (collapse (get-atoms &rule-space)))
+		($modulators (collapse (get-atoms &modulator-space)))
+		($demands (collapse (get-atoms &demandspace)))
+		($_ (collapse (add-atoms $kb $rules)))
+		($_ (collapse (add-atoms $kb $demands)))
+		($_ (collapse (add-atoms $kb $modulators)))
+		
+	)
+     		()
+    
+	)
+)
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
@@ -294,8 +310,8 @@
 		($goal (goalSelector $currDemand))
 		($actions (planner (ruleSpace) $state $goal))
 		($_ (applyActions $actions $goal $currDemand))
-		($competenceDemand (getDemandByName &demand-space competence))
-		($affiliationDemand (getDemandByName &demand-space affiliation))
+		($competenceDemand (getDemandByName &demandspace competence))
+		($affiliationDemand (getDemandByName &demandspace affiliation))
 		($energyDemand (getDemandByName &demand-space energy))
 		($_ (modulatorUpdaterAgent $competenceDemand $affiliationDemand $energyDemand))
 		($happinessValue (happinessFeelingUpdater))
@@ -314,10 +330,14 @@
 	)	
 
 )
+!(get-atoms &demandspace)
 !(get-type (demand competence 0.5))
 !(get-atoms &modulator-space)
 !(fetch-modulator &modulator-space securing-threshold) 
 !(modulatorUpdaterAgent (demand competence 0.5) (demand affiliation 0.5) (demand energy 0.5))
+!(kb-initializer &kb)
+!(this is the result)
+!(get-atoms &kb)
 !(get-atoms &modulator-space)
 !(getAllDemands &demandspace)	
 !(goalSelector (demand Affiliation 2))
