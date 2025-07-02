@@ -293,15 +293,16 @@
 	  	($rules (collapse (get-atoms &rule-space)))
 		($modulators (collapse (get-atoms &modulator-space)))
 		($demands (collapse (get-atoms &demandspace)))
-		($_ (collapse (add-atoms $kb $rules)))
-		($_ (collapse (add-atoms $kb $demands)))
-		($_ (collapse (add-atoms $kb $modulators)))
-		
+		($partialKb (union-atom $rules $modulators))
+		($kbExp (union-atom $partialKb $demands))
+		($_ (collapse (add-atoms $kb $kbExp)))
 	)
      		()
     
 	)
 )
+
+
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
