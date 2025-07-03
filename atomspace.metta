@@ -319,6 +319,8 @@
     
 	)
 )
+
+;; The following is a function that is used to calculate a single value metric.
 (: calcMetric (-> Expression Expression))
 (= (calcMetric $rule)
 	(let* (

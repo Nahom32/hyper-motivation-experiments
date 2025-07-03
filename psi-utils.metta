@@ -161,3 +161,7 @@
       )
      )
    )
+
+(: cogTvMean (-> Expression Number))
+(= (cogTvMean (STV $val $bel))
+   (/ (+ $val $bel) 2))
