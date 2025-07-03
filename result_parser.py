@@ -11,9 +11,7 @@ def feeling_parser(sexp: str) -> Dict[str,Any]:
         ===========================================
     '''
     lexp = sexp.split()
-    print(lexp)
     feeling_dict = {}
-    
     while len(lexp) >= 2:
         try:
             head = lexp.pop(0)
@@ -35,5 +33,7 @@ def feeling_parser(sexp: str) -> Dict[str,Any]:
         raise Exception(f"Unparsed elements remaining: {lexp}. Current dictionary: {feeling_dict}")
 
     return feeling_dict
-print(feeling_parser('(hateValue 0.5 happinessValue 0.4 sadnessValue 0.3 angerValue 0.2)'))
+
+if __name__ == '__main__':
+    print(feeling_parser('(hateValue 0.5 happinessValue 0.4 sadnessValue 0.3 angerValue 0.2)'))
 

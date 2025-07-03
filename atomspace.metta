@@ -182,7 +182,14 @@
         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
         
     )))
-
+;; This function extracts the STV from RULE.
+(: extractSTVFromRule (-> Expression Expression))
+(= (extractSTVFromRule $rule)
+   	(unify $rule (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
+	       (STV $bel $conf)
+	       ()
+	       )
+)
 (:isGoalMet' (-> Expression Goal Bool))
 (= (isGoalMet' $rules $goal)
    	(if (== $rules ())
@@ -303,8 +310,14 @@
 )
 (: calcMetric (-> Expression Expression))
 (= (calcMetric $rule)
-	;; to do later	
+	(let* (
+	       	($stv (extractTvFromRule $rule))
+		($mean (cogTvMean $tv))
+	       )
+	  ($rule $mean)
+	)	
 )
+
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
