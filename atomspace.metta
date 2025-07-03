@@ -81,6 +81,17 @@
 (= (query $space (perception $x $y)) (collapse (match $space (perception $x $y) (perception $x $y))))
 (= (query $space (demand $x $y)) (collapse (match $space (demand $x $y) (demand $x $y))))
 
+(: queryAll (-> hyperon::space::DynSpace Symbol))
+(= (queryAll $space $type)
+   (case $type(
+	       (modulator (query $space (Modulator $x $y)))
+	       (perception (query $space (perception $x $y)))
+	       (demand (query $space (demand $x $y)))
+	       (rule (query $space (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal)))))
+	       ($_ (Error "This form doesn't exist in the atomspace"))
+	       )))
+
+
 (: demandSelector' (-> Expression Number Demand))
 (= (demandSelector' $demands $maxDemand)
    	(if (== $demands ()) 
