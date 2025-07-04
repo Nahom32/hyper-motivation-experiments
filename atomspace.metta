@@ -85,7 +85,7 @@
 (: queryAll (-> hyperon::space::DynSpace Symbol Expression))
 (= (queryAll $space $type)
    (case $type(
-	       (modulator (query $space (Modulator $x $y)))
+	       (modulator (query $space (modulator $x $y)))
 	       (perception (query $space (perception $x $y)))
 	       (demand (query $space (demand $x $y)))
 	       (rule (query $space (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal)))))
@@ -367,7 +367,8 @@
 ;!(fetch-modulator &modulator-space securing-threshold) 
 ;!(modulatorUpdaterAgent (demand competence 0.5) (demand affiliation 0.5) (demand energy 0.5))
 !(kb-initializer &kb)
-!(queryAll &kb demand)
+!(this is a demand)
+!(queryAll &kb modulator)
 !(query &kb (modulator $x $y))
 !(this is the result)
 !(get-atoms &kb)
