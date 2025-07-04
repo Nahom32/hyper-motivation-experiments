@@ -52,7 +52,7 @@
 
 
 
-(= (ruleSpace) (&rule-space))
+(= (ruleSpace) (&ruleSpace))
 (= (modulatorSpace) (&modulator-space))
 (= (demandSpace) (&demandspace))
 (= (add-atoms $space $values)
@@ -67,11 +67,19 @@
    	(let* (
 	       ($updater-atoms (collapse (get-atoms $updater)))
 	       ($_ (remove-occurrences $updated $pattern))
-		($_ (collapse (add-atoms $space $updated)))
+		    ($_ (collapse (add-atoms $space $updated)))
 	       )
 	  	()	
 	  )
 )
+
+;;Tag based specification for atomspace updation
+(: update-all (-> Symbol hyperon::space::DynSpace hyperon::space::DynSpace Expression))
+(= (update-all $tag $updater $updater)
+   (case $tag(
+              (demand (update-atoms (demand $x $y) $updater $updated))
+              (modulator (update-atoms (modulator $x $y) $updater $updated))
+              )))
 ;; a querying mechanism of the knowledge base.
 (= (query $space (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal))))
    	(collapse (match $space (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal)))
