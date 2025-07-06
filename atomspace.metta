@@ -73,6 +73,8 @@
 	  )
 )
 
+
+
 ;;Tag based specification for atomspace updation
 (: update-all (-> Symbol hyperon::space::DynSpace hyperon::space::DynSpace Expression))
 (= (update-all $tag $updater $updater)
@@ -80,6 +82,9 @@
               (demand (update-atoms (demand $x $y) $updater $updated))
               (modulator (update-atoms (modulator $x $y) $updater $updated))
               )))
+
+
+
 ;; a querying mechanism of the knowledge base.
 (= (query $space (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal))))
    	(collapse (match $space (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal)))
@@ -129,9 +134,9 @@
 ;; This is an unfinished function
 (= (goalSelector $demand)
    (case $demand(
-		 ((demand Affiliation $y) (Goal terminate 0.4 0.3))
-		((demand competence $x) (Goal terminal 0.4 0.3))
-        ((demand energy $x) (Goal terminate 0.4 0.3))
+		 ((demand affiliation $y) (Goal mission_complete 1.0 1.0))
+		((demand competence $x) (Goal mission_complete 1.0 1.0))
+        ((demand energy $x) (Goal mission_complete 1.0 1.0))
 	)
 )
 )
@@ -141,13 +146,17 @@
 (= (matchGoal $ruleSpace $actions)
    	(goal1 context1)
 )
-(: applyActions (-> Expression Goal Expression Expression))
+;;(: applyActions (-> Expression Goal Expression Expression))
 (= (applyActions $actions $goal $demand) 
    (if (== $actions ())
      		()
 		(let $isGoalMet? (isGoalMet? $actions $goal)
-		  	(if $isGoalMet? 
-			  	(setDemandValue &demandspace $demandName 1.0)
+		  	(if $isGoalMet?
+                (let* (
+                       ((demand $demandName $demandValue) $demand)
+                )
+			  	    (setDemandValue &demandspace $demandName 1.0)
+                )
 				()
 			)
 		)))
@@ -239,7 +248,7 @@
 	(let* (
 	       ($length (size-atom $actions))
 	       ($lastAction (index-atom $actions (- $length 1)))
-	       ($rules' (findRulesWithAction (ruleSpace) $lastAction)) 
+	       ($rules' (findRulesWithAction &ruleSpace $lastAction)) 
 	)
 		(isGoalMet' $rules' $goal)
 	)	
@@ -272,7 +281,7 @@
 
 	(let* (
 	       	($stimulus (random-float &rng 0 1))
-		($integrity (random-float &rng 0 1))
+		    ($integrity (random-float &rng 0 1))
        		((demand competence $competenceValue) $competence-demand)
 		((demand affiliation $affiliationValue) $affiliation-demand)
 		((demand energy $energyValue) $energy-demand)
@@ -351,7 +360,7 @@
         ($_ (println! (demands $demands)))
 		($currDemand (demandSelector $demands))
         ($_ (println! (dmSelector $currDemand)))
-		($goal (goalSelector $currDemand))
+		((Goal $goal $goalVal1 $goalVal2) (goalSelector $currDemand))
         ($_ (println! (goal $goal)))
 		($actions (planner &ruleSpace $state $goal))
         ($_ (println! (actions $actions)))
@@ -378,15 +387,18 @@
 )
 ;!(get-atoms &demandspace) 
 ;!(get-type (demand competence 0.5)) 
-;!(get-atoms &modulator-space) 
+;!(get-atoms &modulator-space)
+!(getDemandByName &demandspace competence)
 ;!(fetch-modulator &modulator-space securing-threshold) 
 ;!(modulatorUpdaterAgent (demand competence 0.5) (demand affiliation 0.5) (demand energy 0.5))
+!(addRulesToSpace &ruleSpace)
 !(kb-initializer &kb)
 !(this is a demand)
 !(queryAll &kb modulator)
 !(query &kb (modulator $x $y))
 !(this is the result)
 !(get-atoms &kb)
+;; !(applyActions (approach interact report) (Goal mission_complete 1.0 1.0) (demand competence 0.5))
 !(psi-agent-loop init &kb)
 ;;!(get-atoms &modulator-space)
 ;;!(getAllDemands &demandspace)	
