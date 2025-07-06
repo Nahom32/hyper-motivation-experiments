@@ -130,7 +130,8 @@
 (= (goalSelector $demand)
    (case $demand(
 		 ((demand Affiliation $y) (Goal terminate 0.4 0.3))
-		 
+		((demand competence $x) (Goal terminal 0.4 0.3))
+        ((demand energy $x) (Goal terminate 0.4 0.3))
 	)
 )
 )
@@ -181,7 +182,7 @@
 	  $maxRule
 	(let* (
 	       ((($rule $weight) $tail) (decons-atom $rules))
-		(($maxRule' $maxWeight) $maxRule)
+		    (($maxRule' $maxWeight) $maxRule)
 	       )
 	  (if (>= $maxWeight $weight)
 		  	()
@@ -209,8 +210,10 @@
    	(unify $rule (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
 	       (STV $bel $conf)
 	       ()
-	       )
+	)
 )
+
+
 (:isGoalMet' (-> Expression Goal Bool))
 (= (isGoalMet' $rules $goal)
    	(if (== $rules ())
@@ -225,7 +228,7 @@
 		  )
 		)
 	)
-   )
+)
 
 
 ;; How would this function work? how can I check whether the goal is met?
@@ -289,32 +292,7 @@
 
 	)
 )
-;; The main loop of the OpenPsi code base will consist of the following
-;; The number of cycles which can be a big number or an infinite loop
-;; functions that initialize the agents or the agents themselves
-;; The knowledge base which is accessed by the agents (atomspace).
-;; What structure does the agents have? 
-;; representations in openpsi will have the following function arguments
-;; The perception updater: (perceptionUpdater $cacheSpace $percepta $max-recur)
-;; The action planner: (planner $ruleSpace $initState $goal)
-;; The action planner v2: (hillClimbingPlanner $initialState $testedAction $plan $ruleSpace)
-;; The feeling updater will have the following function call mechanism
-;; The last schema is required to get the next state of the agent.
-;; So the action selector agent should return that schema or should be searched by an alternative function
-;; This fails if there are multiple cognitive schemas for one actions. There is a possibility for selecting the wrong rule while searching by action.
-;; But can't that be prevented by leveraging the calculated heuristic?
-;; How can we use the demand updater agent in this usecase?
-;; I'm assuming the following functions are implemented fetchDemand or its equivalent fetch-modulator emotion-calculator.
-;; How will the demand-updation process will be incorporated to the psi-agent-loop
-;; In this case the best option would be to define a decoy updater that might emulate the demand updater agent 
-;; Which is friendly with the action and goal selection
-;;(feeling_calculator $activation_indicator 
-;;                      $resolution_indicator 
-;;                     $securing_threshold_indicator 
-;;                       $selection_threshold_indicator 
-;;                       $pleasure_indicator 
-;;                       $number_of_used_modulators)
-;; I think we need the kb initializer for this to work.
+; I think we need the kb initializer for this to work.
 (: kb-initializer (-> hyperon::space::DynSpace Expression))
 (= (kb-initializer $kb)
    (let* (
@@ -340,14 +318,43 @@
 	  ($rule $mean)
 	)	
 )
+;; The main loop of the OpenPsi code base will consist of the following
+;; The number of cycles which can be a big number or an infinite loop
+;; functions that initialize the agents or the agents themselves
+;; The knowledge base which is accessed by the agents (atomspace).
+;; What structure does the agents have? 
+;; representations in openpsi will have the following function arguments
+;; The perception updater: (perceptionUpdater $cacheSpace $percepta $max-recur)
+;; The action planner: (planner $ruleSpace $initState $goal)
+;; The action planner v2: (hillClimbingPlanner $initialState $testedAction $plan $ruleSpace)
+;; The feeling updater will have the following function call mechanism
+;; The last schema is required to get the next state of the agent.
+;; So the action selector agent should return that schema or should be searched by an alternative function
+;; This fails if there are multiple cognitive schemas for one actions. There is a possibility for selecting the wrong rule while searching by action.
+;; But can't that be prevented by leveraging the calculated heuristic?
+;; How can we use the demand updater agent in this usecase?
+;; I'm assuming the following functions are implemented fetchDemand or its equivalent fetch-modulator emotion-calculator.
+;; How will the demand-updation process will be incorporated to the psi-agent-loop
+;; In this case the best option would be to define a decoy updater that might emulate the demand updater agent 
+;; Which is friendly with the action and goal selection
+;;(feeling_calculator $activation_indicator 
+;;                      $resolution_indicator 
+;;                     $securing_threshold_indicator 
+;;                       $selection_threshold_indicator 
+;;                       $pleasure_indicator 
+;;                       $number_of_used_modulators)
 
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
-	    ($demands (query $kb (demand $x $y)))
+	    ($demands (queryAll $kb demand))
+        ($_ (println! (demands $demands)))
 		($currDemand (demandSelector $demands))
+        ($_ (println! (dmSelector $currDemand)))
 		($goal (goalSelector $currDemand))
+        ($_ (println! (goal $goal)))
 		($actions (planner &ruleSpace $state $goal))
+        ($_ (println! (actions $actions)))
 		($_ (applyActions $actions $goal $currDemand))
 		($competenceDemand (getDemandByName &demandspace competence))
 		($affiliationDemand (getDemandByName &demandspace affiliation))
@@ -380,7 +387,7 @@
 !(query &kb (modulator $x $y))
 !(this is the result)
 !(get-atoms &kb)
-;!(psi-agent-loop init &kb)
+!(psi-agent-loop init &kb)
 ;;!(get-atoms &modulator-space)
 ;;!(getAllDemands &demandspace)	
 ;;!(goalSelector (demand Affiliation 2))
