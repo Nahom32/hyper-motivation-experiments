@@ -204,16 +204,16 @@
 	)))
 
 
-(: extractGoalFromRule (-> Expression Goal))
-(= (extractGoalFromRule $rule)
-	(unify $rule (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $goal ()))
+;(: extractGoalFromRule (-> Expression Goal))
+;(= (extractGoalFromRule $rule)
+;	(unify $rule (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $goal ()))
 
 ;; This function is taken from the action planner in version 1. It will be removed
-(= (findRulesWithAction $space $action)
-    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
-        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
+;;(= (findRulesWithAction $space $action)
+;;   (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)      
+;;((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
         
-    )))
+;;)))
 ;; This function extracts the STV from RULE.
 (: extractSTVFromRule (-> Expression Expression))
 (= (extractSTVFromRule $rule)
@@ -230,7 +230,9 @@
 		False
 		(let* (
 			(($rule $tail) (decons-atom $rules))
+            ($_ (println! (isGoalMetInnerRule $rule tail $tail)))
 			($ruleGoal (extractGoalFromRule $rule))
+            ($_ (println! (this is the goal $ruleGoal)))
 		)
 		  (if (== $ruleGoal $goal)
 		    	True
@@ -249,9 +251,10 @@
 	(let* (
 	       ($length (size-atom $actions))
 	       ($lastAction (index-atom $actions (- $length 1)))
-	       ($rules' (findRulesWithAction &ruleSpace $lastAction)) 
+	       ($rules' (findRulesWithAction &ruleSpace $lastAction))
+           ($_ (println! (rulesinGoal $rules')))
 	)
-		(isGoalMet' $rules' $goal)
+		 (isGoalMet' $rules' $goal)
 	)	
 )
 
@@ -379,6 +382,7 @@
 		($loveValue (loveFeelingUpdater))
 		($hateValue (hateFeelingUpdater))
 		($gratitude (gratitudeFeelingUpdater))
+        ($_ (println! (happinessValue $happinessValue angerValue $angerValue sadnessValue $sadnessValue angerValue $angerValue fearValue $fearValue)))
 		
 
 	)
@@ -399,11 +403,11 @@
 !(queryAll &kb modulator)
 !(query &kb (modulator $x $y))
 !(this is the result)
-!(get-atoms &kb)
-;; !(applyActions (approach interact report) (Goal mission_complete 1.0 1.0) (demand competence 0.5))
-;;!(psi-agent-loop init &kb)
-!(isGoalMet? (report) (Goal mission_complete 1.0 1.0))
-!(get-atoms &modulator-space)
-;;!(getAllDemands &demandspace)	
+;;!(get-atoms &kb)
+;;!(applyActions (approach interact report) (Goal mission_complete 1.0 1.0) (demand competence 0.5))
+!(psi-agent-loop init &kb)
+;;!(isGoalMet? (report) (Goal mission_complete 1.0 1.0))
+;;!(get-atoms &modulator-space)
+!(getAllDemands &demandspace)	
 ;;!(goalSelector (demand Affiliation 2))
 ;;!(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))
