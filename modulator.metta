@@ -44,8 +44,8 @@
 !(insert-modulators &modulator-space)
 !(fetch-modulator &modulator-space securing-threshold)
 !(fetch-modulator-val &modulator-space securing-threshold)
-
-!(add-modulator &modulator-space (modulator custom 0.8))
+!(fetch-modulator &modulator-space arousal)
+;;!(add-modulator &modulator-space (modulator custom 0.8))
 !(get-atoms &modulator-space)
 !(normalize-value 6.0)
 ;; !(normalize-value 9.0)

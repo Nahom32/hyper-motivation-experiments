@@ -3,7 +3,7 @@
 !(import! &self feeling-updaters)
 !(import! &self psi-utils)
 !(import! &self action-planner-v1)
-!(import! &self modulator)
+;;!(import! &self modulator)
 !(bind! &kb (new-space))
 ;;!(bind! &modulator-space (new-space))
 ;;!(bind! &demand-space (new-space))
@@ -16,8 +16,51 @@
 
 ;; A function to be removed later on
 
+(: Modulator Type)
+(: modulator (-> Symbol Number Modulator))
 
-(: update-atom (-> Grounded Atom Atom (->)))
+
+!(bind! &modulator-space (new-space)) ;; a relation-space for adding links between categories and rules
+
+
+
+(: insert-modulators (-> Atom empty))
+(= (insert-modulators $space) (add-reduct $space (superpose (
+        (modulator arousal 0.5)
+        (modulator positive-valence 0.5)
+        (modulator negative-valence 0.5)
+        (modulator selection-threshold 0.5)
+        (modulator securing-threshold 0.5)
+        (modulator goal-directedness 0.5)
+    
+))))
+
+;;(: fetch-modulator (-> hyperon::space::DynSpace Symbol Expression))
+(= (fetch-modulator $space $name)
+    (match $space (modulator $name $x) (modulator $name $x))
+)
+(: fetch-modulator-val (-> hyperon::space::DynSpace Symbol Number))
+(= (fetch-modulator-val $space $name)
+    (let ($x $y $z) (fetch-modulator $space $name) $z)
+)
+(: normalize-value (-> Number Number))
+(= (normalize-value $num)
+    (if(and (<= $num 7) (>= $num 1))
+        (/ $num 7.0)
+        (ERROR (provide unique values))
+    )
+)
+(: isInBetween (-> Number Number Number Bool))
+(= (isInBetween $val $a $b) (if (and (>= $val $a) (<= $val $b)) True False))
+
+
+(= (add-modulator $space (modulator $name $value))
+    (if (isInBetween $value 0 1) (add-atom $space (modulator $name $value)) (Error (value is incorrect))))
+
+
+!(insert-modulators &modulator-space)
+
+;(: update-atom (-> Grounded Atom Atom (->)))
 (= (update-atom $space $oatom $natom) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
 
 
@@ -215,13 +258,13 @@
         
 ;;)))
 ;; This function extracts the STV from RULE.
-(: extractSTVFromRule (-> Expression Expression))
-(= (extractSTVFromRule $rule)
-   	(unify $rule (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
-	       (STV $bel $conf)
-	       ()
-	)
-)
+;; (: extractSTVFromRule (-> Expression Expression))
+;; (= (extractSTVFromRule $rule)
+;;   	(unify $rule (: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal)))
+;;	       (STV $bel $conf)
+;;	       ()
+;;	)
+;;)
 
 
 (:isGoalMet' (-> Expression Goal Bool))
@@ -281,7 +324,7 @@
 ;; I think the best possible thing to do here is to implement them while also 
 
 ;(: modulatorUpdaterAgent (-> Demand Demand Demand Expression))
-(= (modulatorUpdaterAgent $competence-demand $affiliation-demand $energy-demand)
+(= (modulatorUpdaterAgent $modulatorSpace $competence-demand $affiliation-demand $energy-demand)
 
 	(let* (
 	       	($stimulus (random-float &rng 0 1))
@@ -292,12 +335,12 @@
 		    ($activationValue (ActivationHelper $competenceValue $energyValue $stimulus))
 		    ($securingValue (SecuringThresholdHelper $integrity $stimulus))
 		    ($selectionValue (SelectionThresholdHelper $competenceValue $stimulus))
-		    ($activationModulator (fetch-modulator &modulator-space arousal))
-		    ($securingModulator (fetch-modulator &modulator-space securing-threshold))
-		    ($selectionModulator (fetch-modulator &modulator-space selection-threshold))
-		    ($_ (update-atom &modulator-space $activationModulator (modulator arousal $activationValue)))
-		    ($_ (update-atom &modulator-space $securingModulator (modulator securing-threshold $securingValue)))
-		    ($_ (update-atom &modulator-space $selectionModulator (modulator selection-threshold $selectionValue)))
+		    ($activationModulator (fetch-modulator $modulatorSpace arousal))
+		    ($securingModulator (fetch-modulator $modulatorSpace securing-threshold))
+		    ($selectionModulator (fetch-modulator $modulatorSpace selection-threshold))
+		    ($_ (update-atom $modulatorSpace $activationModulator (modulator arousal $activationValue)))
+		    ($_ (update-atom $modulatorSpace $securingModulator (modulator securing-threshold $securingValue)))
+		    ($_ (update-atom $modulatorSpace $selectionModulator (modulator selection-threshold $selectionValue)))
 	
  	)
 	  ()
@@ -364,19 +407,28 @@
         ($_ (println! (demands $demands)))
 		($currDemand (demandSelector $demands))
         ($_ (println! (dmSelector $currDemand)))
-		((Goal $goal $goalVal1 $goalVal2) (goalSelector $currDemand))
-        ($_ (println! (goal $goal)))
+        ($goalObj (goalSelector $currDemand))
+		((Goal $goal $goalVal1 $goalVal2) $goalObj)
+        
+        ($_ (println! (goal-psi $goal)))
 		($actions (planner &ruleSpace $state $goal))
-        ($_ (println! (actions $actions)))
-		($_ (collapse (applyActions $actions $goal $currDemand)))
+        ($_ (println! (actions-psi-to-apply $actions goal $goal demand $currDemand)))
+		($applyValue (applyActions $actions $goalObj $currDemand))
+        
+        ($_ (println! (applyValue $applyValue)))
+
 		($competenceDemand (getDemandByName &demandspace competence))
+        ($_ (println! (competence-psi $competenceDemand)))
 		($affiliationDemand (getDemandByName &demandspace affiliation))
 		($energyDemand (getDemandByName &demandspace energy))
         ($_ (println! (demandValues $competenceDemand $affiliationDemand $energyDemand)))
-		($_ (modulatorUpdaterAgent $competenceDemand $affiliationDemand $energyDemand))
+		($_ (modulatorUpdaterAgent &modulator-space $competenceDemand $affiliationDemand $energyDemand))
 		($happinessValue (happinessFeelingUpdater))
+        ($_ (println! (happinessVal $happinessValue)))
 		($sadnessValue (sadnessFeelingUpdater))
+        ($_ (println! (sadnessVal $sadnessValue)))
 		($angerValue (angerFeelingUpdater))
+        ($_ (println! (angerVal $angerValue)))
 		($fearValue (fearFeelingUpdater))
 		($excitementValue (excitementFeelingUpdater))
 		($loveValue (loveFeelingUpdater))
