@@ -1,10 +1,10 @@
-(= (fuzzy_equal $x $t $a)
-    (/ 1
-        (+ 1
-            (* $a (*(- $x $t) (- $x $t)))
-        )  
-    )     
-)
+;(= (fuzzy_equal $x $t $a)
+;    (/ 1
+;        (+ 1
+;            (* $a (*(- $x $t) (- $x $t)))
+;        )  
+;    )     
+;)
 (: ActivationHelper (-> Number Number Number Number))
 (= (ActivationHelper $competence $energy $stimulus)
     (+  (* 2 $stimulus)

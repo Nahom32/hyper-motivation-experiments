@@ -72,6 +72,7 @@
 ;; !(register-module! ../utilities-module)
 ;; !(import! &self utilities-module:utils)
 ;; !(import! &self hyperon-openpsi:utils:psi_utils)
+;;!(import! &self psi-utils)
 ;; (: foldl (-> (-> $a $b $d) $b $c $d))
 (= (foldl $f $acc $tuple)
    (if (== $tuple ())
@@ -96,7 +97,7 @@
 (= (sum $list)
     (foldl + 0 $list)
 )
-!(sum (1 2 3 4))
+
 ; Ma)p a modulator t)o corresponding feeling dimension
 ; indicator equals to -2 means extremely low, -1 low, 0 medium, 1 high, 2 extremely high,
 ; others not defined (would return 0) 
@@ -139,14 +140,14 @@
                        $number_of_used_modulators)
     (let* (
 	((modulator arousal $activation-value) (fetch-modulator $modulator_space arousal))
-    ($_ (println! (arousal $activation-value)))
+    
 	((modulator securing-threshold $securing-value) (fetch-modulator $modulator_space securing-threshold))
-    ($_ (println! (securing-value $securing-value)))
+    
 	((modulator selection-threshold $selection-value) (fetch-modulator $modulator_space selection-threshold))
-    ($_ (println! (selection-threshold $selection-value)))
+    
 	((modulator resolution-level $resolution-value) (fetch-modulator $modulator_space resolution-level))
     
-    ($_ (println! (activation-value $activation-value securing-threshold $securing-value)))
+    
         ;($activation-value 0.3)
         ;($resolution-value 0.4)
         ;($securing-value 0.7)
@@ -288,7 +289,7 @@
 ;;                                  Tests for feeling updaters
 ;; ==================================================================================
 
-;; !(modulator_to_feeling_dimension 0.85 1)
+!(modulator_to_feeling_dimension 0.85 1)
 ;; !(feeling_calculator 1 1 1 1 1 5)
 ;; !(happinessFeelingUpdater)
 ;; !(sadnessFeelingUpdater)

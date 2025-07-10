@@ -201,7 +201,7 @@
 		    (($maxRule' $maxWeight) $maxRule)
 	       )
 	  (if (>= $maxWeight $weight)
-		  	()
+		  	;;()
 			(selectMaxRule $tail $maxRule)
 			(selectMaxRule $tail $rule)
 
@@ -362,22 +362,7 @@
 ;;                       $selection_threshold_indicator 
 ;;                       $pleasure_indicator 
 ;;                       $number_of_used_modulators)
-;(= (debug-loop $state $kb)
-;(let* (
-;	    ($demands (queryAll $kb demand))
-;        ($_ (println! (demands $demands)))
-;		($currDemand (demandSelector $demands))
-;        ($_ (println! (dmSelector $currDemand)))
-;        ($goalObj (goalSelector $currDemand))
-;		((Goal $goal $goalVal1 $goalVal2) $goalObj) 
-;        ($_ (println! (goal-psi $goal)))
-;		($actions (planner &ruleSpace $state $goal))
-;        ($_ (println! (actions-psi-to-apply $actions goal $goal demand $currDemand)))
-;		($applyValue (applyActions $actions $goalObj $currDemand))
-;    )
-;  ()
-;     
-;))
+
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
@@ -402,22 +387,22 @@
 
         ($_ (println! (modUpdate $modUpdate modulatorValues (collapse (get-atoms &modulator-space))))) 
 		($happinessValue (happinessFeelingUpdater &modulator-space))
-        ($_ (println! (happinessVal $happinessValue)))
+        ;($_ (println! (happinessVal $happinessValue)))
 		($sadnessValue (sadnessFeelingUpdater &modulator-space))
-        ($_ (println! (sadnessVal $sadnessValue)))
+        ;($_ (println! (sadnessVal $sadnessValue)))
 		($angerValue (angerFeelingUpdater &modulator-space))
-        ($_ (println! (angerVal $angerValue)))
+        ;($_ (println! (angerVal $angerValue)))
 		($fearValue (fearFeelingUpdater &modulator-space))
 		($excitementValue (excitementFeelingUpdater &modulator-space))
 		($loveValue (loveFeelingUpdater &modulator-space))
 		($hateValue (hateFeelingUpdater &modulator-space))
 		($gratitude (gratitudeFeelingUpdater &modulator-space))
-        ($_ (println! (happinessValue $happinessValue angerValue $angerValue sadnessValue $sadnessValue angerValue $angerValue fearValue $fearValue)))
+        ;($_ (println! (happinessValue $happinessValue angerValue $angerValue sadnessValue $sadnessValue angerValue $angerValue fearValue $fearValue)))
 		
 
 	)
 	  (hateValue $hateValue happinessValue $happinessValue sadnessValue $sadnessValue angerValue $angerValue)
-	  
+	 ;;(happinessValue $happinessValue) 
 	)	
 
 )
@@ -431,8 +416,8 @@
 !(kb-initializer &kb) 
 !(this is a demand)
 !(queryAll &kb modulator)
-!(query &kb (modulator $x $y))
-!(this is the result)
+;;!(query &kb (modulator $x $y))
+;!(this is the result)
 ;;!(get-atoms &kb)
 ;;!(applyActions (approach interact report) (Goal mission_complete 1.0 1.0) (demand competence 0.5))
 !(psi-agent-loop init &kb)
