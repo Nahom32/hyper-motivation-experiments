@@ -3,59 +3,22 @@
 !(import! &self feeling-updaters)
 !(import! &self psi-utils)
 !(import! &self action-planner-v1)
-;;!(import! &self modulator)
+!(import! &self modulator)
 !(bind! &kb (new-space))
-;;!(bind! &modulator-space (new-space))
+;!(bind! &modulator-space (new-space))
 ;;!(bind! &demand-space (new-space))
 !(bind! &rule-space (new-space))
 !(bind! &cache-space (new-space))
-;; Line 2 to Line 5 are expected to be removed.
 
 ;; This function removes all occurences of an existing pattern
 ;; how would we evaluate it? The action is planned, then the demand updater should update based on the plan
 
 ;; A function to be removed later on
 
-(: Modulator Type)
-(: modulator (-> Symbol Number Modulator))
+
+;;!(bind! &modulator-space (new-space)) ;; a relation-space for adding links between categories and rules
 
 
-!(bind! &modulator-space (new-space)) ;; a relation-space for adding links between categories and rules
-
-
-
-(: insert-modulators (-> Atom empty))
-(= (insert-modulators $space) (add-reduct $space (superpose (
-        (modulator arousal 0.5)
-        (modulator positive-valence 0.5)
-        (modulator negative-valence 0.5)
-        (modulator selection-threshold 0.5)
-        (modulator securing-threshold 0.5)
-        (modulator goal-directedness 0.5)
-    
-))))
-
-;;(: fetch-modulator (-> hyperon::space::DynSpace Symbol Expression))
-(= (fetch-modulator $space $name)
-    (match $space (modulator $name $x) (modulator $name $x))
-)
-(: fetch-modulator-val (-> hyperon::space::DynSpace Symbol Number))
-(= (fetch-modulator-val $space $name)
-    (let ($x $y $z) (fetch-modulator $space $name) $z)
-)
-(: normalize-value (-> Number Number))
-(= (normalize-value $num)
-    (if(and (<= $num 7) (>= $num 1))
-        (/ $num 7.0)
-        (ERROR (provide unique values))
-    )
-)
-(: isInBetween (-> Number Number Number Bool))
-(= (isInBetween $val $a $b) (if (and (>= $val $a) (<= $val $b)) True False))
-
-
-(= (add-modulator $space (modulator $name $value))
-    (if (isInBetween $value 0 1) (add-atom $space (modulator $name $value)) (Error (value is incorrect))))
 
 
 !(insert-modulators &modulator-space)
@@ -399,7 +362,22 @@
 ;;                       $selection_threshold_indicator 
 ;;                       $pleasure_indicator 
 ;;                       $number_of_used_modulators)
-
+;(= (debug-loop $state $kb)
+;(let* (
+;	    ($demands (queryAll $kb demand))
+;        ($_ (println! (demands $demands)))
+;		($currDemand (demandSelector $demands))
+;        ($_ (println! (dmSelector $currDemand)))
+;        ($goalObj (goalSelector $currDemand))
+;		((Goal $goal $goalVal1 $goalVal2) $goalObj) 
+;        ($_ (println! (goal-psi $goal)))
+;		($actions (planner &ruleSpace $state $goal))
+;        ($_ (println! (actions-psi-to-apply $actions goal $goal demand $currDemand)))
+;		($applyValue (applyActions $actions $goalObj $currDemand))
+;    )
+;  ()
+;     
+;))
 (: psi-agent-loop (-> Symbol hyperon::space::DynSpace Expression)) 
 (= (psi-agent-loop $state $kb)
 	(let* (
@@ -408,32 +386,32 @@
 		($currDemand (demandSelector $demands))
         ($_ (println! (dmSelector $currDemand)))
         ($goalObj (goalSelector $currDemand))
-		((Goal $goal $goalVal1 $goalVal2) $goalObj)
-        
+		((Goal $goal $goalVal1 $goalVal2) $goalObj) 
         ($_ (println! (goal-psi $goal)))
 		($actions (planner &ruleSpace $state $goal))
         ($_ (println! (actions-psi-to-apply $actions goal $goal demand $currDemand)))
-		($applyValue (applyActions $actions $goalObj $currDemand))
-        
+		($applyValue (applyActions $actions $goalObj $currDemand)) 
         ($_ (println! (applyValue $applyValue)))
-
-		($competenceDemand (getDemandByName &demandspace competence))
+		($competenceDemand (getDemandByName &demandspace competence)) 
         ($_ (println! (competence-psi $competenceDemand)))
 		($affiliationDemand (getDemandByName &demandspace affiliation))
 		($energyDemand (getDemandByName &demandspace energy))
+    
         ($_ (println! (demandValues $competenceDemand $affiliationDemand $energyDemand)))
-		($_ (modulatorUpdaterAgent &modulator-space $competenceDemand $affiliationDemand $energyDemand))
-		($happinessValue (happinessFeelingUpdater))
+		($modUpdate (modulatorUpdaterAgent &modulator-space $competenceDemand $affiliationDemand $energyDemand))
+
+        ($_ (println! (modUpdate $modUpdate modulatorValues (collapse (get-atoms &modulator-space))))) 
+		($happinessValue (happinessFeelingUpdater &modulator-space))
         ($_ (println! (happinessVal $happinessValue)))
-		($sadnessValue (sadnessFeelingUpdater))
+		($sadnessValue (sadnessFeelingUpdater &modulator-space))
         ($_ (println! (sadnessVal $sadnessValue)))
-		($angerValue (angerFeelingUpdater))
+		($angerValue (angerFeelingUpdater &modulator-space))
         ($_ (println! (angerVal $angerValue)))
-		($fearValue (fearFeelingUpdater))
-		($excitementValue (excitementFeelingUpdater))
-		($loveValue (loveFeelingUpdater))
-		($hateValue (hateFeelingUpdater))
-		($gratitude (gratitudeFeelingUpdater))
+		($fearValue (fearFeelingUpdater &modulator-space))
+		($excitementValue (excitementFeelingUpdater &modulator-space))
+		($loveValue (loveFeelingUpdater &modulator-space))
+		($hateValue (hateFeelingUpdater &modulator-space))
+		($gratitude (gratitudeFeelingUpdater &modulator-space))
         ($_ (println! (happinessValue $happinessValue angerValue $angerValue sadnessValue $sadnessValue angerValue $angerValue fearValue $fearValue)))
 		
 
@@ -450,7 +428,7 @@
 ;!(fetch-modulator &modulator-space securing-threshold) 
 ;;!(modulatorUpdaterAgent (demand competence 0.5) (demand affiliation 0.5) (demand energy 0.5))
 !(addRulesToSpace &ruleSpace)
-!(kb-initializer &kb)
+!(kb-initializer &kb) 
 !(this is a demand)
 !(queryAll &kb modulator)
 !(query &kb (modulator $x $y))
@@ -458,8 +436,9 @@
 ;;!(get-atoms &kb)
 ;;!(applyActions (approach interact report) (Goal mission_complete 1.0 1.0) (demand competence 0.5))
 !(psi-agent-loop init &kb)
+;!(happinessFeelingUpdater &modulator-space)
 ;;!(isGoalMet? (report) (Goal mission_complete 1.0 1.0))
 ;;!(get-atoms &modulator-space)
-!(getAllDemands &demandspace)	
+;;!(happinessFeelingUpdater)	
 ;;!(goalSelector (demand Affiliation 2))
 ;;!(demandSelector ((demand Affiliation 3) (demand Concept 4) (demand Car 8)))

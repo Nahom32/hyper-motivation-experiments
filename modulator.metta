@@ -7,14 +7,15 @@
 
 
 
-(: insert-modulators (-> Atom empty))
+;;(: insert-modulators (-> Atom empty))
 (= (insert-modulators $space) (add-reduct $space (superpose (
         (modulator arousal 0.5)
         (modulator positive-valence 0.5)
-        (modulator negative-valence 0.5)
+        ;;(modulator negative-valence 0.5)
         (modulator selection-threshold 0.5)
         (modulator securing-threshold 0.5)
         (modulator goal-directedness 0.5)
+        (modulator resolution-level 0.5)
     
 ))))
 
@@ -41,12 +42,12 @@
     (if (isInBetween $value 0 1) (add-atom $space (modulator $name $value)) (Error (value is incorrect))))
 
 
-!(insert-modulators &modulator-space)
-!(fetch-modulator &modulator-space securing-threshold)
-!(fetch-modulator-val &modulator-space securing-threshold)
-!(fetch-modulator &modulator-space arousal)
+;!(insert-modulators &modulator-space)
+;!(fetch-modulator &modulator-space securing-threshold)
+;!(fetch-modulator-val &modulator-space securing-threshold)
+;!(fetch-modulator &modulator-space arousal)
 ;;!(add-modulator &modulator-space (modulator custom 0.8))
-!(get-atoms &modulator-space)
-!(normalize-value 6.0)
+;!(get-atoms &modulator-space)
+;!(normalize-value 6.0)
 ;; !(normalize-value 9.0)
-!(get-atoms &modulator-space)
+;!(get-atoms &modulator-space)
