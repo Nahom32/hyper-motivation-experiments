@@ -27,20 +27,22 @@
 (= (update-atom $space $oatom $natom) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
 
 
-(: remove-atoms' (-> hyperon::space::DynSpace Expression Expression))
+;;(: remove-atoms' (-> hyperon::space::DynSpace Expression Expression))
 (= (remove-atoms' $space $expression)
     (if (== $expression ())
         ()
         (let* (
             (($head $tail) (decons-atom $expression))
-            ($_ (remove-atom $space $head))
+            ($_  (remove-atom $space $head))
+           ($rem (collapse (get-atoms $space)))
+           ($_ (println! (remaining-atoms $rem)))
         )
             (remove-atoms' $space $tail)
         )
     )
 )
 ;; This function removes values from a given atomspace
-(:remove-atoms (-> hyperon::space::DynSpace))
+;;(:remove-atoms (-> hyperon::space::DynSpace))
 (= (remove-atoms $space)
     (let $atoms (collapse (get-atoms $space))
         (remove-atoms' $space $atoms)
@@ -49,10 +51,13 @@
 ;; Remove The remove occurrences function removes values based on a given 
 ;;pattern for instance a perception updater value can be stored as 
 ;;(perception value time)
-(: remove-occurrences (-> hyperon::space::DynSpace Expression Expression)) 
+;;(: remove-occurrences (-> hyperon::space::DynSpace Expression Expression)) 
 (= (remove-occurrences $space $pattern)
-   	(let $atoms (collapse (match $space $pattern $pattern))
-	  	(remove-atoms $space $atoms)))
+   	(let* (
+            ($atoms (collapse (match $space $pattern $pattern)))
+            ($_ (println! (atoms-to-remove $atoms)))
+           ) 
+	  	(remove-atoms' $space $atoms)))
 
 
 
@@ -72,18 +77,24 @@
 (= (update-atoms $pattern $updater $updated)
    	(let* (
 	       ($updater-atoms (collapse (get-atoms $updater)))
-	       ($_ (remove-occurrences $updated $pattern))
-		    ($_ (collapse (add-atoms $space $updated)))
+           ($_ (println! (pattern $pattern)))
+	       ($rem-res (remove-occurrences $updated $pattern))
+		   ($_ (println! (removed successfully $rem-res)))
+           ($atoms (collapse (get-atoms $updated)))
+           ($_ (println! (atomsKb $atoms)))
+            ($res (collapse (add-atoms $updated $updater-atoms)))
+            ($_ (println! (result-after-added $res)))
+            ($atoms' (collapse (get-atoms $updated)))
 	       )
 	  	()	
-	  )
+	)
 )
 
 
 
 ;;Tag based specification for atomspace updation
 (: update-all (-> Symbol hyperon::space::DynSpace hyperon::space::DynSpace Expression))
-(= (update-all $tag $updater $updater)
+(= (update-all $tag $updater $updated)
    (case $tag(
               (demand (update-atoms (demand $x $y) $updater $updated))
               (modulator (update-atoms (modulator $x $y) $updater $updated))
@@ -398,7 +409,9 @@
 		($hateValue (hateFeelingUpdater &modulator-space))
 		($gratitude (gratitudeFeelingUpdater &modulator-space))
         ;($_ (println! (happinessValue $happinessValue angerValue $angerValue sadnessValue $sadnessValue angerValue $angerValue fearValue $fearValue)))
-		
+	    ($_ (update-all modulator &modulator-space $kb))
+;        
+        ($_ (update-all demand &demandspace $kb))
 
 	)
 	  (hateValue $hateValue happinessValue $happinessValue sadnessValue $sadnessValue angerValue $angerValue)
@@ -421,7 +434,11 @@
 ;;!(get-atoms &kb)
 ;;!(applyActions (approach interact report) (Goal mission_complete 1.0 1.0) (demand competence 0.5))
 !(psi-agent-loop init &kb)
-;!(happinessFeelingUpdater &modulator-space)
+!(collapse (get-atoms &kb))
+;!(bind! &test (new-space))
+;!(add-atoms &test ((md 13 14) (md 15 17)))
+;!(get-atoms &test)
+;;!(happinessFeelingUpdater &modulator-space)
 ;;!(isGoalMet? (report) (Goal mission_complete 1.0 1.0))
 ;;!(get-atoms &modulator-space)
 ;;!(happinessFeelingUpdater)	
