@@ -27,6 +27,13 @@
 (= (update-atom $space $oatom $natom) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
 
 
+
+;; A function to be removed later on since we have it in meTTa-utils.
+(: getInput (-> String))
+(= (getInput) (
+    let $x ((py-atom sys.stdin.readline)) $x
+))
+
 ;;(: remove-atoms' (-> hyperon::space::DynSpace Expression Expression))
 (= (remove-atoms' $space $expression)
     (if (== $expression ())
@@ -419,6 +426,10 @@
 	)	
 
 )
+
+(= (getAndAdd)
+   (let $val (getInput) (car-atom $val)))
+!(getAndAdd)
 ;!(get-atoms &demandspace) 
 ;!(get-type (demand competence 0.5)) 
 ;!(get-atoms &modulator-space)
@@ -433,8 +444,8 @@
 ;!(this is the result)
 ;;!(get-atoms &kb)
 ;;!(applyActions (approach interact report) (Goal mission_complete 1.0 1.0) (demand competence 0.5))
-!(psi-agent-loop init &kb)
-!(collapse (get-atoms &kb))
+;;!(psi-agent-loop init &kb)
+;;!(collapse (get-atoms &kb))
 ;!(bind! &test (new-space))
 ;!(add-atoms &test ((md 13 14) (md 15 17)))
 ;!(get-atoms &test)
