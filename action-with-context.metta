@@ -140,22 +140,22 @@
 
 (= (findRulesWithContext $space $context)
     (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
-         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal))) $weight)
+         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
     ))
 
 )
-;
+;; This contains extra modification to the context given using an enhanced context 
 ;; finds rules with goals as contexts
 (= (findRulesWithGoalAsContext $space $goal)
-    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $goal $x $y) $action)) $nextGoal))) $weight)
-        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $goal $x $y) $action)) $nextGoal))) $weight) 
+    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $goal $x $y)) $action)) $nextGoal))) $weight)
+         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $goal $x $y)) $action)) $nextGoal))) $weight)
     ))
 
 )
 ;; finds rules with similar actions
 (= (findRulesWithAction $space $action)
-    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
-        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
+    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
+        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
         
     ))
 
@@ -176,8 +176,8 @@
 )
 ;; filters rules with the same goal name.
 (= (findRulesWithGoal $space $goal)
-    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) (Goal $goal $x $y)))) $weight)
-        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) (Goal $goal $x $y)))) $weight)
+    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
+       ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
         
     ))
 )
@@ -191,12 +191,16 @@
 )
 
 (= (extractGoalFromRule $rule)
-    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $goal)
+    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight) $rule $goal)
 
 )
 
+;(= (extractContextFromRule $rule)
+;    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $context)
+;)
 (= (extractContextFromRule $rule)
-    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $context)
+  (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight) $rule
+  $context)
 )
 ;; an implementation inspired that greedily selects 
 ;; an action at each step.
