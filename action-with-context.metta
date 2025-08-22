@@ -155,7 +155,7 @@
 ;; This function might require further modification later.
 (= (findRulesWithPriorGoal $space $priorGoal)
     (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
-         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((Goal $context $x $y) $action)) $goal))) $weight)
+         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ((context $context (Goal $priorGoal $x $y)) $action)) $goal))) $weight)
     ))
 
 )
