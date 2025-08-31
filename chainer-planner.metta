@@ -195,7 +195,7 @@
 ;; backward chainer function.
 (: bc_em (-> Atom Nat Atom))
 ;; Base case
-(= (bc_em $conclusion $depth)
+(= (bc_em $conclusion Z)
    (match &kb_em $conclusion $conclusion))
 ;; Recursive step (modus ponens)
 (= (bc_em $q (S $k))
