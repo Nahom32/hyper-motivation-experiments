@@ -314,7 +314,7 @@
                $conclusion 
                $structFunc 
                Z)
-   (bcSearch $space $conclusion $structFunc ))
+   (bcSearch $space $conclusion $structFunc))
 (= (bcChainer $space 
                $conclusion 
                $structFunc 
@@ -329,6 +329,26 @@
                         $Z)
                
         )))
+(= (filterHasInit $initConditions $actions)
+    (if (== (car-atom $actions) $initConditions)
+        $actions
+        (empty)
+    )
+)
+(: actionPlanner 
+        (-> Atom 
+            Action
+            Action 
+            (-> Atom 
+                Atom 
+                Expression) 
+                Expression))
+(= (actionPlanner $space $initCondition $goalCondition $structFunc)
+    (let $actions (collapse (bcChainer $space $goalCondition $structFunc (fromNumber 100)))
+        (collapse (filterHasInit $initConditions (superpose $actions))) 
+    )
+
+)
 
 
 
