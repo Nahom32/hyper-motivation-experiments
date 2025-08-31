@@ -321,13 +321,17 @@
                (S $Z))
    (let $result (bcSearch $space $conclusion $structFunc)
         (if  (== $result ())
+                 $result
                 (bcChainer 
                         $space 
                         $result 
                         $structFunc 
                         $Z)
-                $result
+               
         )))
+
+
+
 
 
 
