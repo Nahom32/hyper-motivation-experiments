@@ -319,14 +319,15 @@
                $conclusion 
                $structFunc 
                (S $Z))
-   (let (($result (bcSearch $space $conclusion $structFunc)))
-     (if (and (not (= $result ())) (> $depth 0))
-         (bcChainer 
-                $space 
-                $result 
-                $structFunc 
-                (fromNat (- (fromNat $depth) 1)))
-         $result)))
+   (let $result (bcSearch $space $conclusion $structFunc)
+        (if  (== $result ())
+                (bcChainer 
+                        $space 
+                        $result 
+                        $structFunc 
+                        $Z)
+                $result
+        )))
 
 
 
