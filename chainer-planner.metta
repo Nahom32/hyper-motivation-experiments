@@ -349,7 +349,12 @@
     )
 
 )
-
+(= (findRulesWithAction $space $action)
+    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
+        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
+        
+    ))
+)
 
 
 
