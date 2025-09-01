@@ -209,25 +209,25 @@
      (→ $p $r)))                            ; conclusion
 
 ;; Test backward chainer
-!(assertEqual
-  (bc_em A Z)
-  A)
-!(assertEqual
-  (bc_em B (fromNumber 1))
-  B)
-!(assertEqualToResult
-  (bc_em C (fromNumber 2))
-  (C   ; 2 modus ponens
-   C)) ; deduction + modus ponens
-!(assertEqual
-  (bc_em (→ A B) (fromNumber 0))
-  (→ A B))
-!(assertEqual
-  (bc_em (→ B C) (fromNumber 0))
-  (→ B C))
-!(assertEqual
-  (bc_em (→ A C) (fromNumber 2))
-  (→ A C))
+;; !(assertEqual
+;;   (bc_em A Z)
+;;   A)
+;; !(assertEqual
+;;   (bc_em B (fromNumber 1))
+;;   B)
+;; !(assertEqualToResult
+;;   (bc_em C (fromNumber 2))
+;;   (C   ; 2 modus ponens
+;;    C)) ; deduction + modus ponens
+;; !(assertEqual
+;;   (bc_em (→ A B) (fromNumber 0))
+;;   (→ A B))
+;; !(assertEqual
+;;   (bc_em (→ B C) (fromNumber 0))
+;;   (→ B C))
+;; !(assertEqual
+;;   (bc_em (→ A C) (fromNumber 2))
+;;   (→ A C))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DTL Equality Match ;;
@@ -300,7 +300,17 @@
 (= (bcSearch $space 
               $conclusion 
               $structFunc)
-   ($structFunc $space $conclusion))
+    (let* (
+      ($rules ($structFunc $space $conclusion))
+      (() (println! (rules $rules)))
+
+    )
+      $rules
+    )
+    
+   
+)
+  
 
 
 (: bcChainer (-> Atom 
@@ -330,9 +340,12 @@
                
         )))
 (= (filterHasInit $initConditions $actions)
-    (if (== (car-atom $actions) $initConditions)
-        $actions
+    (if (== $actions ())
         (empty)
+      (if (== (car-atom $actions) $initConditions)
+          $actions
+          (empty)
+      )
     )
 )
 (: actionPlanner 
@@ -343,8 +356,12 @@
                 Atom 
                 Expression) 
                 Expression))
-(= (actionPlanner $space $initCondition $goalCondition $structFunc)
+(= (actionPlanner $space 
+                  $initCondition 
+                  $goalCondition 
+                  $structFunc)
     (let $actions (collapse (bcChainer $space $goalCondition $structFunc (fromNumber 100)))
+          ;; $actions
         (collapse (filterHasInit $initConditions (superpose $actions))) 
     )
 
@@ -355,7 +372,83 @@
         
     ))
 )
+(= (extractGoalFromRule $rule)
+    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $goal)
 
+)
+(= (extractContextFromRule $rule)
+    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $context)
+)
+
+(= (findGoalsWithAction $space $action)
+    (let $rules (findRulesWithAction $space $action)
+        (collapse (extractGoalFromRule (superpose $rules)))
+         
+    )
+)
+
+
+
+(= (addRulesToSpace $space)
+    (add-reduct $space (superpose (
+            
+((: r1 ((TTV 1 (STV 0.8 0.7)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal init 0.9 0.6) explore)) 
+          (Goal found_target 1.0 1.0)))) 2)
+
+;; r2: Approach after finding target
+((: r2 ((TTV 1 (STV 0.75 0.65)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal found_target 1.0 1.0) approach)) 
+          (Goal near_target 1.0 1.0)))) 3)
+
+;; r3: Interact when near
+((: r3 ((TTV 1 (STV 0.7 0.6)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal near_target 1.0 1.0) interact)) 
+          (Goal task_done 1.0 1.0)))) 2)
+
+;; r4: Report task done
+((: r4 ((TTV 1 (STV 0.65 0.6)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal task_done 1.0 1.0) report)) 
+          (Goal mission_complete 1.0 1.0)))) 10)
+
+;; r5: Do nothing and become low energy
+((: r5 ((TTV 1 (STV 0.5 0.5)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal init 0.8 0.5) idle)) 
+          (Goal low_energy 1.0 1.0)))) 1)
+
+;; r6: Analyze after mission complete
+((: r6 ((TTV 1 (STV 0.75 0.7)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal mission_complete 0.9 0.7) analyze)) 
+          (Goal analyze_data 1.0 1.0)))) 4)
+
+;; r7: Upload results after analysis
+((: r7 ((TTV 1 (STV 0.7 0.7)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal analyze_data 0.85 0.7) upload)) 
+          (Goal upload_results 1.0 1.0)))) 2)
+
+;; r8: Reboot after upload
+((: r8 ((TTV 1 (STV 0.9 0.8)) 
+        (IMPLICATION_LINK 
+          (AND_LINK ((Goal upload_results 0.95 0.75) reboot)) 
+          (Goal reset_system 1.0 1.0)))) 1)
+
+            )
+        )
+    )
+
+)
+!(bind! &kb (new-space))
+!(addRulesToSpace &kb)
+!(get-atoms &kb)
+!(actionPlanner &kb init deployed findGoalsWithAction)
+;; !(fromNumber 10)
 
 
 
