@@ -387,6 +387,24 @@
     )
 )
 
+(= (extractGoalName $goal)
+    (let (Goal $name $x $y) $goal $name)
+
+)
+
+(= (findContextWithAction $space $action)
+    (let* (
+      ($rules (findRulesWithAction $space $action))
+      ($priors (collapse (extractContextFromRule (superpose $rules))))
+      ($contexts (collapse (extractGoalName (superpose $priors))))
+
+    ) 
+
+       $contexts
+         
+    )
+)
+
 
 
 (= (addRulesToSpace $space)
@@ -447,7 +465,7 @@
 !(bind! &kb (new-space))
 !(addRulesToSpace &kb)
 !(get-atoms &kb)
-!(actionPlanner &kb init deployed findGoalsWithAction)
+!(actionPlanner &kb init deployed findContextWithAction)
 ;; !(fromNumber 10)
 
 
