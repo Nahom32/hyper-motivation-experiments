@@ -332,11 +332,11 @@
    (let $result (bcSearch $space $conclusion $structFunc)
         (if  (== $result ())
                  $result
-                (bcChainer 
+                ((bcChainer 
                         $space 
                         $result 
                         $structFunc 
-                        $Z)
+                        $Z) $result)
                
         )))
 (= (filterHasInit $initConditions $actions)
@@ -361,8 +361,8 @@
                   $goalCondition 
                   $structFunc)
     (let $actions (collapse (bcChainer $space $goalCondition $structFunc (fromNumber 100)))
-          ;; $actions
-        (collapse (filterHasInit $initConditions (superpose $actions))) 
+          $actions
+        ;; (collapse (filterHasInit $initConditions (superpose $actions))) 
     )
 
 )
@@ -371,6 +371,23 @@
         ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
         
     ))
+)
+
+;; (: findActionWithGoal (-> Atom 
+;;                         Goal
+;;                         Expression))
+(= (findRulesWithGoal $space $goal)
+    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) (Goal $goal $x $y)))) $weight)
+        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) (Goal $goal $x $y)))) $weight)
+        
+    ))
+)
+
+(= (findActionWithGoal $space $goal)
+    (let $rules (findRulesWithGoal $space $goal)
+        (collapse (extractContextFromRule (superpose $rules)))
+         
+    )
 )
 (= (extractGoalFromRule $rule)
     (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $goal)
@@ -465,8 +482,15 @@
 !(bind! &kb (new-space))
 !(addRulesToSpace &kb)
 !(get-atoms &kb)
-!(actionPlanner &kb init deployed findContextWithAction)
+!(actionPlanner &kb init task_done findActionWithGoal)
 ;; !(fromNumber 10)
+
+
+;; What should be the halting condition for the backward-chainer ?
+;; 
+;; so how does the following work out?
+
+
 
 
 
