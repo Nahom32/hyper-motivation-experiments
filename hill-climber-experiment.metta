@@ -92,6 +92,7 @@
 !(add-states &state-space)
 !(collapse (match &rule-space 
                     (rule (state $init-state) (action $init-action) (state $x) $y) ($x $y)))
+
 ;; !(get-atoms &action-space)
 !(hill-climb-planner hungry walk satisfied ())
 ;; (= (blend $concept1 $concept2) (union-atom $concept1 $concept2))

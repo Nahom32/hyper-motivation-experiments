@@ -404,6 +404,9 @@
     )
 )
 
+
+(= (findRulesWithHandle $space $handle) (match $space ((: $handle $rule) $weight) ((: $handle $rule) $weight)))
+
 (= (extractGoalName $goal)
     (let (Goal $name $x $y) $goal $name)
 
@@ -421,6 +424,10 @@
          
     )
 )
+(= (extractTriplets $expr)
+    (unify $expr ((: $handle $rule) $weight) 
+      
+    ))
 
 
 
@@ -489,6 +496,29 @@
 ;; What should be the halting condition for the backward-chainer ?
 ;; 
 ;; so how does the following work out?
+;; I think what we need is an action and a goal pair. the action will be accumulated while the goal will 
+;; given to the recursive call of the backward chainer.
+(: extractAction (-> Expression Expression))
+(= (extractAction $rule)
+    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $action)
+)
+
+;; (: add-action (-> hyperon::space::DynSpace Symbol))
+
+(= (interimFunction $space $goal)
+    (let* (
+      ($rules (findRulesWithGoal $space $goal))
+      ($extractedAction (extractAction $goal))
+      ($priors (collapse (extractContextFromRule (superpose $rules))))
+      ($contextNames (collapse (unify (superpose $priors) (Goal $cName $x $y ) $cName (empty))))
+      ($contexts (collapse (extractGoalName (superpose $priors))))
+
+    ) 
+
+      ($contextNames $goal $extractedAction)
+         
+    )
+  )
 
 
 

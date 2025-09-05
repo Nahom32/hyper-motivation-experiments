@@ -53,8 +53,8 @@
 		       (($head $tail) (decons-atom $previous_times))
 		       ($timeTv (getTV $time))
 		       ($latestTv (getTV $head))
-			($prevTvMean (cogTvMean $timeTv))
-			($latestTvMean (cogTvMean $latestTv))
+				($prevTvMean (cogTvMean $timeTv))
+				($latestTvMean (cogTvMean $latestTv))
 			($diff (- $latestTvMean $prevTvMean))
 
 		)
