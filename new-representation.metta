@@ -14,7 +14,7 @@
 (: Rule Type)
 (: HandleSchema Type)
 (: handleSchema (-> Symbol Symbol Symbol Symbol HandleSchema))
-(: rule (-> TemporalTruthValue Context Action Goal Rule))
+(: rule (-> TemporalTruthValue Context Action GoalValue Rule))
 
 
 
@@ -31,6 +31,11 @@
 ;;;             Some Experiments with the New Representation
 ;;; ===========================================================
 (: g1 (Goal 0.3 0.4))
+(: c1 (context (csdlfkj cdlkajflk cdlkjfalfkj)))
+(: te1 (TTV 1 (STV 0.3 0.4)))
+(: a1 (action go))
+
+
 
 !(get-type g1)
 ;;!(get-type (get-type r))
@@ -43,16 +48,23 @@
 !(retrieveType g1)
 
 
-(: convertSchemaToRule (-> HandleSchema Rule))
-(= (convertSchemaToRule $schema $space)
+
+(: convertSchemaToRule (-> Atom HandleSchema Rule))
+(= (convertSchemaToRule $space $schema)
     (let* (
         ((handleSchema $temporalHandle $contextHandle $actionHandle $goalHandle) $schema)
+        
         ($temporalValue (match $space (: $temporalHandle $temporal) $temporal))
+       
         ($contextValue (match $space (: $contextHandle $context) $context))
+        
         ($actionValue (match $space (: $actionHandle $action) $action))
-        ($goalValue (match $space (: goalHandle $goal) $goal))
+        ;; ($_ (println! (temp $actionValue)))
+        ($goalValue (match $space (: $goalHandle $goal) $goal))
+        
     )
         (rule $temporalValue $contextValue $actionValue $goalValue)
     )
 
 )
+!(convertSchemaToRule &self (handleSchema te1 c1 a1 g1))
