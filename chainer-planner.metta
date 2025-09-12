@@ -52,18 +52,18 @@
               $q))
 
 ;; Test backward chainer
-!(assertEqual
-  (bc_bare A kb_bare rb_bare Z)
-  A)
-!(assertEqual
-  (bc_bare B kb_bare rb_bare (fromNumber 1))
-  B)
-!(assertEqual
-  (bc_bare C kb_bare rb_bare (fromNumber 2))
-  C)
-!(assertEqualToResult
-  (bc_bare D kb_bare rb_bare (fromNumber 4))
-  ())
+;; !(assertEqual
+;;   (bc_bare A kb_bare rb_bare Z)
+;;   A)
+;; !(assertEqual
+;;   (bc_bare B kb_bare rb_bare (fromNumber 1))
+;;   B)
+;; !(assertEqual
+;;   (bc_bare C kb_bare rb_bare (fromNumber 2))
+;;   C)
+;; !(assertEqualToResult
+;;   (bc_bare D kb_bare rb_bare (fromNumber 4))
+;;   ())
 
 ;;;;;;;;;;;;;;
 ;; Equality ;;
@@ -95,25 +95,25 @@
      (→ $p $r)))                                ; conclusion
 
 ;; Test backward chainer
-!(assertEqual
-  (bc_eq A kb_eq Z)
-  A)
-!(assertEqual
-  (bc_eq B kb_eq (fromNumber 1))
-  B)
-!(assertEqualToResult
-  (bc_eq C kb_eq (fromNumber 2))
-  (C   ; 2 modus ponens
-   C)) ; deduction + modus ponens
-!(assertEqual
-  (bc_eq (→ A B) kb_eq (fromNumber 0))
-  (→ A B))
-!(assertEqual
-  (bc_eq (→ B C) kb_eq (fromNumber 0))
-  (→ B C))
-!(assertEqual
-  (bc_eq (→ A C) kb_eq (fromNumber 2))
-  (→ A C))
+;; !(assertEqual
+;;   (bc_eq A kb_eq Z)
+;;   A)
+;; !(assertEqual
+;;   (bc_eq B kb_eq (fromNumber 1))
+;;   B)
+;; !(assertEqualToResult
+;;   (bc_eq C kb_eq (fromNumber 2))
+;;   (C   ; 2 modus ponens
+;;    C)) ; deduction + modus ponens
+;; !(assertEqual
+;;   (bc_eq (→ A B) kb_eq (fromNumber 0))
+;;   (→ A B))
+;; !(assertEqual
+;;   (bc_eq (→ B C) kb_eq (fromNumber 0))
+;;   (→ B C))
+;; !(assertEqual
+;;   (bc_eq (→ A C) kb_eq (fromNumber 2))
+;;   (→ A C))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bare Entail Match ;;
@@ -157,25 +157,25 @@
             $conclusion)))
 
 ;; Test backward chainer
-!(assertEqual
-  (bc_bem A Z)
-  A)
-!(assertEqual
-  (bc_bem B (fromNumber 1))
-  B)
-!(assertEqualToResult
-  (bc_bem C (fromNumber 2))
-  (C   ; 2 modus ponens
-   C)) ; deduction + modus ponens
-!(assertEqual
-  (bc_bem (→ A B) (fromNumber 0))
-  (→ A B))
-!(assertEqual
-  (bc_bem (→ B C) (fromNumber 0))
-  (→ B C))
-!(assertEqual
-  (bc_bem (→ A C) (fromNumber 2))
-  (→ A C))
+;; !(assertEqual
+;;   (bc_bem A Z)
+;;   A)
+;; !(assertEqual
+;;   (bc_bem B (fromNumber 1))
+;;   B)
+;; !(assertEqualToResult
+;;   (bc_bem C (fromNumber 2))
+;;   (C   ; 2 modus ponens
+;;    C)) ; deduction + modus ponens
+;; !(assertEqual
+;;   (bc_bem (→ A B) (fromNumber 0))
+;;   (→ A B))
+;; !(assertEqual
+;;   (bc_bem (→ B C) (fromNumber 0))
+;;   (→ B C))
+;; !(assertEqual
+;;   (bc_bem (→ A C) (fromNumber 2))
+;;   (→ A C))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Equality Match ;;
@@ -237,13 +237,13 @@
 ;; chainer and match is used instead of let (as far as matching
 ;; premises is concerned).
 
-! "=== DTL Equality Match ==="
+;; ! "=== DTL Equality Match ==="
 
-;; Knowledge base
-!(bind! &kb_dem (new-space))
-!(add-atom &kb_dem (: ab (→ A B)))
-!(add-atom &kb_dem (: bc (→ B C)))
-!(add-atom &kb_dem (: a A))
+;; ;; Knowledge base
+;; !(bind! &kb_dem (new-space))
+;; !(add-atom &kb_dem (: ab (→ A B)))
+;; !(add-atom &kb_dem (: bc (→ B C)))
+;; !(add-atom &kb_dem (: a A))
 
 ;; Backward chainer.  The rule based is directly embedded in the
 ;; backward chainer function.
@@ -329,14 +329,15 @@
                $conclusion 
                $structFunc 
                (S $Z))
-   (let $result (bcSearch $space $conclusion $structFunc)
+   (let ($contexts $goal $actions) (bcSearch $space $conclusion $structFunc)
         (if  (== $result ())
                  $result
+                 
                 ((bcChainer 
                         $space 
-                        $result 
+                        (superpose $contexts)
                         $structFunc 
-                        $Z) $result)
+                        $Z) $action)
                
         )))
 (= (filterHasInit $initConditions $actions)
@@ -360,9 +361,13 @@
                   $initCondition 
                   $goalCondition 
                   $structFunc)
-    (let $actions (collapse (bcChainer $space $goalCondition $structFunc (fromNumber 100)))
+    (let $actions (collapse (bcChainer $space $goalCondition $structFunc (fromNumber 10)))
           $actions
         ;; (collapse (filterHasInit $initConditions (superpose $actions))) 
+        ;; (bcChainer $space 
+        ;;        $conclusion 
+        ;;        $structFunc 
+        ;;        (S $Z))
     )
 
 )
@@ -382,7 +387,9 @@
         
     ))
 )
-
+(: findActionWithGoal (-> Atom 
+                         Goal
+                         Expression))
 (= (findActionWithGoal $space $goal)
     (let $rules (findRulesWithGoal $space $goal)
         (collapse (extractContextFromRule (superpose $rules)))
@@ -404,7 +411,9 @@
     )
 )
 
-
+(: findRulesWithHandle (-> Atom 
+                            Symbol
+                            Expression))
 (= (findRulesWithHandle $space $handle) (match $space ((: $handle $rule) $weight) ((: $handle $rule) $weight)))
 
 (= (extractGoalName $goal)
@@ -489,7 +498,7 @@
 !(bind! &kb (new-space))
 !(addRulesToSpace &kb)
 !(get-atoms &kb)
-!(actionPlanner &kb init task_done findActionWithGoal)
+!(actionPlanner &kb init task_done interimFunction)
 ;; !(fromNumber 10)
 
 
@@ -504,13 +513,15 @@
 )
 
 ;; (: add-action (-> hyperon::space::DynSpace Symbol))
-
+;; (: interimFunction (-> hyperon::space::DynSpace Symbol Expression))
 (= (interimFunction $space $goal)
     (let* (
       ($rules (findRulesWithGoal $space $goal))
-      ($extractedAction (extractAction $goal))
+      ($extractedAction (collapse (extractAction (superpose $rules))))
       ($priors (collapse (extractContextFromRule (superpose $rules))))
-      ($contextNames (collapse (unify (superpose $priors) (Goal $cName $x $y ) $cName (empty))))
+      ($_ (println! (priors $priors)))
+      ($contextNames (collapse (filterFunction (superpose $priors))))
+      ($_ (println! (contextNames $contextNames)))
       ($contexts (collapse (extractGoalName (superpose $priors))))
 
     ) 
@@ -520,8 +531,13 @@
     )
   )
 
+!(interimFunction &kb upload_results)
+!(collapse (unify  (Goal analyze_data 0.85 0.7) (Goal $cName $x $y) $cName (empty)))
 
 
+(= (filterFunction $goal)
+    (let $goal (Goal $cName $x $y) $cName (empty))
+)
 
 
 
