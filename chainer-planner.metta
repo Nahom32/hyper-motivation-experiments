@@ -22,7 +22,7 @@
 
 ;; Variant of entail where ⊢ is not wrapped around the knowledge base.
 
-! "=== Bare Entail ==="
+;; ! "=== Bare Entail ==="
 
 ;; Backward chainer
 (: bc_bare (-> Atom (-> Atom) (-> Atom) Nat Atom))
@@ -51,25 +51,6 @@
               ;; Conclusion
               $q))
 
-;; Test backward chainer
-;; !(assertEqual
-;;   (bc_bare A kb_bare rb_bare Z)
-;;   A)
-;; !(assertEqual
-;;   (bc_bare B kb_bare rb_bare (fromNumber 1))
-;;   B)
-;; !(assertEqual
-;;   (bc_bare C kb_bare rb_bare (fromNumber 2))
-;;   C)
-;; !(assertEqualToResult
-;;   (bc_bare D kb_bare rb_bare (fromNumber 4))
-;;   ())
-
-;;;;;;;;;;;;;;
-;; Equality ;;
-;;;;;;;;;;;;;;
-
-! "=== Equality ==="
 
 ;; Knowledge base
 (: kb_eq (-> Atom))
@@ -291,12 +272,12 @@
 ;; !(bc_dem (: $prf C) (fromNumber 2))
 
 ;; !(kb_bare)
-(: bcSearch (-> Atom 
-                Atom 
-                (-> Atom 
-                    Atom 
-                    Expression) 
-                Expression))
+;; (: bcSearch (-> Atom 
+;;                 Atom 
+;;                 (-> Atom 
+;;                     Atom 
+;;                     Expression) 
+;;                 Expression))
 (= (bcSearch $space 
               $conclusion 
               $structFunc)
@@ -349,6 +330,9 @@
       )
     )
 )
+
+
+
 (: actionPlanner 
         (-> Atom 
             Action
@@ -406,7 +390,10 @@
 
 (= (findGoalsWithAction $space $action)
     (let $rules (findRulesWithAction $space $action)
-        (collapse (extractGoalFromRule (superpose $rules)))
+        (do 
+            (collapse (extractGoalFromRule (superpose $rules)))
+            (println! (rules $rules))
+        )
          
     )
 )
@@ -498,7 +485,7 @@
 !(bind! &kb (new-space))
 !(addRulesToSpace &kb)
 !(get-atoms &kb)
-!(actionPlanner &kb init task_done interimFunction)
+
 ;; !(fromNumber 10)
 
 
@@ -513,10 +500,11 @@
 )
 
 ;; (: add-action (-> hyperon::space::DynSpace Symbol))
-;; (: interimFunction (-> hyperon::space::DynSpace Symbol Expression))
+;;  (: interimFunction (-> hyperon::space::DynSpace Symbol Expression))
 (= (interimFunction $space $goal)
     (let* (
       ($rules (findRulesWithGoal $space $goal))
+     
       ($extractedAction (collapse (extractAction (superpose $rules))))
       ($priors (collapse (extractContextFromRule (superpose $rules))))
       ($_ (println! (priors $priors)))
@@ -526,19 +514,20 @@
 
     ) 
 
-      ($contextNames $goal $extractedAction)
+      ($cName $goal $extractedAction)
          
     )
   )
 
-!(interimFunction &kb upload_results)
-!(collapse (unify  (Goal analyze_data 0.85 0.7) (Goal $cName $x $y) $cName (empty)))
+!(interimFunction &kb mission_complete)
+;; !(collapse (unify  (Goal analyze_data 0.85 0.7) (Goal $cName $x $y) $cName (empty)))
 
 
 (= (filterFunction $goal)
-    (let $goal (Goal $cName $x $y) $cName (empty))
+    (unify $goal (Goal $cName $x $y) $cName (empty))
 )
 
+!(actionPlanner &kb init mission_complete interimFunction)
 
 
 

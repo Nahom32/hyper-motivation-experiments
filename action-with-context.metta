@@ -84,8 +84,6 @@
                      (Goal upload_results 0.95 0.75)) reboot))
           (Goal reset_system 1.0 1.0)))) 1)
 
-
-
         )
     )
     )
