@@ -310,15 +310,23 @@
                $conclusion 
                $structFunc 
                (S $Z))
-   (let ($contexts $goal $actions) (bcSearch $space $conclusion $structFunc)
+   (let $result (bcSearch $space $conclusion $structFunc)
         (if  (== $result ())
-                 $result
-                 
-                ((bcChainer 
+
+                (let $_ (println! (This is the result)) $result)
+                (let* (
+                    (($contexts $goal $actions) $result)
+                    ($_ (println! (resultsInChainer $result)))
+                    ($_ (println! (contextsInChainer $contexts)))
+                    ($res (collapse (bcChainer 
                         $space 
                         (superpose $contexts)
                         $structFunc 
-                        $Z) $action)
+                        $Z)))
+
+                )  
+                    (union-atom $res $actions)
+                )
                
         )))
 (= (filterHasInit $initConditions $actions)
@@ -390,10 +398,10 @@
 
 (= (findGoalsWithAction $space $action)
     (let $rules (findRulesWithAction $space $action)
-        (do 
+       
             (collapse (extractGoalFromRule (superpose $rules)))
-            (println! (rules $rules))
-        )
+           
+       
          
     )
 )
@@ -499,35 +507,36 @@
     (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $action)
 )
 
-;; (: add-action (-> hyperon::space::DynSpace Symbol))
-;;  (: interimFunction (-> hyperon::space::DynSpace Symbol Expression))
+
+(: interimFunction (-> Atom Atom Expression))
 (= (interimFunction $space $goal)
-    (let* (
-      ($rules (findRulesWithGoal $space $goal))
-     
-      ($extractedAction (collapse (extractAction (superpose $rules))))
-      ($priors (collapse (extractContextFromRule (superpose $rules))))
-      ($_ (println! (priors $priors)))
-      ($contextNames (collapse (filterFunction (superpose $priors))))
-      ($_ (println! (contextNames $contextNames)))
-      ($contexts (collapse (extractGoalName (superpose $priors))))
+    (if (== $goal ())
+        ()
+        (let* (
+        ($rules (findRulesWithGoal $space $goal))
+        
+        ($extractedAction (collapse (extractAction (superpose $rules))))
+        ($priors (collapse (extractContextFromRule (superpose $rules))))
+        ($_ (println! (priors $priors)))
+        ($contextNames (collapse (filterFunction (superpose $priors))))
+        ($_ (println! (contextNames $contextNames)))
+        ($contexts (collapse (extractGoalName (superpose $priors))))
 
-    ) 
+        ) 
 
-      ($cName $goal $extractedAction)
-         
+        ($contextNames $goal $extractedAction)
+            
+        )
     )
   )
 
 !(interimFunction &kb mission_complete)
-;; !(collapse (unify  (Goal analyze_data 0.85 0.7) (Goal $cName $x $y) $cName (empty)))
-
 
 (= (filterFunction $goal)
     (unify $goal (Goal $cName $x $y) $cName (empty))
 )
 
 !(actionPlanner &kb init mission_complete interimFunction)
-
+;; !(union-atom () ())
 
 
