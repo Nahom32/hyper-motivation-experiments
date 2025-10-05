@@ -312,7 +312,6 @@
                (S $Z))
    (let $result (bcSearch $space $conclusion $structFunc)
         (if  (== $result ())
-
                 (let $_ (println! (This is the result)) $result)
                 (let* (
                     (($contexts $goal $actions) $result)
@@ -326,6 +325,7 @@
 
                 )  
                     (union-atom $res $actions)
+                
                 )
                
         )))
