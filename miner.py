@@ -35,7 +35,7 @@ def validateSyntax(rule: str) -> bool:
     )
 
     # Adjusted regex to support underscores and multi-line formatting
-        return bool(pattern.match(rule))
+    return bool(pattern.match(rule))
 
 def query_llm(perceptionList, noOfRules):
     SYSTEM_PROMPT = f"""
@@ -57,8 +57,7 @@ def query_llm(perceptionList, noOfRules):
            """
     llm_instance = connect_llm()
     value = llm_instance.generate_content(SYSTEM_PROMPT, stream=True)
-    return value
+    value.resolve()
+    return value.text
 
-
-     
-
+print(query_llm(["(perception 3 (observe Car)", "(perception 3 (head to SomeWhere))"],4))
