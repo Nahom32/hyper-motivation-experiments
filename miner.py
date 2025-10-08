@@ -1,5 +1,7 @@
 
-from langchain_core.runnables import RunnableConfig
+import google.generativeai as genai
+from dotenv import load_dotenv
+import os 
 def connect_llm():
     """
     A simple terminal-based chatbot using Google's Gemini API.
