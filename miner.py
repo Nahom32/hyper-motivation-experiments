@@ -1,4 +1,5 @@
 
+from langchain_core.runnables import RunnableConfig
 def connect_llm():
     """
     A simple terminal-based chatbot using Google's Gemini API.
@@ -34,22 +35,28 @@ def validateSyntax(rule: str) -> bool:
     # Adjusted regex to support underscores and multi-line formatting
         return bool(pattern.match(rule))
 
+def query_llm(perceptionList, noOfRules):
+    SYSTEM_PROMPT = f"""
+        You are going to take a list of percetions as an agent of the form (perception $timeCycle $perceptionValue) 
+        The perception list is {perceptionList} so based on the perception List generate a list of cognitive schemas that 
+        Look like the following:
+    
+                (: <<name reference>>
+                    (TTV <<cycle>>)
+                    (STV <<belief>> <<confidence>>)
+                    (Complexity 1)
+                    (Context (<<contextInformation about the environment>>)
+                    (Action <<ATTACK SWORD>>)
+                    (Goal <<Goal Value>>
+                )
+                The belief and the confidence values are between [0,1] while the <<cycle>> is a natural number describing the timeCycle. The contextInformation
+                about the environment is the an s-expression containing information about the environment. The number of rules generated should be {noOfRules} return the rules as a list of python expressions.
+    
+           """
+    llm_instance = connect_llm()
+    value = llm_instance.generate_content(SYSTEM_PROMPT, stream=True)
+    return value
 
-SYSTEM_PROMPT = f"""
-    You are going to take a list of percetions as an agent of the form (perception $timeCycle $perceptionValue) 
-    The perception list is {perceptionList} so based on the perception List generate a list of cognitive schemas that 
-    Look like the following:
 
-            (: <<name reference>>
-                (TTV <<cycle>>)
-                (STV <<belief>> <<confidence>>)
-                (Complexity 1)
-                (Context (<<contextInformation about the environment>>)
-                (Action (ATTACK SWORD))
-                (Goal (HIT))
-            )
-            The belief and the confidence values are between [0,1] while the <<cycle>> is a natural number describing the timeCycle. The contextInformation
-            about the environment is the an s-expression containing information about the environment.
-       """
- 
+     
 
