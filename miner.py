@@ -76,11 +76,15 @@ def convert_to_list(txtChunck):
         else:
             stack[-1].append(token)
     return stack[0][0] if stack else []
+
+
+
 def preprocess_llm_response(raw_data:str) -> List:
     import ast
     clean_output = re.sub(r"```(?:python)?|```", "", raw_data).strip()
     schemas = ast.literal_eval(clean_output)
     return [convert_to_list(i) for i in schemas]
+
 
 def validateResponses(schemaList: List) -> List[int]:
     return [i for i in range(len(schemaList)) if validateSyntax(schemaList[i]) == False]
