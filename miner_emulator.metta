@@ -21,7 +21,7 @@
   (perception 5 (sense danger high))
   
   (perception 5 (observe person walking))))
-
+(: miner (-> hyperon::space::DynSpace Number Expression))
 (= (miner $perceptaSpace $noOfRules)
     (let* (
           ($perceptaList (collapse (get-atoms $perceptaSpace)))
@@ -32,5 +32,4 @@
     )
 )
 
-!(hi 5 4)
-;;!(miner &perceptaSpace 10)
+!(miner &perceptaSpace 10)

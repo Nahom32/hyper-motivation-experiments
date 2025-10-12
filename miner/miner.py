@@ -1,6 +1,6 @@
 
-import google.generativeai as genai
-from dotenv import load_dotenv
+#import google.generativeai as genai
+#from dotenv import load_dotenv
 from typing import List
 import re
 import os 
