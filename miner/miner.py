@@ -17,7 +17,6 @@ def connect_llm():
     model = genai.GenerativeModel('models/gemini-2.5-flash')
     return model
 
-
 def validateSyntax(rule: str) -> bool:
     rule = rule.strip()
     pattern = re.compile(
@@ -83,8 +82,23 @@ def preprocess_llm_response(raw_data:str) -> List:
     import ast
     clean_output = re.sub(r"```(?:python)?|```", "", raw_data).strip()
     schemas = ast.literal_eval(clean_output)
-    return [convert_to_list(i) for i in schemas]
+    ##return [convert_to_list(i) for i in schemas]
+    data = " "
+    for i in schemas:
+        data+=" "
+        data+=i 
+    return "(" + data + ")"
+    
+def pyModuleX(metta: MeTTa, name: Atom, *args: Atom):
+    payload_expression: ExpressionAtom = args[0]
+    actual_arg_atoms = payload_expression.get_children()
+    functionName = name.get_name()
+    handler_args: list[str] = [str(arg) for arg in actual_arg_atoms]
 
+    # run
+    result = globals()[functionName](*handler_args)
+
+    return metta.parse_all(result)
 
 def validateResponses(schemaList: List) -> List[int]:
     return [i for i in range(len(schemaList)) if validateSyntax(schemaList[i]) == False]
