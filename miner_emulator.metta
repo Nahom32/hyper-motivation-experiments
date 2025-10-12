@@ -21,14 +21,17 @@
   (perception 5 (sense danger high))
   
   (perception 5 (observe person walking))))
+
+
+
 (: miner (-> hyperon::space::DynSpace Number Expression))
 (= (miner $perceptaSpace $noOfRules)
     (let* (
           ($perceptaList (collapse (get-atoms $perceptaSpace)))
-          ($llm_response ((query_llm  $perceptaList $noOfRules)))
-          ($output (pyModuleX (preprocess_llm_response $llm_response)))
+          ($llm_response (pyModuleX query_llm  $perceptaList $noOfRules))
+          ($preprocessedResult (pyModuleX preprocess_llm_response $llm_response))
     )
-      $output 
+      $preprocessedResult
     )
 )
 

@@ -1,6 +1,6 @@
-
-#import google.generativeai as genai
-#from dotenv import load_dotenv
+from hyperon import *
+import google.generativeai as genai
+from dotenv import load_dotenv
 from typing import List
 import re
 import os 
@@ -106,8 +106,8 @@ def validateResponses(schemaList: List) -> List[int]:
 
     
     
-llm_result = query_llm(["(perception 3 (observe Car)", "(perception 3 (head to SomeWhere))"],4)
-print(preprocess_llm_response(llm_result))
+#llm_result = query_llm(["(perception 3 (observe Car)", "(perception 3 (head to SomeWhere))"],4)
+#print(preprocess_llm_response(llm_result))
 #print(llm_result)
 #print(len(llm_result))
 ##print(validateResponses(llm_result))
