@@ -1,3 +1,4 @@
 vertenv/ 
-trialvenv/ 
+trialvenv/
+lastvenv/
 .env
