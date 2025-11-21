@@ -3,7 +3,16 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from typing import List
 import re
-import os 
+import os
+from hyperon.ext import register_atoms
+from hyperon.atoms import (
+    OperationAtom,
+    ValueAtom,
+    E,
+    ExpressionAtom,
+)
+
+
 def connect_llm():
     """
     A simple terminal-based chatbot using Google's Gemini API.
@@ -14,8 +23,9 @@ def connect_llm():
         raise ValueError("GEMINI_API_KEY not found in .env file")
 
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('models/gemini-2.5-flash')
+    model = genai.GenerativeModel("models/gemini-2.5-flash")
     return model
+
 
 def validateSyntax(rule: str) -> bool:
     rule = rule.strip()
@@ -37,7 +47,28 @@ def validateSyntax(rule: str) -> bool:
     # Adjusted regex to support underscores and multi-line formatting
     return bool(pattern.match(rule))
 
-def query_llm(perceptionList, noOfRules):
+
+def pyModule(metta: MeTTa, name: Atom, *args: Atom):
+    payload_expression: ExpressionAtom = args[0]
+    actual_arg_atoms = payload_expression.get_children()
+    functionName = name.get_name()
+    handler_args: list[str] = [str(arg) for arg in actual_arg_atoms]
+
+    # run
+    result = globals()[functionName](*handler_args)
+
+    return [ValueAtom(result)]
+
+
+def simple():
+    return "hi"
+
+
+def simple_print(perceptaInstance):
+    return perceptaInstance
+
+
+def queryLlm(perceptionList, noOfRules: int) -> str:
     SYSTEM_PROMPT = f"""
         You are going to take a list of percetions as an agent of the form (perception $timeCycle $perceptionValue) 
         The perception list is {perceptionList} so based on the perception List generate a list of cognitive schemas that 
@@ -63,33 +94,37 @@ def query_llm(perceptionList, noOfRules):
 
 
 def convert_to_list(txtChunck):
-    tokens = re.findall(r'\(|\)|[^\s()]+', txtChunck)
+    tokens = re.findall(r"\(|\)|[^\s()]+", txtChunck)
     stack = [[]]
     for token in tokens:
-        if token == '(':
+        if token == "(":
             new_list = []
             stack[-1].append(new_list)
             stack.append(new_list)
-        elif token == ')':
+        elif token == ")":
             stack.pop()
         else:
             stack[-1].append(token)
     return stack[0][0] if stack else []
 
 
-
-def preprocess_llm_response(raw_data:str) -> List:
+def preprocess_llm_response(raw_data: str) -> List:
     import ast
+
     clean_output = re.sub(r"```(?:python)?|```", "", raw_data).strip()
     schemas = ast.literal_eval(clean_output)
-    ##return [convert_to_list(i) for i in schemas]
-    data = " "
-    for i in schemas:
-        data+=" "
-        data+=i 
-    return "(" + data + ")"
-    
-def pyModuleX(metta: MeTTa, name: Atom, *args: Atom):
+    return [convert_to_list(i) for i in schemas]
+    # data = " "
+    # for i in schemas:
+    #    data+=" "
+    #    data+=i
+    # return "(" + data + ")"
+    # return schemas
+
+
+# @register_atoms(pass_metta=True)
+def pyModuleX(name: Atom, *args: E):
+    metta = MeTTa()
     payload_expression: ExpressionAtom = args[0]
     actual_arg_atoms = payload_expression.get_children()
     functionName = name.get_name()
@@ -100,16 +135,14 @@ def pyModuleX(metta: MeTTa, name: Atom, *args: Atom):
 
     return metta.parse_all(result)
 
+
 def validateResponses(schemaList: List) -> List[int]:
-    return [i for i in range(len(schemaList)) if validateSyntax(schemaList[i]) == False]
+    return [i for i in range(len(schemaList)) if not validateSyntax(schemaList[i])]
 
 
-    
-    
-#llm_result = query_llm(["(perception 3 (observe Car)", "(perception 3 (head to SomeWhere))"],4)
-#print(preprocess_llm_response(llm_result))
-#print(llm_result)
-#print(len(llm_result))
-##print(validateResponses(llm_result))
-
-
+llm_result = queryLlm(
+    ["(perception 3 (observe Car)", "(perception 3 (head to SomeWhere))"], 4
+)
+print(preprocess_llm_response(llm_result))
+print(llm_result)
+print(len(llm_result))

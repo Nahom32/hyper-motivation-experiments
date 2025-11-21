@@ -1,6 +1,6 @@
-!(import! &self miner)
 !(import! &self perception-updater-agent)
 !(bind! &perceptaSpace (new-space))
+!(import! &self miner)
 !(addPerceptions &perceptaSpace (
   (perception 5 (see ball red))
   
@@ -28,11 +28,15 @@
 (= (miner $perceptaSpace $noOfRules)
     (let* (
           ($perceptaList (collapse (get-atoms $perceptaSpace)))
-          ($llm_response (pyModuleX query_llm  $perceptaList $noOfRules))
-          ($preprocessedResult (pyModuleX preprocess_llm_response $llm_response))
+          ($instance (car-atom $perceptaList))
+          ($perceptaPrint (pyModuleX simple_print ($instance)))
+          ($llm_response (pyModuleX queryLlm  ($perceptaList $noOfRules)))
+          ($preprocessedResult (pyModuleX preprocess_llm_response ($llm_response)))
     )
-      $preprocessedResult
+      $perceptaPrint
     )
 )
-
+;;!(pyModuleX queryLlm (((perception 3 (hear alarm loud)) (perception 4 (see door open))) 2))
+!(simple_print "hi")
+!(pyModuleX simple ())
 !(miner &perceptaSpace 10)
