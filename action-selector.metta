@@ -9,7 +9,7 @@
     ($nextRule (if (>= (size-atom $possibleInstances) 1) (selectBestRule (car-atom $possibleInstances) (cdr-atom $possibleInstances) $comparatorFunc)())
     ($action (extractAction $nextRule))
   )
-    (apply $action)
+    (apply $nextRule $action)
   ) 
 )
 
@@ -31,4 +31,8 @@
       )
       )
 )
-!(cogTvMean (STV 0.3 0.4))
+
+
+(= (apply  $action)
+   ("action applied") 
+)
