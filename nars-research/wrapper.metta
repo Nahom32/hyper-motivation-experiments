@@ -1,8 +1,11 @@
 
-!(register-module! ../metta-nars)
-!(import! &self metta-nars:src:logic:nal1)
-!(import! &self metta-nars:src:NARS)
-!(bind! &test (new-space))
+;;!(register-module! ../metta-nars)
+;;!(import! &self metta-nars:src:logic:nal1)
+;;!(import! &self metta-nars:src:NARS)
+;;!(bind! &test (new-space))
+
+!(import! &self NARS)
+
 ((: r1 ((TTV 1 (STV 0.8 0.7)) (IMPLICATION_LINK 
               (AND_LINK ((Goal Conversation-Started 0.9 0.6) initiate-dialogue)) (Goal Send-Greeting 1.0 1.0)))) 4)
 (= (convertScheme ((: $handle ($tv (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight))
@@ -15,7 +18,7 @@
 )
 
 (= (addRules $space) 
-    (add-reduct $space (superpose (
+    (add-atom $space (superpose (
 
     ;; r30 Return to base on alert
     ((: r30 ((TTV 1 (STV 0.8 0.75)) 
