@@ -1,7 +1,7 @@
 
 ;; stdlib extension
 (= (TupleConcat $Ev1 $Ev2) (collapse (superpose ((superpose $Ev1) (superpose $Ev2)))))
-(= (TupleCount $tuple) (If (== $tuple ()) 0 (+ 1 (TupleCount (cdr-atom $tuple)))))
+(= (TupleCount $tuple) (if (== $tuple ()) 0 (+ 1 (TupleCount (cdr-atom $tuple)))))
 (: CountElement (-> Expression Number))
 (= (CountElement $x) (case $x (($y 1))))
 ;; Useful interop functions for querying when MeTTa-NARS is compiled as a library to be used via Mettamorph
@@ -10,9 +10,9 @@
 (= (get-concept-terms) (match (superpose (&attentional_focus &concepts)) (Concept $TermX $Belief $BeliefEvent $CPrio) $TermX))
 (= (get-concept-beliefs) (match (superpose (&attentional_focus &concepts)) (Concept $TermX $Belief $BeliefEvent $CPrio) $Belief))
 (= (get-concept-terms-of-positive-beliefs) (match (superpose (&attentional_focus &concepts)) (Concept $TermX (Event ($term ($f $c)) ($occT $Ev $Prio)) $BeliefEvent $CPrio) 
-   (If (> $f 0.5) ($term (confidence: $c)))))
+   (if (> $f 0.5) ($term (confidence: $c)))))
 (= (get-concept-terms-of-positive-temporal-beliefs) (match (superpose (&attentional_focus &concepts)) (Concept $TermX $EternalEvent (Event ($term ($f $c)) ($occT $Ev $Prio)) $CPrio) 
-   (If (> $f 0.5) ($term (time: $occT) (confidence: $c)))))
+   (if (> $f 0.5) ($term (time: $occT) (confidence: $c)))))
 ;; Truth functions
 (= (Truth_c2w $c) (/ $c (- 1 $c)))
 (= (Truth_w2c $w) (/ $w (+ $w 1)))
@@ -26,7 +26,7 @@
 (= (Truth_Intersection ($f1 $c1) ($f2 $c2)) ((* $f1 $f2) (* $c1 $c2)))
 (= (Truth_StructuralIntersection $T) (Truth_Intersection $T (1.0 0.9)))
 (= (Truth_or $a $b) (- 1 (* (- 1 $a) (- 1 $b))))
-(= (Truth_Comparison ($f1 $c1) ($f2 $c2)) (let $f0 (Truth_or $f1 $f2) ((If (== $f0 0.0) 0.0 (/ (* $f1 $f2) $f0)) (Truth_w2c (* $f0 (* $c1 $c2))))))
+(= (Truth_Comparison ($f1 $c1) ($f2 $c2)) (let $f0 (Truth_or $f1 $f2) ((if (== $f0 0.0) 0.0 (/ (* $f1 $f2) $f0)) (Truth_w2c (* $f0 (* $c1 $c2))))))
 (= (Truth_Analogy ($f1 $c1) ($f2 $c2)) ((* $f1 $f2) (* (* $c1 $c2) $f2)))
 (= (Truth_Resemblance ($f1 $c1) ($f2 $c2)) ((* $f1 $f2) (* (* $c1 $c2) (Truth_or $f1 $f2))))
 (= (Truth_Union ($f1 $c1) ($f2 $c2)) ((Truth_or $f1 $f2) (* $c1 $c2)))
@@ -217,7 +217,7 @@
                 (do (change-state! &tempbest ()))
                 (do (let* (($x (superpose $tuple))
                                ($fx ($evaluateCandidateFunction $x $t)))
-                              (superpose ((If (> $fx (get-state &tempbestscore))
+                              (superpose ((if (> $fx (get-state &tempbestscore))
                                               (sequential ((change-state! &tempbest $x)
                                                            (change-state! &tempbestscore $fx))))))))
                 (get-state &tempbest))))
@@ -236,10 +236,10 @@
 (= (BoundEvents $collection $Threshold $Increment $TargetAmount $t)
    (sequential ((do (let* (($Ev (get-atoms $collection))
                             ((Event $Sentence ($Time $Evidence $EPrio)) $Ev))
-                          (If (< (EventPriorityNow $EPrio $t) $Threshold)
+                          (if (< (EventPriorityNow $EPrio $t) $Threshold)
                               (remove-atom $collection $Ev))))
                 (let $CurrentAmount (TupleCount (collapse (CountElement (get-atoms $collection))))
-                     (If (> $CurrentAmount $TargetAmount)
+                     (if (> $CurrentAmount $TargetAmount)
                          (BoundEvents $collection (+ $Threshold $Increment) $Increment $TargetAmount $t))))))
 ;params
 (= (AttentionalFocusConceptsMax) 10)
@@ -253,7 +253,7 @@
 
 ;Whether evidence was just counted once
 (= (StampDisjoint $Ev1 $Ev2)
-   (If (or (== $Ev1 ()) (== $Ev2 ())) ;check only needed due to a bug in the MeTTa interpreter
+   (if (or (== $Ev1 ()) (== $Ev2 ())) ;check only needed due to a bug in the MeTTa interpreter
        True                           ;https://github.com/trueagi-io/hyperon-experimental/issues/481
        (== () (collapse (let* (($x (superpose $Ev1))
                                ($y (superpose $Ev2)))
@@ -262,9 +262,9 @@
 ;revise if there is no evidential overlap, else use higher-confident candidate
 (= (RevisionAndChoice (Event ($Term1 ($f1 $c1)) (eternal $ev1 $EPrio1)) (Event ($Term2 ($f2 $c2)) (eternal $ev2 $EPrio2)))
    (let $ConclusionStamp (TupleConcat $ev1 $ev2)
-        (If (StampDisjoint $ev1 $ev2)
+        (if (StampDisjoint $ev1 $ev2)
             (Event ($Term1 (Truth_Revision ($f1 $c1) ($f2 $c2))) (eternal $ConclusionStamp (0 0.0)))
-            (If (> $c1 $c2)
+            (if (> $c1 $c2)
                 (Event ($Term1 ($f1 $c1)) (eternal $ev1 (0 0.0)))
                 (Event ($Term2 ($f2 $c2)) (eternal $ev2 (0 0.0)))))))
 
@@ -273,15 +273,15 @@
    (let* (((Event ($Term $TV) ($Time $Evidence $EPrio)) $NewEvent)
           ($NewEventEternalized (Eternalize $NewEvent)))
                       (case (match &attentional_focus (Concept $TermX $Belief $BeliefEvent $CPrio) 
-                                                       (If (== $TermX $Term) (Concept $TermX $Belief $BeliefEvent $CPrio)))
+                                                       (if (== $TermX $Term) (Concept $TermX $Belief $BeliefEvent $CPrio)))
                             (((Concept $TermX $Belief $BeliefEvent $CPrio) (sequential ((remove-atom &attentional_focus (Concept $TermX $Belief $BeliefEvent $CPrio))
                                                                                          (let* (((Event $RevSentence $Metadata) (RevisionAndChoice $Belief $NewEventEternalized))
                                                                                                 ($RevisedBelief (Event (trace! (@ $RevSentence) $RevSentence) $Metadata))
-                                                                                                ($MaxPrio (If (> (EventPriorityNow $EPrio $t) (ConceptPriorityNow $CPrio $t))
+                                                                                                ($MaxPrio (if (> (EventPriorityNow $EPrio $t) (ConceptPriorityNow $CPrio $t))
                                                                                                               $EPrio $CPrio)))
                                                                                                (add-atom &attentional_focus (Concept $Term $RevisedBelief $NewEvent $MaxPrio))))))
                              (%void% (case (match &concepts (Concept $TermX2 $Belief2 $BeliefEvent2 $CPrio2)
-                                           (If (== $TermX2 $Term) (Concept $TermX2 $Belief2 $BeliefEvent2 $CPrio2)))
+                                           (if (== $TermX2 $Term) (Concept $TermX2 $Belief2 $BeliefEvent2 $CPrio2)))
                                                (((Concept $TermX2 $Belief2 $BeliefEvent2 $CPrio2) (sequential ((remove-atom &concepts (Concept $TermX2 $Belief2 $BeliefEvent2 $CPrio2))
                                                                                                                 (add-atom &attentional_focus (Concept $TermX2 $Belief2 $BeliefEvent2 $CPrio2))
                                                                                                                 (UpdateConcept $NewEvent $t))))
@@ -291,29 +291,29 @@
 (= (BoundAttention $Threshold $Increment $TargetAmount $t)
    (sequential ((do (let* (($C (get-atoms &attentional_focus))
                            ((Concept $Term (Event $Sentence $Metadata) $BeliefEvent $CPrio) $C))
-                          (If (< (ConceptPriorityNow $CPrio $t) $Threshold) (sequential ((remove-atom &attentional_focus $C)
+                          (if (< (ConceptPriorityNow $CPrio $t) $Threshold) (sequential ((remove-atom &attentional_focus $C)
                                                                                          (add-atom &concepts $C))))))
                 (let $CurrentAmount (TupleCount (collapse (CountElement (get-atoms &attentional_focus))))
-                     (If (> $CurrentAmount $TargetAmount)
+                     (if (> $CurrentAmount $TargetAmount)
                          (BoundAttention (+ $Threshold $Increment) $Increment $TargetAmount $t))))))
 
 ;get eternal belief of concept
 (: EternalQuestion (-> Expression %Undefined%))
-(= (EternalQuestion $Term) (case (match (superpose (&attentional_focus &concepts)) (Concept $TermX $Belief $BeliefEvent $CPrio) (If (== $Term $TermX) $Belief))
+(= (EternalQuestion $Term) (case (match (superpose (&attentional_focus &concepts)) (Concept $TermX $Belief $BeliefEvent $CPrio) (if (== $Term $TermX) $Belief))
                                  (($Ev $Ev) (%void% (Event (None (0.5 0.0)) (eternal () 0.0))))))
 
 (: HowAchieveQuestion (-> Expression %Undefined%))
-(= (HowAchieveQuestion $Cons) (case (match (superpose (&attentional_focus &concepts)) (Concept (($Prec &/ (^ $Op)) =/> $ConsX) $Belief $BeliefEvent $CPrio) (If (== $Cons $ConsX) $Belief))
+(= (HowAchieveQuestion $Cons) (case (match (superpose (&attentional_focus &concepts)) (Concept (($Prec &/ (^ $Op)) =/> $ConsX) $Belief $BeliefEvent $CPrio) (if (== $Cons $ConsX) $Belief))
                                     (($Ev $Ev) (%void% (Event (None (0.5 0.0)) (eternal () 0.0))))))
 
 (: WhatWillHappenQuestion (-> Expression %Undefined%))
-(= (WhatWillHappenQuestion $Prec) (case (match (superpose (&attentional_focus &concepts)) (Concept ($PrecX =/> $Cons) $Belief $BeliefEvent $CPrio) (If (== $Prec $PrecX) $Belief))
+(= (WhatWillHappenQuestion $Prec) (case (match (superpose (&attentional_focus &concepts)) (Concept ($PrecX =/> $Cons) $Belief $BeliefEvent $CPrio) (if (== $Prec $PrecX) $Belief))
                                     (($Ev $Ev) (%void% (Event (None (0.5 0.0)) (eternal () 0.0))))))
 
 
 ;get event belief of concept
 (: EventQuestion (-> Expression %Undefined%))
-(= (EventQuestion $Term) (case (match (superpose (&attentional_focus &concepts)) (Concept $TermX $Belief $BeliefEvent $CPrio) (If (== $TermX $Term) $BeliefEvent))
+(= (EventQuestion $Term) (case (match (superpose (&attentional_focus &concepts)) (Concept $TermX $Belief $BeliefEvent $CPrio) (if (== $TermX $Term) $BeliefEvent))
                                (($Ev $Ev) (%void% (Event (None (0.5 0.0)) (0 () 0.0))))))
 ;;Declarative inference (deriving events and knowledge from observed events)
 
@@ -323,7 +323,7 @@
 ;making declarative inferences on two events (task from PQ and belief from concept)
 (= (Conclude (Event $S1 ($time1 $ev1 $prio1)) (Event $S2 ($time2 $ev2 $prio2)) $CPrio $t)
    (let $ConclusionStamp (TupleConcat $ev1 $ev2)
-        (If (StampDisjoint $ev1 $ev2)
+        (if (StampDisjoint $ev1 $ev2)
             (let ($ConcTerm $ConcTV) (superpose ((reason $S1 $S2) (|- $S2 $S1)))
                  (Event ($ConcTerm $ConcTV)
                         ($time1 $ConclusionStamp
@@ -335,7 +335,7 @@
 (= (ReasonWithTask (Event $S1 ($time1 $ev1 $prio1)) $t)
    (let ($Belief $CPrio) (case (get-atoms &attentional_focus)
                                (((Concept $Term (Event $SE2 ($timeE2 $evE2 $prioE2)) (Event $S2 ($time2 $ev2 $prio2)) $CPrio)
-                                 (If (and (not (== $time1 eternal)) (> (abs (- $time1 $time2)) 20))
+                                 (if (and (not (== $time1 eternal)) (> (abs (- $time1 $time2)) 20))
                                      ((Event $SE2 ($timeE2 $evE2 $prioE2)) $Cprio)
                                      ((Event $S2 ($time2 $ev2 $prio2)) $CPrio)))))
         (case (Conclude (Event $S1 ($time1 $ev1 $prio1)) (TemporallyAlignedBelief $time1 $Belief) $CPrio $t)
@@ -352,7 +352,7 @@
 
 ;use the event's evidence to induce a time-independent belief which can be used in the future
 (= (Eternalize $Ev) (let (Event ($Term $TV) ($Time $Evidence $EPrio)) $Ev
-                         (If (== $Time eternal) $Ev
+                         (if (== $Time eternal) $Ev
                              (Event ($Term (Truth_Eternalize $TV)) (eternal $Evidence (0 0.0))))))
 
 ;use evidence of an event at a slightly different moment in time
@@ -360,7 +360,7 @@
    (Event ($Term ($f (* $c (min 1 (/ 1 (abs (- $Time $TargetTime))))))) ($TargetTime $Evidence $EPrio)))
 
 ;make the belief occurrence time compatible with the task's
-(= (TemporallyAlignedBelief $TaskTime $Belief) (If (== $TaskTime eternal)
+(= (TemporallyAlignedBelief $TaskTime $Belief) (if (== $TaskTime eternal)
                                                    (Eternalize $Belief)
                                                    (Projection $Belief $TaskTime)))
 
@@ -395,31 +395,31 @@
 ;Find implications in the event FIFO:
 ;procedural implications
 (= (TemporalImplicationInduction ($Cons $Op $Prec))
-   (If (and (IsOp $Op) (and (not (IsOp $Cons)) (not (IsOp $Prec))))
+   (if (and (IsOp $Op) (and (not (IsOp $Cons)) (not (IsOp $Prec))))
        (let $PrecOp (TemporalSequence $Prec $Op)
             (TemporalImplication $PrecOp $Cons))))
 ;and temporal without operation
 ;(= (TemporalImplicationInduction ($Cons $Prec $Trail))
-;   (If (and (not (IsOp $Prec)) (not (IsOp $Cons)))
+;   (if (and (not (IsOp $Prec)) (not (IsOp $Cons)))
 ;       (TemporalImplication $Prec $Cons)))
 
 ;Add negative evidence for implications which predicted the input unsuccessfully
 (= (NegConfirmation $PrecTerm $ObservedCons $t)
    (let (Event (($PrecTerm =/> $PredictedCons) $ImpTV) $ImpMetadata) (WhatWillHappenQuestion $PrecTerm)
-        (If (not (== $ObservedCons $PredictedCons))
+        (if (not (== $ObservedCons $PredictedCons))
             (UpdateConcept (Event (($PrecTerm =/> $PredictedCons) (0.0 0.1)) ($t () (0 0.0))) $t))))
 
 ;Check if the implication's preconditions are met to anticipate the by the implication predicted outcome
 ;(= (Anticipate ($Pos $Pre $Trail) $t)
 ;   (let* (((Event ($PreTerm $PreTV) $PreMetadata) $Pre)
 ;          ((Event ($PosTerm $PosTV) $PosMetadata) $Pos))
-;         (If (not (IsOp $Pre))
+;         (if (not (IsOp $Pre))
 ;             (NegConfirmation $PreTerm $PosTerm $t))))
 (= (Anticipate ($Pos $Op $Pre) $t)
    (let* (((Event ($PreTerm $PreTV) $PreMetadata) $Pre)
           ((Event ($OpTerm $OpTV) $OpMetadata) $Op)
           ((Event ($PosTerm $PosTV) $PosMetadata) $Pos))
-         (If (and (IsOp $Op) (not (IsOp $Pre)))
+         (if (and (IsOp $Op) (not (IsOp $Pre)))
              (NegConfirmation ($PreTerm &/ $OpTerm) $PosTerm $t))))
 
 ;Input procedure
@@ -429,7 +429,7 @@
           ($notAnOperation (not (IsOp $InputEvent))))
           (do (sequential ((EventToFIFO $InputEvent)
                            (Anticipate (get-state &FIFO) $t)
-                           (If $notAnOperation
+                           (if $notAnOperation
                                (sequential ((let $InducedHypothesis (TemporalImplicationInduction (get-state &FIFO))
                                                  (UpdateConcept $InducedHypothesis $t))
                                             (ProcessBeliefEvent $InputEvent $t)
@@ -463,11 +463,11 @@
                                   ($DVPrec (Truth_StructuralDeduction $DVPrecOp))
                                   ($SubgoalStamp (TupleConcat $GoalEvBase $ImpEvBase))
                                   ($SubgoalPrio (SubgoalPriority (EventPriorityNow $GoalPrio $t) $DVPrec)))
-                                 (If (StampDisjoint $GoalEvBase $ImpEvBase)
+                                 (if (StampDisjoint $GoalEvBase $ImpEvBase)
                                      (Decision ((^ $Op) $DVOp) (Event ($Prec $DVPrec)
                                                                       ($t $SubgoalStamp ($t $SubgoalPrio)))))))
         (let (Decision ($Opname $DVOp) $Subgoal) (BestCandidate $Options OpExpectation $t)
-             (If (> (Truth_Expectation $DVOp) 0.5)
+             (if (> (Truth_Expectation $DVOp) 0.5)
                  (Execute $Opname)
                  (DeriveSubgoals $Options)))))
 
