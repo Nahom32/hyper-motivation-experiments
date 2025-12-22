@@ -18,7 +18,7 @@
 )
 
 (= (addRules $space) 
-    (add-atom $space (superpose (
+    (let $atoms (superpose (
 
     ;; r30 Return to base on alert
     ((: r30 ((TTV 1 (STV 0.8 0.75)) 
@@ -90,14 +90,13 @@
             (IMPLICATION_LINK 
             (AND_LINK ((Goal model_saved 0.9 0.75) deploy)) 
             (Goal model_deployed 1.0 1.0)))) 5)
-))))
-
+)) (add-atom $space $atoms)))
 (= (convertRulesToNars $space)
   (let $values (collapse (get-atoms $space)) (collapse (convertScheme (superpose $values))))
 )
 !(addRules &test)
-
-(: isMember (-> $aa Expression Bool))
+!(get-atoms &test)
+;;(: isMember (-> $aa Expression Bool))
 (= (isMember $item $list) 
         (if (== $list ()) 
             False 
@@ -114,7 +113,7 @@
     (let $exp (collapse (if (== (superpose $expression) True) True (empty))) (if (== $exp ()) False True)))
 
 
-( isReduced (-> Expression Bool))
+(: isReduced (-> Expression Bool))
 ;;(= (isReduced $value) (all (collapse (not (isMember reason (superpose $value))))))
 (= (isReduced $value) (not (isMember reason $value)))
 (= (applyInferenceForRule $rule $rules $accum)
@@ -137,7 +136,9 @@
      $accum
     (let* (
       (($head $tail) (decons-atom $rules))
+      ($_ (println! (decons-result $head $tail)))
       ($inferedRules (applyInferenceForRule $head $tail ()))
+      ($_ (println! (inferedRules $inferedRules)))
       ($ruleSize (size-atom $inferedRules))
       ($accum' (union-atom $accum $inferedRules))
     )
@@ -149,25 +150,27 @@
 (= (applyInference $space)
   (let* (
     ($narsRules (convertRulesToNars $space))
+    ($_ (println! (narsRules $narsRules)))
     ($newRules (applyInference' $narsRules $counter ()))
+        
   )
     $newRules
   )
 )
-;;!(applyInference  &test)
+;;!(applyInference &test)
 
 
-!(reason (convertScheme ((: r33' ((TTV 1 (STV 0.65 0.6)) 
-            (IMPLICATION_LINK 
-            (AND_LINK ((Goal less_energy 0.9 0.75) shutdown)) 
-            (Goal system_off 1.0 1.0)))) 1)
-    )
-    (convertScheme 
-        ((: r33 ((TTV 1 (STV 0.65 0.6)) 
-                (IMPLICATION_LINK 
-                (AND_LINK ((Goal full_energy 0.9 0.75) shutdown))  
-                (Goal system_off 1.0 1.0)))) 1)))
-    
+;;!(reason (convertScheme ((: r33' ((TTV 1 (STV 0.65 0.6)) 
+;;            (IMPLICATION_LINK 
+;;            (AND_LINK ((Goal less_energy 0.9 0.75) shutdown)) 
+;;            (Goal system_off 1.0 1.0)))) 1)
+;;    )
+;;    (convertScheme 
+;;        ((: r33 ((TTV 1 (STV 0.65 0.6)) 
+;;                (IMPLICATION_LINK 
+;;                (AND_LINK ((Goal full_energy 0.9 0.75) shutdown))  
+;;                (Goal system_off 1.0 1.0)))) 1)))
+;;    
 
 (= (randomizer' $size $accum $sentinel $noOfSamples)
   (if (== $size 0) $accum
@@ -180,7 +183,7 @@
 )
 
 
-!(randomizer' 10 () 20 4)
+;;!(randomizer' 10 () 20 4)
 (= (randomizer $list $size) (randomizer' $size () (size-atom $list) $size))
 (:selectRandom (-> Expression Number Expression))
 (= (selectRandom $list $size) 
@@ -191,7 +194,7 @@
     )
       $selectedValues
     ))
-(: massSelect (-> Expression Expression Expression Expression))
+;;(: massSelect (-> Expression Expression Expression Expression))
 (= (massSelect $list $indiceList $acc)
     (if (== $indiceList ()) 
         $acc 
@@ -205,8 +208,8 @@
     )
 )
 
-!(selectRandom (a b c d e f g h i j k l m n o p q r s t u v w x y z) 10)
-!(size-atom (collapse (match &test ((r33 $schema) $weight) $schema)))
+;;!(selectRandom (a b c d e f g h i j k l m n o p q r s t u v w x y z) 10)
+;;!(size-atom (collapse (match &test ((r33 $schema) $weight) $schema)))
 
 (= (greedySelection' $list $best $evalFunc)
   (if (== $list ())
@@ -247,4 +250,4 @@
     (let $rules (getRulesByContext $ruleSpace $context) (greedySelection $rules $evalFunc))
 )
 
-
+!(applyInference &test)

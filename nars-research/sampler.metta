@@ -359,5 +359,30 @@
        )
    )
 )
+ (: Rule 4
+                (TTV 0)
+                (STV 0.5 0.002) 
+                (Complexity 1)
+                (Context ((Position MID_RANGE)))
+                (Action (ATTACK SWORD))
+                (Goal (HIT))   
+            )
+
+(= (getRuleById $space $id) (match $space (: Rule $id  $ttv $stv $complexity $context $action $goal) (: Rule $id $ttv $stv $complexity $context $action $goal)))
 !(probBasedSample &ruleSpace 4)
 !(getRuleIdWithStv (get-atoms &ruleSpace))
+(= (collectRules $space $values $accum)
+  (if (== $values ())
+    $accum
+    (let* (
+      (($head $tail) (decons-atom $values))
+      (($id $val) $head)
+      ($rule (getRuleById $space $id))
+      ($accum' (cons-atom $rule $accum))
+    )
+      (collectRules $space $tail $accum')
+    )
+  )
+
+ )
+!(collectRules &ruleSpace ((2 1.0) (1 0.9715) (7 0.9689) (5 0.8104)) ())

@@ -22,7 +22,7 @@
 
 ;; Variant of entail where ⊢ is not wrapped around the knowledge base.
 
-;; ! "=== Bare Entail ==="
+! "=== Bare Entail ==="
 
 ;; Backward chainer
 (: bc_bare (-> Atom (-> Atom) (-> Atom) Nat Atom))
@@ -51,6 +51,25 @@
               ;; Conclusion
               $q))
 
+;; Test backward chainer
+!(assertEqual
+  (bc_bare A kb_bare rb_bare Z)
+  A)
+!(assertEqual
+  (bc_bare B kb_bare rb_bare (fromNumber 1))
+  B)
+!(assertEqual
+  (bc_bare C kb_bare rb_bare (fromNumber 2))
+  C)
+!(assertEqualToResult
+  (bc_bare D kb_bare rb_bare (fromNumber 4))
+  ())
+
+;;;;;;;;;;;;;;
+;; Equality ;;
+;;;;;;;;;;;;;;
+
+! "=== Equality ==="
 
 ;; Knowledge base
 (: kb_eq (-> Atom))
@@ -76,25 +95,25 @@
      (→ $p $r)))                                ; conclusion
 
 ;; Test backward chainer
-;; !(assertEqual
-;;   (bc_eq A kb_eq Z)
-;;   A)
-;; !(assertEqual
-;;   (bc_eq B kb_eq (fromNumber 1))
-;;   B)
-;; !(assertEqualToResult
-;;   (bc_eq C kb_eq (fromNumber 2))
-;;   (C   ; 2 modus ponens
-;;    C)) ; deduction + modus ponens
-;; !(assertEqual
-;;   (bc_eq (→ A B) kb_eq (fromNumber 0))
-;;   (→ A B))
-;; !(assertEqual
-;;   (bc_eq (→ B C) kb_eq (fromNumber 0))
-;;   (→ B C))
-;; !(assertEqual
-;;   (bc_eq (→ A C) kb_eq (fromNumber 2))
-;;   (→ A C))
+!(assertEqual
+  (bc_eq A kb_eq Z)
+  A)
+!(assertEqual
+  (bc_eq B kb_eq (fromNumber 1))
+  B)
+!(assertEqualToResult
+  (bc_eq C kb_eq (fromNumber 2))
+  (C   ; 2 modus ponens
+   C)) ; deduction + modus ponens
+!(assertEqual
+  (bc_eq (→ A B) kb_eq (fromNumber 0))
+  (→ A B))
+!(assertEqual
+  (bc_eq (→ B C) kb_eq (fromNumber 0))
+  (→ B C))
+!(assertEqual
+  (bc_eq (→ A C) kb_eq (fromNumber 2))
+  (→ A C))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bare Entail Match ;;
@@ -138,25 +157,25 @@
             $conclusion)))
 
 ;; Test backward chainer
-;; !(assertEqual
-;;   (bc_bem A Z)
-;;   A)
-;; !(assertEqual
-;;   (bc_bem B (fromNumber 1))
-;;   B)
-;; !(assertEqualToResult
-;;   (bc_bem C (fromNumber 2))
-;;   (C   ; 2 modus ponens
-;;    C)) ; deduction + modus ponens
-;; !(assertEqual
-;;   (bc_bem (→ A B) (fromNumber 0))
-;;   (→ A B))
-;; !(assertEqual
-;;   (bc_bem (→ B C) (fromNumber 0))
-;;   (→ B C))
-;; !(assertEqual
-;;   (bc_bem (→ A C) (fromNumber 2))
-;;   (→ A C))
+!(assertEqual
+  (bc_bem A Z)
+  A)
+!(assertEqual
+  (bc_bem B (fromNumber 1))
+  B)
+!(assertEqualToResult
+  (bc_bem C (fromNumber 2))
+  (C   ; 2 modus ponens
+   C)) ; deduction + modus ponens
+!(assertEqual
+  (bc_bem (→ A B) (fromNumber 0))
+  (→ A B))
+!(assertEqual
+  (bc_bem (→ B C) (fromNumber 0))
+  (→ B C))
+!(assertEqual
+  (bc_bem (→ A C) (fromNumber 2))
+  (→ A C))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Equality Match ;;
@@ -176,7 +195,7 @@
 ;; backward chainer function.
 (: bc_em (-> Atom Nat Atom))
 ;; Base case
-(= (bc_em $conclusion Z)
+(= (bc_em $conclusion $depth)
    (match &kb_em $conclusion $conclusion))
 ;; Recursive step (modus ponens)
 (= (bc_em $q (S $k))
@@ -190,25 +209,25 @@
      (→ $p $r)))                            ; conclusion
 
 ;; Test backward chainer
-;; !(assertEqual
-;;   (bc_em A Z)
-;;   A)
-;; !(assertEqual
-;;   (bc_em B (fromNumber 1))
-;;   B)
-;; !(assertEqualToResult
-;;   (bc_em C (fromNumber 2))
-;;   (C   ; 2 modus ponens
-;;    C)) ; deduction + modus ponens
-;; !(assertEqual
-;;   (bc_em (→ A B) (fromNumber 0))
-;;   (→ A B))
-;; !(assertEqual
-;;   (bc_em (→ B C) (fromNumber 0))
-;;   (→ B C))
-;; !(assertEqual
-;;   (bc_em (→ A C) (fromNumber 2))
-;;   (→ A C))
+!(assertEqual
+  (bc_em A Z)
+  A)
+!(assertEqual
+  (bc_em B (fromNumber 1))
+  B)
+!(assertEqualToResult
+  (bc_em C (fromNumber 2))
+  (C   ; 2 modus ponens
+   C)) ; deduction + modus ponens
+!(assertEqual
+  (bc_em (→ A B) (fromNumber 0))
+  (→ A B))
+!(assertEqual
+  (bc_em (→ B C) (fromNumber 0))
+  (→ B C))
+!(assertEqual
+  (bc_em (→ A C) (fromNumber 2))
+  (→ A C))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DTL Equality Match ;;
@@ -218,13 +237,13 @@
 ;; chainer and match is used instead of let (as far as matching
 ;; premises is concerned).
 
-;; ! "=== DTL Equality Match ==="
+! "=== DTL Equality Match ==="
 
-;; ;; Knowledge base
-;; !(bind! &kb_dem (new-space))
-;; !(add-atom &kb_dem (: ab (→ A B)))
-;; !(add-atom &kb_dem (: bc (→ B C)))
-;; !(add-atom &kb_dem (: a A))
+;; Knowledge base
+!(bind! &kb_dem (new-space))
+!(add-atom &kb_dem (: ab (→ A B)))
+!(add-atom &kb_dem (: bc (→ B C)))
+!(add-atom &kb_dem (: a A))
 
 ;; Backward chainer.  The rule based is directly embedded in the
 ;; backward chainer function.
@@ -272,26 +291,16 @@
 ;; !(bc_dem (: $prf C) (fromNumber 2))
 
 ;; !(kb_bare)
-;; (: bcSearch (-> Atom 
-;;                 Atom 
-;;                 (-> Atom 
-;;                     Atom 
-;;                     Expression) 
-;;                 Expression))
+(: bcSearch (-> Atom 
+                Atom 
+                (-> Atom 
+                    Atom 
+                    Expression) 
+                Expression))
 (= (bcSearch $space 
               $conclusion 
               $structFunc)
-    (let* (
-      ($rules ($structFunc $space $conclusion))
-      (() (println! (rules $rules)))
-
-    )
-      $rules
-    )
-    
-   
-)
-  
+   ($structFunc $space $conclusion))
 
 
 (: bcChainer (-> Atom 
@@ -305,238 +314,20 @@
                $conclusion 
                $structFunc 
                Z)
-   (bcSearch $space $conclusion $structFunc))
+   (bcSearch $space $conclusion $structFunc ))
 (= (bcChainer $space 
                $conclusion 
                $structFunc 
                (S $Z))
-   (let $result (bcSearch $space $conclusion $structFunc)
-        (if  (== $result ())
-                (let $_ (println! (This is the result)) $result)
-                (let* (
-                    (($contexts $goal $actions) $result)
-                    ($_ (println! (resultsInChainer $result)))
-                    ($_ (println! (contextsInChainer $contexts)))
-                    ($res (collapse (bcChainer 
-                        $space 
-                        (superpose $contexts)
-                        $structFunc 
-                        $Z)))
-
-                )  
-                    (union-atom $res $actions)
-                
-                )
-               
-        )))
-(= (filterHasInit $initConditions $actions)
-    (if (== $actions ())
-        (empty)
-      (if (== (car-atom $actions) $initConditions)
-          $actions
-          (empty)
-      )
-    )
-)
+   (let (($result (bcSearch $space $conclusion $structFunc)))
+     (if (and (not (= $result ())) (> $depth 0))
+         (bcChainer 
+                $space 
+                $result 
+                $structFunc 
+                (fromNat (- (fromNat $depth) 1)))
+         $result)))
 
 
-
-(: actionPlanner 
-        (-> Atom 
-            Action
-            Action 
-            (-> Atom 
-                Atom 
-                Expression) 
-                Expression))
-(= (actionPlanner $space 
-                  $initCondition 
-                  $goalCondition 
-                  $structFunc)
-    (let $actions (collapse (bcChainer $space $goalCondition $structFunc (fromNumber 10)))
-          $actions
-        ;; (collapse (filterHasInit $initConditions (superpose $actions))) 
-        ;; (bcChainer $space 
-        ;;        $conclusion 
-        ;;        $structFunc 
-        ;;        (S $Z))
-    )
-
-)
-(= (findRulesWithAction $space $action)
-    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
-        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight)
-        
-    ))
-)
-
-;; (: findActionWithGoal (-> Atom 
-;;                         Goal
-;;                         Expression))
-(= (findRulesWithGoal $space $goal)
-    (collapse (match $space ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) (Goal $goal $x $y)))) $weight)
-        ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) (Goal $goal $x $y)))) $weight)
-        
-    ))
-)
-(: findActionWithGoal (-> Atom 
-                         Goal
-                         Expression))
-(= (findActionWithGoal $space $goal)
-    (let $rules (findRulesWithGoal $space $goal)
-        (collapse (extractContextFromRule (superpose $rules)))
-         
-    )
-)
-(= (extractGoalFromRule $rule)
-    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $goal)
-
-)
-(= (extractContextFromRule $rule)
-    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $context)
-)
-
-(= (findGoalsWithAction $space $action)
-    (let $rules (findRulesWithAction $space $action)
-       
-            (collapse (extractGoalFromRule (superpose $rules)))
-           
-       
-         
-    )
-)
-
-(: findRulesWithHandle (-> Atom 
-                            Symbol
-                            Expression))
-(= (findRulesWithHandle $space $handle) (match $space ((: $handle $rule) $weight) ((: $handle $rule) $weight)))
-
-(= (extractGoalName $goal)
-    (let (Goal $name $x $y) $goal $name)
-
-)
-
-(= (findContextWithAction $space $action)
-    (let* (
-      ($rules (findRulesWithAction $space $action))
-      ($priors (collapse (extractContextFromRule (superpose $rules))))
-      ($contexts (collapse (extractGoalName (superpose $priors))))
-
-    ) 
-
-       $contexts
-         
-    )
-)
-(= (extractTriplets $expr)
-    (unify $expr ((: $handle $rule) $weight) 
-      
-    ))
-
-
-
-(= (addRulesToSpace $space)
-    (add-reduct $space (superpose (
-            
-((: r1 ((TTV 1 (STV 0.8 0.7)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal init 0.9 0.6) explore)) 
-          (Goal found_target 1.0 1.0)))) 2)
-
-;; r2: Approach after finding target
-((: r2 ((TTV 1 (STV 0.75 0.65)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal found_target 1.0 1.0) approach)) 
-          (Goal near_target 1.0 1.0)))) 3)
-
-;; r3: Interact when near
-((: r3 ((TTV 1 (STV 0.7 0.6)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal near_target 1.0 1.0) interact)) 
-          (Goal task_done 1.0 1.0)))) 2)
-
-;; r4: Report task done
-((: r4 ((TTV 1 (STV 0.65 0.6)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal task_done 1.0 1.0) report)) 
-          (Goal mission_complete 1.0 1.0)))) 10)
-
-;; r5: Do nothing and become low energy
-((: r5 ((TTV 1 (STV 0.5 0.5)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal init 0.8 0.5) idle)) 
-          (Goal low_energy 1.0 1.0)))) 1)
-
-;; r6: Analyze after mission complete
-((: r6 ((TTV 1 (STV 0.75 0.7)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal mission_complete 0.9 0.7) analyze)) 
-          (Goal analyze_data 1.0 1.0)))) 4)
-
-;; r7: Upload results after analysis
-((: r7 ((TTV 1 (STV 0.7 0.7)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal analyze_data 0.85 0.7) upload)) 
-          (Goal upload_results 1.0 1.0)))) 2)
-
-;; r8: Reboot after upload
-((: r8 ((TTV 1 (STV 0.9 0.8)) 
-        (IMPLICATION_LINK 
-          (AND_LINK ((Goal upload_results 0.95 0.75) reboot)) 
-          (Goal reset_system 1.0 1.0)))) 1)
-
-            )
-        )
-    )
-
-)
-!(bind! &kb (new-space))
-!(addRulesToSpace &kb)
-!(get-atoms &kb)
-
-;; !(fromNumber 10)
-
-
-;; What should be the halting condition for the backward-chainer ?
-;; 
-;; so how does the following work out?
-;; I think what we need is an action and a goal pair. the action will be accumulated while the goal will 
-;; given to the recursive call of the backward chainer.
-(: extractAction (-> Expression Expression))
-(= (extractAction $rule)
-    (let ((: $handle ((TTV $time (STV $bel $conf)) (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight) $rule $action)
-)
-
-
-(: interimFunction (-> Atom Atom Expression))
-(= (interimFunction $space $goal)
-    (if (== $goal ())
-        ()
-        (let* (
-        ($rules (findRulesWithGoal $space $goal))
-        
-        ($extractedAction (collapse (extractAction (superpose $rules))))
-        ($priors (collapse (extractContextFromRule (superpose $rules))))
-        ($_ (println! (priors $priors)))
-        ($contextNames (collapse (filterFunction (superpose $priors))))
-        ($_ (println! (contextNames $contextNames)))
-        ($contexts (collapse (extractGoalName (superpose $priors))))
-
-        ) 
-
-        ($contextNames $goal $extractedAction)
-            
-        )
-    )
-  )
-
-!(interimFunction &kb mission_complete)
-
-(= (filterFunction $goal)
-    (unify $goal (Goal $cName $x $y) $cName (empty))
-)
-
-!(actionPlanner &kb init mission_complete interimFunction)
-;; !(union-atom () ())
 
 
