@@ -1,11 +1,19 @@
 
-;;!(register-module! ../metta-nars)
-;;!(import! &self metta-nars:src:logic:nal1)
-;;!(import! &self metta-nars:src:NARS)
-;;!(bind! &test (new-space))
+;;!(import! &self NARS)
 
-!(import! &self NARS)
-
+(= (Truth_c2w $c) (/ $c (- 1 $c)))
+(= (Truth_w2c $w) (/ $w (+ $w 1)))
+(= (Truth_Deduction ($f1 $c1) ($f2 $c2)) ((* $f1 $f2) (* (* $f1 $f2) (* $c1 $c2))))
+(= (Truth_Abduction ($f1 $c1) ($f2 $c2)) ($f2 (Truth_w2c (* (* $f1 $c1) $c2))))
+(= (Truth_Induction $T1 $T2) (Truth_Abduction $T2 $T1))
+(= (Truth_Exemplification ($f1 $c1) ($f2 $c2)) (1.0 (Truth_w2c (* (* $f1 $f2) (* $c1 $c2)))))
+;;NAL-1
+;;!Syllogistic rules for Inheritance:
+(= (reason (($a --> $b) $T1) (($b --> $c) $T2)) (($a --> $c) (Truth_Deduction $T1 $T2)))
+(= (reason (($a --> $b) $T1) (($a --> $c) $T2)) (($c --> $b) (Truth_Induction $T1 $T2)))
+(= (reason (($a --> $c) $T1) (($b --> $c) $T2)) (($b --> $a) (Truth_Abduction $T1 $T2)))
+(= (reason (($a --> $b) $T1) (($b --> $c) $T2)) (($c --> $a) (Truth_Exemplification $T1 $T2)))
+(= (reason (($a --> $b) $T1) (($c --> $d) $T2)) (if (== (intersection-atom ($a $b) ($c $d)) ()) () (empty)))
 ((: r1 ((TTV 1 (STV 0.8 0.7)) (IMPLICATION_LINK 
               (AND_LINK ((Goal Conversation-Started 0.9 0.6) initiate-dialogue)) (Goal Send-Greeting 1.0 1.0)))) 4)
 (= (convertScheme ((: $handle ($tv (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight))
@@ -113,19 +121,21 @@
     (let $exp (collapse (if (== (superpose $expression) True) True (empty))) (if (== $exp ()) False True)))
 
 
-(: isReduced (-> Expression Bool))
+;;(: isReduced (-> Expression Bool))
 ;;(= (isReduced $value) (all (collapse (not (isMember reason (superpose $value))))))
-(= (isReduced $value) (not (isMember reason $value)))
+;;(= (isReduced $value) (not (isMember reason $value)))
+(= (isReduced $value) (if (== $value ())False True))
 (= (applyInferenceForRule $rule $rules $accum)
   (if (== $rules ())
      $accum
     (let* (
         (($head $tail) (decons-atom $rules))
-        ($results (reason $rule $head))
-        ($_ (println! (results $results)))
-        ($reduced (isReduced $results))
+        ($s_ (println! (forApplication $rule space $head)))
+        ($result (reason $rule $head))
+        ($_ (println! (results $result)))
+        ($reduced (isReduced $result))
         ($_ (println! (reduced $reduced)))
-        ($accum' (if (not $reduced) $accum (union-atom $accum ($results))))
+        ($accum' (if (not $reduced) $accum (union-atom $accum ($result))))
     ) 
       (applyInferenceForRule $rule $tail  $accum')
   )
@@ -160,17 +170,17 @@
 ;;!(applyInference &test)
 
 
-;;!(reason (convertScheme ((: r33' ((TTV 1 (STV 0.65 0.6)) 
-;;            (IMPLICATION_LINK 
-;;            (AND_LINK ((Goal less_energy 0.9 0.75) shutdown)) 
-;;            (Goal system_off 1.0 1.0)))) 1)
-;;    )
-;;    (convertScheme 
-;;        ((: r33 ((TTV 1 (STV 0.65 0.6)) 
-;;                (IMPLICATION_LINK 
-;;                (AND_LINK ((Goal full_energy 0.9 0.75) shutdown))  
-;;                (Goal system_off 1.0 1.0)))) 1)))
-;;    
+!(reason (convertScheme ((: r33' ((TTV 1 (STV 0.65 0.6)) 
+            (IMPLICATION_LINK 
+            (AND_LINK ((Goal less_energy 0.9 0.75) shutdown)) 
+            (Goal system_in 0.9 1.0)))) 1)
+    )
+    (convertScheme 
+        ((: r33 ((TTV 1 (STV 0.65 0.6)) 
+                (IMPLICATION_LINK 
+                (AND_LINK ((Goal full_energy 0.9 0.75) shutdown))  
+                (Goal system_off 1.0 1.0)))) 1)))
+    
 
 (= (randomizer' $size $accum $sentinel $noOfSamples)
   (if (== $size 0) $accum
@@ -185,7 +195,7 @@
 
 ;;!(randomizer' 10 () 20 4)
 (= (randomizer $list $size) (randomizer' $size () (size-atom $list) $size))
-(:selectRandom (-> Expression Number Expression))
+;;(:selectRandom (-> Expression Number Expression))
 (= (selectRandom $list $size) 
     (let* (
       ($randomList (randomizer $list $size))
@@ -249,5 +259,11 @@
 (= (greedyPlanner $ruleSpace $context $evalFunc)
     (let $rules (getRulesByContext $ruleSpace $context) (greedySelection $rules $evalFunc))
 )
-
+!(allResullts (all (True True True False)))
+!(anyResullts (any (True True True False)))
 !(applyInference &test)
+
+;;(= (apply $rule1 $rule2) (applyReasoning $rule1 $rule2))
+
+;;!(apply (((AND_LINK ((Goal battery_alert 0.95 0.8) return)) --> (Goal base_reached 1.0 1.0)) (0.8 0.75)) (((AND_LINK ((Goal base_reached 0.9 0.75) dock)) --> (Goal docked 1.0 1.0)) (0.7 0.65)))
+;;(forApplication (((AND_LINK ((Goal battery_alert 0.95 0.8) return)) --> (Goal base_reached 1.0 1.0)) (0.8 0.75)) space (((AND_LINK ((Goal base_reached 0.9 0.75) dock)) --> (Goal docked 1.0 1.0)) (0.7 0.65)))

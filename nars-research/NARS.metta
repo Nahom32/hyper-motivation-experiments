@@ -484,3 +484,6 @@
           ($InputEvent (Event (trace! (!: $Sentence) $Sentence) ($t $evidentialBase ($t 1.0)))))
          (sequential ((do (add-atom &goal_events $InputEvent))
                       (GoalCycle $t)))))
+
+
+(= (applyReasoning $rule1 $rule2) (reason $rule1 $rule2))
