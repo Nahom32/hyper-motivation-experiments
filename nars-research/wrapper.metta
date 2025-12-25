@@ -234,7 +234,11 @@
   )
 )
 
-(: Rule 1
+
+(= (convertSchemeToNars (: Rule $id $ttv $stv1 $complexity (IMPLICATION (AND $context $action) $goal))) ((AND ($context $action)) --> $goal $stv1))
+
+
+!(convertSchemeToNars (: Rule 1
     (TTV 0)
     (STV 0.5 0.002)  
     (Complexity 1)
@@ -248,7 +252,7 @@
                 (CENTER_SQUARE (STV 0.2 0.1))
                 (STILL_ALIVE (STV 0.2 0.1)))
     )) 
-))
+)))
 (= (getRulesByContext $space $context) (collapse (match &self (: Rule $index $ttv $complexity 
               (IMPLICATION (AND (Context $contextStv $context) $action $goal))))))
 ;;(: (greedySelection (-> Expression (-> Expression Number) Expression)))
@@ -262,8 +266,28 @@
 !(allResullts (all (True True True False)))
 !(anyResullts (any (True True True False)))
 !(applyInference &test)
+(= (addRules $rules $space)
+  (if (== $rules ()) 
+    ()
+    (let* (
+      ($availableRules (collapse (get-atoms $space)))
+      (($head $tail) (decons-atom $rules))
+      ($_ (if (not (isMember $head $availableRules)) (add-atom $space $head) ()))
+      
+    )
+      (addRules $tail $space)
+    )
+  )
+)
+(= (reasoningSelector $space)
+  (let* (
+    ($inferedRules (applyInference $space))
+    ($_ (addRules $inferedRules $space))
 
-;;(= (apply $rule1 $rule2) (applyReasoning $rule1 $rule2))
+  )
+    (collapse (get-atoms $space))
+  )
+)
 
-;;!(apply (((AND_LINK ((Goal battery_alert 0.95 0.8) return)) --> (Goal base_reached 1.0 1.0)) (0.8 0.75)) (((AND_LINK ((Goal base_reached 0.9 0.75) dock)) --> (Goal docked 1.0 1.0)) (0.7 0.65)))
-;;(forApplication (((AND_LINK ((Goal battery_alert 0.95 0.8) return)) --> (Goal base_reached 1.0 1.0)) (0.8 0.75)) space (((AND_LINK ((Goal base_reached 0.9 0.75) dock)) --> (Goal docked 1.0 1.0)) (0.7 0.65)))
+!(reasoningSelector &test)
+
