@@ -1,5 +1,6 @@
 
 ;;!(import! &self NARS)
+!(import! &self sampler)
 
 (= (Truth_c2w $c) (/ $c (- 1 $c)))
 (= (Truth_w2c $w) (/ $w (+ $w 1)))
@@ -14,6 +15,39 @@
 (= (reason (($a --> $c) $T1) (($b --> $c) $T2)) (($b --> $a) (Truth_Abduction $T1 $T2)))
 (= (reason (($a --> $b) $T1) (($b --> $c) $T2)) (($c --> $a) (Truth_Exemplification $T1 $T2)))
 (= (reason (($a --> $b) $T1) (($c --> $d) $T2)) (if (== (intersection-atom ($a $b) ($c $d)) ()) () (empty)))
+(= (add-atoms $space $values)
+  (if (== $values ()) () 
+      (let* (
+          ($head (car-atom $values))
+          ($tail (cdr-atom $values))
+          ($_ (add-atom $space $head))
+      )
+        (add-atoms $space $tail)
+
+      )
+  )
+)
+(= (remove-atoms $space $values)
+    (if (== $values ())
+        ()
+        (let* (
+            ($head (car-atom $values))
+            ($tail (cdr-atom $values))
+            ($_ (remove-atom $space $head))
+        )
+          (remove-atoms $space $tail)
+        )
+    )
+)
+;;(= (|- $rule1 $rule2)
+;;    (let* (
+;;      ((: Rule $id1 $ttv1 $stv1 $complexity1 (IMPLICATION $contextAction1 $goal1)) $rule1)
+;;      ((: Rule $id2 $ttv2 $stv2 $complexity2 (IMPLICATION $contextAction2 $goal2)) $rule2)
+;;      ()
+;;    )
+;;        (if (== ))
+;;    )
+;;)
 ((: r1 ((TTV 1 (STV 0.8 0.7)) (IMPLICATION_LINK 
               (AND_LINK ((Goal Conversation-Started 0.9 0.6) initiate-dialogue)) (Goal Send-Greeting 1.0 1.0)))) 4)
 (= (convertScheme ((: $handle ($tv (IMPLICATION_LINK (AND_LINK ($context $action)) $goal))) $weight))
@@ -141,7 +175,7 @@
   )
 ))
 
-(= (applyInference' $rules $counter $accum)
+(= (applyInference' $rules  $accum)
   (if (== $rules ())
      $accum
     (let* (
@@ -152,7 +186,7 @@
       ($ruleSize (size-atom $inferedRules))
       ($accum' (union-atom $accum $inferedRules))
     )
-     (applyInference' $tail $counter' $accum')
+     (applyInference' $tail  $accum')
     )
   )
 )
@@ -161,13 +195,13 @@
   (let* (
     ($narsRules (convertRulesToNars $space))
     ($_ (println! (narsRules $narsRules)))
-    ($newRules (applyInference' $narsRules $counter ()))
+    ($newRules (applyInference' $narsRules ()))
         
   )
     $newRules
   )
 )
-;;!(applyInference &test)
+!(applyInference &test)
 
 
 !(reason (convertScheme ((: r33' ((TTV 1 (STV 0.65 0.6)) 
@@ -279,15 +313,22 @@
     )
   )
 )
-(= (reasoningSelector $space)
+
+
+(= (reasoningSelector $space $cacheSpace)
   (let* (
-    ($inferedRules (applyInference $space))
-    ($_ (addRules $inferedRules $space))
+    ($indices (probBasedSample $space 5))
+    ($sampledRules (collectRules $space $indices ()))
+    ($_ (add-atoms $cacheSpace $sampledRules))
+    ($inferedRules (applyInference $cacheSpace))
+    ($convertedRules (convertRulesToPSI $inferedRules))
+    ($_ (add-atoms $space $convertedRules))
+    ($_ (remove-atoms $cacheSpace))
 
   )
     (collapse (get-atoms $space))
   )
 )
 
-!(reasoningSelector &test)
+;;!(reasoningSelector &test)
 
