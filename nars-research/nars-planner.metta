@@ -59,7 +59,7 @@
 
 !(addRules &rulespace)
 !(get-atoms &rulespace)
-
+;;!(generateId &rulespace)
 (= (add-atoms $space $values)
   (if (== $values ()) () 
       (let* (
@@ -138,3 +138,4 @@
 !(get-type true)
 (Concept Noe)
 !(unify &self (Concept Noe) Noe None)
+!(generateId &rulespace)

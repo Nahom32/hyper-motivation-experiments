@@ -186,7 +186,7 @@
 ))
 
 ;; This could be optimized by adding an atom that tracks the max TTV in the rule space instead of searching every time
-(: findCurrentTTV (-> hyperon::space::DynSpace Number))
+;;(: findCurrentTTV (-> hyperon::space::DynSpace Number))
 (= (findCurrentTTV $ruleSpace) (
     let* (
         ($rules (collapse (get-atoms $ruleSpace)))
@@ -195,7 +195,7 @@
     ) (max-atom $ttvValues) ;; For some reason max-atom returns a float instead of int
 ))
 
-(: findCurrentRuleId (-> hyperon::space::DynSpace Number))
+;;(: findCurrentRuleId (-> hyperon::space::DynSpace Number))
 (= (findCurrentRuleId $ruleSpace) (
     let* (
         ($rules (collapse (get-atoms $ruleSpace)))
@@ -203,3 +203,41 @@
         ($_ (println! ("Current Rule IDs: " $ruleIds)))
     ) (max-atom $ruleIds)
 ))
+
+(= (extractIds $rules $accum) 
+   (if (== $rules ())
+        $accum
+        (let* (
+          (($head $tail) (decons-atom $rules))
+          ($id (extractRule Id $head))
+          ($newAccum (union-atom $accum ($id)))
+        )
+          (extractIds $tail $newAccum)
+        )
+   ) 
+)
+
+
+
+
+(= (isMember $item $list) 
+        (if (== $list ()) 
+            False 
+            (let ($head $tail) (decons-atom $list) 
+                (if (== $head $item) 
+                    True 
+                    (isMember $item $tail)))))
+;;(= (extractIds $space) (collapse (extractRule Id (get-atoms $space))))
+(= (generateId $space)
+    (let* (
+      ($rules (collapse (get-atoms $space)))
+      ($len (length $rules))
+      ($id (random-int $len (+ $len 10)))
+      ($ids (extractIds $rules ()))
+    )
+      (if (isMember $id $ids)
+        (generateId $space)
+        $id
+      ) 
+    )
+)
