@@ -16,6 +16,43 @@
 (= (reason (($a --> $b) $T1) (($c --> $d) $T2)) (if (== (intersection-atom ($a $b) ($c $d)) ()) () (empty)))
 (= (reason (($a --> $b) $T1) (($a --> $b) $T1)) ())
 
+(: Rule 1
+        (TTV 0)
+        (STV 0.5 0.002)  
+        (Complexity 1)
+        (IMPLICATION
+            (AND 
+                (Context (STV 0.2 0.1) (AND (
+                    (RIGHT_SQUARE (STV 0.2 0.1))
+                    (STILL_ALIVE (STV 0.2 0.1)))))
+                (Action (SEQ_GO (MOVE_RIGHT))))
+            (Goal (STV 0.2 0.1) (AND (
+                    (CENTER_SQUARE (STV 0.2 0.1))
+                    (STILL_ALIVE (STV 0.2 0.1)))
+        )) 
+    ))
+
+;;(: convertRulesToPSI (-> Expression Expression))
+(= (convertRuleToPSI $rule)
+    (if (== $rule ()) ()
+    (let* (
+      (($id (($precedent --> $antecedent) ($freq $conf))) $rule)
+      ($truthValue (STV $freq $conf)) 
+      (($context $action) $precedent)
+      ($goal $antecedent)
+
+    )
+      (: Rule $id 
+        (TTV 0)
+        $truthValue
+        (Complexity 1)
+        (IMPLICATION (AND $context $action) $goal)
+      )
+      
+    )
+    )
+)
+(= (convertRulesToPSI $rules) (collapse (convertRuleToPSI (superpose $rules))))
 
 (= (addRules $space)
     (let $rules (superpose (
@@ -111,9 +148,11 @@
       ($action (eval (extractRule Action $rule)))
       ($goal (eval (extractRule Goal $rule)))
       ($STV (eval (extractRule STV $rule)))
+      ((STV $freq $conf) $STV)
+
       ($id (eval (extractRule Id $rule)))
     )
-      ($id ((($context $action) --> $goal) $STV)) 
+      ($id ((($context $action) --> $goal) ($freq $conf))) 
     )
 )
 
@@ -224,6 +263,7 @@
     ($_ (add-atoms $cacheSpace $sampledRules))
     ($inferedRules (applyInference $cacheSpace))
     ($convertedRules (convertRulesToPSI $inferedRules))
+    ($_ (println! (converted Rules $convertedRules)))
     ($_ (add-atoms $space $convertedRules))
     ($_ (remove-atoms $cacheSpace))
 
@@ -237,5 +277,5 @@
 ;;!(let (($A --> $B) $stv) (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (STV 0.5 0.002)) $A)
 ;;!(reason (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (STV 0.5 0.002)) 
 ;;          (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (DEAD (STV 0.2 0.1)))) (STV 0.5 0.002)))
-!(applyInference &rulespace)
+;;!(applyInference &rulespace)
 !(reasoningSelector &rulespace &cachespace)
