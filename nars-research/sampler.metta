@@ -1,4 +1,4 @@
-
+;;!(import! &self rule-helpers)
 
 ;; Math utilities for Metta
 
@@ -184,10 +184,24 @@
         ($_ (updateSTV $ruleId ($newStrength $newConfidence) $space))
     ) ()
 ))
-(= (getHandle $rule) (unify (dummy x) $rule $handle NONE))
-
+;;(= (getHandle $rule) (unify (dummy x) $rule $handle NONE))
+(: Rule 1
+        (TTV 0)
+        (STV 0.5 0.002)  
+        (Complexity 1)
+        (IMPLICATION
+            (AND 
+                (Context (STV 0.2 0.1) (AND (
+                    (RIGHT_SQUARE (STV 0.2 0.1))
+                    (STILL_ALIVE (STV 0.2 0.1)))))
+                (Action (SEQ_GO (MOVE_RIGHT))))
+            (Goal (STV 0.2 0.1) (AND (
+                    (CENTER_SQUARE (STV 0.2 0.1))
+                    (STILL_ALIVE (STV 0.2 0.1)))
+        )) 
+    ))
 (: Rule $ruleId $ttv $stv $comp (Context $context) $action $goal)
-(= (getRuleIdWithStv $rule) (let (: Rule $id $temporal $stv $comp $context $action $goal) $rule ($id $stv)))
+(= (getRuleIdWithStv $rule) (let (: Rule $id $temporal $stv $comp (IMPLICATION (AND $context $action) $goal)) $rule ($id $stv)))
 (= (changeSTVToBeta $ruleIdWithSTV)
   (let* (
     ($_ (println! (ruleIdWithSTV $ruleIdWithSTV)))
@@ -211,86 +225,55 @@
 
 (= (addGameRules $space) (
     let $rules (superpose (
-            (: Rule 1
-                (TTV 0)
-                (STV 0.5 0.002)  
-                (Complexity 1)
-                (Context ((Position CLOSE_RANGE)))
-                (Action (ATTACK SWORD))
-                (Goal (HIT))  
-            )
+        (: Rule 1
+          (TTV 0)
+          (STV 0.5 0.002)  
+          (Complexity 1)
+          (IMPLICATION
+              (AND 
+                  (Context (STV 0.2 0.1) (AND (
+                      (RIGHT_SQUARE (STV 0.2 0.1))
+                      (STILL_ALIVE (STV 0.2 0.1)))))
+                  (Action (SEQ_GO (MOVE_RIGHT))))
+              (Goal (STV 0.2 0.1) (AND (
+                      (CENTER_SQUARE (STV 0.2 0.1))
+                      (STILL_ALIVE (STV 0.2 0.1)))
+          )) 
+    ))  
 
-            (: Rule 2
-                (TTV 0)
-                (STV 0.5 0.002) 
-                (Complexity 1)
-                (Context ((Position CLOSE_RANGE)))
-                (Action (ATTACK BOW))
-                (Goal (HIT))   
-            )
+    ;; Rule 3
+    (: Rule 3
+        (TTV 0)
+        (STV 0.5 0.002)  
+        (Complexity 1)
+        (IMPLICATION 
+            (AND 
+                (Context (STV 0.2 0.1) (AND (
+                    (LEFT_SQUARE (STV 0.2 0.1))
+                    (STILL_ALIVE (STV 0.2 0.1)))))
+                (Action (SEQ_AND (MOVE_RIGHT))))
+            (Goal (STV 0.2 0.1) (AND (
+                    (CENTER_SQUARE (STV 0.2 0.1))
+                    (DEAD (STV 0.2 0.1)))
+        )) 
+    ))
 
-            (: Rule 3
-                (TTV 0)
-                (STV 0.5 0.002) 
-                (Complexity 1)
-                (Context ((Position CLOSE_RANGE)))
-                (Action (CAST FIREBALL))
-                (Goal (HIT))  
-            )
-
-            (: Rule 4
-                (TTV 0)
-                (STV 0.5 0.002) 
-                (Complexity 1)
-                (Context ((Position MID_RANGE)))
-                (Action (ATTACK SWORD))
-                (Goal (HIT))   
-            )
-
-            (: Rule 5
-                (TTV 0)
-                (STV 0.5 0.002)  
-                (Complexity 1)
-                (Context ((Position MID_RANGE)))
-                (Action (ATTACK BOW))
-                (Goal (HIT))  
-            )
-
-            (: Rule 6
-                (TTV 0)
-                (STV 0.5 0.002)  
-                (Complexity 1)
-                (Context ((Position MID_RANGE)))
-                (Action (CAST FIREBALL))
-                (Goal (HIT))  
-            )
-
-            (: Rule 7
-                (TTV 0)
-                (STV 0.5 0.002) 
-                (Complexity 1)
-                (Context ((Position LONG_RANGE)))
-                (Action (ATTACK SWORD))
-                (Goal (HIT))  
-            )
-
-            (: Rule 8
-                (TTV 0)
-                (STV 0.5 0.002) 
-                (Complexity 1)
-                (Context ((Position LONG_RANGE)))
-                (Action (ATTACK BOW))
-                (Goal (HIT))  
-            )
-
-            (: Rule 9
-                (TTV 0)
-                (STV 0.5 0.002) 
-                (Complexity 1)
-                (Context ((Position LONG_RANGE)))
-                (Action (CAST FIREBALL))
-                (Goal (HIT))  
-            )
+    ;; Rule 2
+    (: Rule 2
+        (TTV 0)
+        (STV 0.5 0.002)  
+        (Complexity 1)
+        (IMPLICATION 
+            (AND 
+                (Context (STV 0.2 0.1) (AND (
+                    (CENTER_SQUARE (STV 0.2 0.1))
+                    (STILL_ALIVE (STV 0.2 0.1)))))
+                (Action (SEQ_AND (MOVE_RIGHT)) ) )
+            (Goal (STV 0.2 0.1) (AND (
+                    (RIGHT_SQUARE (STV 0.2 0.1))
+                    (STILL_ALIVE (STV 0.2 0.1)))
+        )) 
+    ))
         )) (add-atom $space $rules)
 ))
 
@@ -368,7 +351,10 @@
                 (Goal (HIT))   
             )
 
-(= (getRuleById $space $id) (match $space (: Rule $id  $ttv $stv $complexity $context $action $goal) (: Rule $id $ttv $stv $complexity $context $action $goal)))
+(= (getRuleById $space $id) 
+    (match $space  
+        (: Rule $id $temporal $stv $comp (IMPLICATION (AND $context $action) $goal)) 
+          (: Rule $id $temporal $stv $comp (IMPLICATION (AND $context $action) $goal))))
 !(probBasedSample &ruleSpace 4)
 !(getRuleIdWithStv (get-atoms &ruleSpace))
 (= (collectRules $space $values $accum)
@@ -385,4 +371,4 @@
   )
 
  )
-!(collectRules &ruleSpace ((2 1.0) (1 0.9715) (7 0.9689) (5 0.8104)) ())
+;;!(collectRules &ruleSpace ((2 1.0) (1 0.9715) (7 0.9689) (5 0.8104)) ())
