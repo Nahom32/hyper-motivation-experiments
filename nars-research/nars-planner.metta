@@ -30,10 +30,6 @@
 !("The first implementation")
 !(complexity (3 (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (DEAD (STV 0.2 0.1)))) (0.5 0.002))))
 
-;;(= (complexity $rule)
-;;    
-;;)
-
 ;;!(add-reduct &ruleSpace (superpose (
 ;;    ;; Rule 1
 ;;    (: Rule 1
@@ -126,6 +122,7 @@
     (if (== $rule ()) ()
     (let* (
       (($id (($precedent --> $antecedent) ($freq $conf))) $rule)
+      ($complexity (size-atom $antecedent))
       ($truthValue (STV $freq $conf)) 
       (($context $action) $precedent)
       ($goal $antecedent)
@@ -134,7 +131,7 @@
       (: Rule $id 
         (TTV 0)
         $truthValue
-        (Complexity 1)
+        (Complexity $complexity)
         (IMPLICATION (AND $context $action) $goal)
       )
       
@@ -385,4 +382,4 @@
 ;;!(reasoningSelector (LEFT_SQUARE STILL_ALIVE) (CENTER_SQUARE STILL_ALIVE) &ruleSpace &cachespace)
 
 
-;;!(convertRuleToPSI (1 (((((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((RIGHT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (0.5 0.002))))
+!(convertRuleToPSI (1 (((((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((RIGHT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (0.5 0.002))))
