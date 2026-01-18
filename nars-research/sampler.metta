@@ -342,14 +342,6 @@
        )
    )
 )
- (: Rule 4
-                (TTV 0)
-                (STV 0.5 0.002) 
-                (Complexity 1)
-                (Context ((Position MID_RANGE)))
-                (Action (ATTACK SWORD))
-                (Goal (HIT))   
-            )
 
 (= (getRuleById $space $id) 
     (match $space  

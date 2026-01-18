@@ -1,5 +1,6 @@
 !(import! &self sampler)
 !(import! &self rule-ops)
+;;!(import! &self nars-util)
 
 (= (Truth_c2w $c) (/ $c (- 1 $c)))
 (= (Truth_w2c $w) (/ $w (+ $w 1)))
@@ -27,97 +28,9 @@
     )
 )
 
-!("The first implementation")
-!(complexity (3 (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (DEAD (STV 0.2 0.1)))) (0.5 0.002))))
+;;!(complexity (3 (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (DEAD (STV 0.2 0.1)))) (0.5 0.002))))
 
-;;!(add-reduct &ruleSpace (superpose (
-;;    ;; Rule 1
-;;    (: Rule 1
-;;        (TTV 0)
-;;        (STV 0.5 0.002)  
-;;        (Complexity 1)
-;;        (IMPLICATION
-;;            (AND 
-;;                (Context (STV 0.2 0.1) (AND (
-;;                    (LEFT_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))))
-;;                (Action (SEQ_AND (MOVE_RIGHT))))
-;;            (Goal (STV 0.2 0.1) (AND (
-;;                    (CENTER_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))
-;;        )) 
-;;    ))
-;;
-;;    ;; Rule 3
-;;    (: Rule 3
-;;        (TTV 0)
-;;        (STV 0.5 0.002)  
-;;        (Complexity 1)
-;;        (IMPLICATION 
-;;            (AND 
-;;                (Context (STV 0.2 0.1) (AND (
-;;                    (LEFT_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))))
-;;                (Action (SEQ_AND (MOVE_RIGHT))))
-;;            (Goal (STV 0.2 0.1) (AND (
-;;                    (CENTER_SQUARE (STV 0.2 0.1))
-;;                    (DEAD (STV 0.2 0.1)))
-;;        )) 
-;;    ))
-;;
-;;    ;; Rule 2
-;;    (: Rule 2
-;;        (TTV 0)
-;;        (STV 0.5 0.002)  
-;;        (Complexity 1)
-;;        (IMPLICATION 
-;;            (AND 
-;;                (Context (STV 0.2 0.1) (AND (
-;;                    (CENTER_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))))
-;;                (Action (SEQ_AND (MOVE_RIGHT)) ) )
-;;            (Goal (STV 0.2 0.1) (AND (
-;;                    (RIGHT_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))
-;;        )) 
-;;    ))
-;;
-;;    ;; Rule 4
-;;    (: Rule 4
-;;        (TTV 0)
-;;        (STV 0.7 0.62)  
-;;        (Complexity 1)
-;;        (IMPLICATION 
-;;            (AND 
-;;                (Context (STV 0.2 0.1) (AND (
-;;                    (LEFT_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))))
-;;                (Action (SEQ_AND (JUMP_RIGHT)) ) )
-;;            (Goal (STV 0.2 0.1) (AND (
-;;                    (CENTER_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))
-;;        )) 
-;;    ))
-;;)))
 
-(: Rule 1
-        (TTV 0)
-        (STV 0.5 0.002)  
-        (Complexity 1)
-        (IMPLICATION
-            (AND 
-                (Context (STV 0.2 0.1) (AND (
-                    (RIGHT_SQUARE (STV 0.2 0.1))
-                    (STILL_ALIVE (STV 0.2 0.1)))))
-                (Action (SEQ_GO (MOVE_RIGHT))))
-            (Goal (STV 0.2 0.1) (AND (
-                    (CENTER_SQUARE (STV 0.2 0.1))
-                    (STILL_ALIVE (STV 0.2 0.1)))
-        )) 
-    )
-)
-
-;;(: convertRulesToPSI (-> Expression Expression))
 (= (convertRuleToPSI $rule)
     (if (== $rule ()) ()
     (let* (
@@ -214,8 +127,6 @@
 ;; What if I use the following format ($id $rule-narsese)
 
 !(addRules &rulespace)
-;;!(get-atoms &rulespace)
-;;!(generateId &rulespace)
 
 
 (= (add-atoms $space $values)
@@ -273,22 +184,6 @@
     )
 )
 
-;;!(convertRuleToNars  (: Rule 1
-;;        (TTV 0)
-;;        (STV 0.5 0.002)  
-;;        (Complexity 1)
-;;        (IMPLICATION
-;;            (AND 
-;;                (Context (STV 0.2 0.1) (AND (
-;;                    (LEFT_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))))
-;;                (Action (SEQ_AND (MOVE_RIGHT))))
-;;            (Goal (STV 0.2 0.1) (AND (
-;;                    (CENTER_SQUARE (STV 0.2 0.1))
-;;                    (STILL_ALIVE (STV 0.2 0.1)))
-;;        )) 
-;;    )))
-
 
 (= (isReduced $value) (if (== $value ()) false true))
 (= (applyInferenceForRule $rule $rules $accum)
@@ -335,6 +230,20 @@
     $newRules
   )
 )
+(= (matchContextRules $rules $contexts) (
+    if (== $rules ())
+        ()
+        (let* (
+            (($rule $restRules) (decons-atom $rules))
+            ($_ (println! (dec $rule)))
+            ($rule-context (extractRule ContextValues $rule))
+            ($restMatching (matchContextRules $restRules $contexts))
+        ) (if (sameElements $contexts $rule-context)
+            (cons-atom $rule $restMatching)
+            $restMatching
+        ))
+))
+
 
 (= (psiPlanner $contexts $goals $ruleSpace) (
     let* (
@@ -342,7 +251,7 @@
         ($rules (collapse (get-atoms $ruleSpace)))
         ($matchingGoals (matchGoals $goals $rules))
         ($_ (println! (Matched Goals:  $matchingGoals)))
-        ($matchingContexts (matchContexts $matchingGoals $contexts))
+        ($matchingContexts (matchContextRules $matchingGoals $contexts))
         ($_ (println! (Matched Contexts:  $matchingContexts)))
         ($applicableRules $matchingContexts)
         ($_ (println! (Applicable Rules:  (size-atom $applicableRules))))
@@ -367,7 +276,6 @@
     ($_ (add-atoms $space $convertedRules))
     ($_ (remove-atoms $cacheSpace))
     
-
   )
     (psiPlanner $context $goal $space)
   )
@@ -379,7 +287,7 @@
 ;;!(reason (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (STV 0.5 0.002)) 
 ;;          (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (DEAD (STV 0.2 0.1)))) (STV 0.5 0.002)))
 ;;!(applyInference &rulespace)
-;;!(reasoningSelector (LEFT_SQUARE STILL_ALIVE) (CENTER_SQUARE STILL_ALIVE) &ruleSpace &cachespace)
+!(reasoningSelector (LEFT_SQUARE STILL_ALIVE) (CENTER_SQUARE STILL_ALIVE) &ruleSpace &cachespace)
 
 
-!(convertRuleToPSI (1 (((((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((RIGHT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (0.5 0.002))))
+;;!(convertRuleToPSI (1 (((((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((RIGHT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (0.5 0.002))))

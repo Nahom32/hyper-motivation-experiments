@@ -96,6 +96,38 @@
         ($default ())
     )
 ))
+(= (matchGoals $goals $rules) (
+    if (== $rules ())
+        ()
+        (let* (
+            (($rule $restRules) (decons-atom $rules))
+            ($rule-goal (extractRule GoalValues $rule))
+            ($restMatching (matchGoals $goals $restRules))
+        ) (if (sameElements $goals $rule-goal)
+            (cons-atom $rule $restMatching)
+            $restMatching
+        ))
+))
+
+(= (sameElements $list1 $list2) (
+    if (not (== (size-atom $list1) (size-atom $list2)))
+        False
+        (let $intersection (intersection-atom $list1 $list2) (== (size-atom $intersection) (size-atom $list1)))      
+))
+
+(= (matchContexts $rules $contexts) (
+    if (== $rules ())
+        ()
+        (let* (
+            (($rule $restRules) (decons-atom $rules))
+            ($rule-context (extractRule ContextValues $rule))
+            ($restMatching (matchContexts $restRules $contexts))
+        ) (if (sameElements $contexts $rule-context)
+            (cons-atom $rule $restMatching)
+            $restMatching
+        ))
+))
+
 
 (: extractRuleId (-> Expression Number))
 (= (extractRuleId $rule) (
