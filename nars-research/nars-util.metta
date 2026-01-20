@@ -1,4 +1,36 @@
 
+;;!(import! &self utils)
+
+;;(: countSimilar (-> Expression Expression Number))
+;;(= (countSimilar $listOne $listTwo) (
+;;    let* (
+;;        ($count (collapse (let $value (superpose $listOne) (let $isIn (isMember $listTwo $value) $isIn))))
+;;    ) (sum $count)
+;;))
+;;
+;;(= (areSimilar $listOne $listTwo) 
+;;    (if (not (== (size-atom $listOne) (size-atom $listTwo)))
+;;        False
+;;        (if (== (size-atom $listOne) (countSimilar $listOne $listTwo))
+;;            True 
+;;            False)
+;;))
+;;
+;;
+;;(: min (-> Number Number Number))
+;;(= (min $num1 $num2) (
+;;    if (< $num1 $num2)
+;;        $num1
+;;        $num2
+;;))
+;;
+;;(: div (-> Number Number Number))
+;;(= (div $num $denom) (
+;;    (py-atom operator.truediv) $num $denom
+;;))
+
+;;(: round (-> Number Number Number))
+(= (round $num $sig) ((py-atom round) $num $sig))
 (= (matchContexts $rules $contexts) (
     if (== $rules ())
         ()
@@ -35,7 +67,7 @@
 (= (performActions $actions) (
     let* (
         ($action-size (size-atom $actions))
-        ($cutoff (/ 1 (+ 1 $action-size)))
+        ($cutoff (/ 1.0 (+ 1 $action-size)))
         ($_ (println! ("Action size: " $action-size " Cutoff: " $cutoff)))
         ($randomValue (/ (getRandom) 2))
         ($_ (println! ("Random Value: " $randomValue)))
@@ -58,7 +90,7 @@
     ) ()
 ))
 
-(: updateSTV (-> Number (Number Number) hyperon::space::DynSpace (->)))
+;;(: updateSTV (-> Number (Number Number) hyperon::space::DynSpace (->)))
 (= (updateSTV $rule ($s $c) $space) (
     let* (
         ((: Rule $id $ttv (STV $os $oc) $comp $context $action $goal) $rule)

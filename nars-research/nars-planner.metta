@@ -1,6 +1,7 @@
 !(import! &self sampler)
 !(import! &self rule-ops)
 !(import! &self nars-util)
+;;!(import! &self utils)
 
 (= (Truth_c2w $c) (/ $c (- 1 $c)))
 (= (Truth_w2c $w) (/ $w (+ $w 1)))
