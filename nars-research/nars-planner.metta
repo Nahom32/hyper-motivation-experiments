@@ -1,6 +1,6 @@
 !(import! &self sampler)
 !(import! &self rule-ops)
-;;!(import! &self nars-util)
+!(import! &self nars-util)
 
 (= (Truth_c2w $c) (/ $c (- 1 $c)))
 (= (Truth_w2c $w) (/ $w (+ $w 1)))
@@ -52,8 +52,7 @@
     )
 )
 (= (convertRulesToPSI $rules) (collapse (convertRuleToPSI (superpose $rules))))
-
-(= (addRules $space)
+(= (addRules $space) 
     (let $rules (superpose (
     ;; Rule 1
     (: Rule 1
@@ -122,7 +121,167 @@
                     (STILL_ALIVE (STV 0.2 0.1)))
         )) 
     ))
-)) (add-atom $space $rules)))
+)) (add-atom $space $rules) ))
+
+;;(= (addRules $space)
+;;    (let $rules (superpose 
+;;  (
+;;    (: Rule 1
+;;      (TTV 0)
+;;      (STV 0.6 0.01)
+;;      (Complexity 2)
+;;      (IMPLICATION
+;;          (AND
+;;              (Context (STV 0.4 0.1)
+;;                  (AND
+;;                      (HAS_CAPITAL (STV 0.5 0.1))
+;;                      (PRICE_LOW (STV 0.6 0.1) (COMMODITY_A))
+;;                      (SYSTEM_VISITED (STV 0.4 0.1))
+;;                  ))
+;;              (Action
+;;                  (SEQ_AND
+;;                      (BUY (COMMODITY_A))
+;;                  ))
+;;          )
+;;          (Goal (STV 0.5 0.1)
+;;              (AND
+;;                  (INVENTORY_INCREASED (STV 0.5 0.1))
+;;                  (PROFIT_POTENTIAL (STV 0.6 0.1))
+;;              ))
+;;      )
+;;  )
+;;
+;;  (: Rule 2
+;;      (TTV 0)
+;;      (STV 0.7 0.02)
+;;      (Complexity 3)
+;;      (IMPLICATION
+;;          (AND
+;;              (Context (STV 0.5 0.1)
+;;                  (AND
+;;                      (EVENT_ACTIVE (STV 0.6 0.1) (FAMINE))
+;;                      (COMMODITY_TYPE (STV 0.5 0.1) (FOOD))
+;;                      (INVENTORY_AVAILABLE (STV 0.4 0.1))
+;;                  ))
+;;              (Action
+;;                  (SEQ_AND
+;;                      (TRAVEL_TO (AFFECTED_SYSTEM))
+;;                      (SELL (FOOD))
+;;                  ))
+;;          )
+;;          (Goal (STV 0.7 0.1)
+;;              (AND
+;;                  (PROFIT_REALIZED (STV 0.7 0.1))
+;;                  (CAPITAL_INCREASED (STV 0.6 0.1))
+;;              ))
+;;      )
+;;  )
+;;
+;;  (: Rule 3
+;;      (TTV 0)
+;;      (STV 0.65 0.015)
+;;      (Complexity 4)
+;;      (IMPLICATION
+;;          (AND
+;;              (Context (STV 0.4 0.1)
+;;                  (AND
+;;                      (KNOWS_PRODUCTION_CHAIN (STV 0.6 0.1))
+;;                      (ROUTE_AVAILABLE (STV 0.5 0.1))
+;;                      (FUEL_SUFFICIENT (STV 0.4 0.1))
+;;                  ))
+;;              (Action
+;;                  (SEQ_AND
+;;                      (BUY (RAW_MATERIAL))
+;;                      (TRAVEL_TO (INDUSTRIAL_SYSTEM))
+;;                      (SELL (RAW_MATERIAL))
+;;                      (BUY (REFINED_GOODS))
+;;                  ))
+;;          )
+;;          (Goal (STV 0.6 0.1)
+;;              (AND
+;;                  (TRADE_CYCLE_COMPLETED (STV 0.5 0.1))
+;;                  (LONG_TERM_PROFIT (STV 0.6 0.1))
+;;              ))
+;;      )
+;;  )
+;;
+;;  (: Rule 4
+;;      (TTV 0)
+;;      (STV 0.55 0.02)
+;;      (Complexity 3)
+;;      (IMPLICATION
+;;          (AND
+;;              (Context (STV 0.5 0.1)
+;;                  (AND
+;;                      (EVENT_ACTIVE (STV 0.6 0.1) (UNREST))
+;;                      (RISK_LEVEL_HIGH (STV 0.5 0.1))
+;;                      (CAPITAL_LOW (STV 0.4 0.1))
+;;                  ))
+;;              (Action
+;;                  (SEQ_AND
+;;                      (AVOID_SYSTEM)
+;;                  ))
+;;          )
+;;          (Goal (STV 0.5 0.1)
+;;              (AND
+;;                  (CAPITAL_PRESERVED (STV 0.5 0.1))
+;;                  (LOSS_AVOIDED (STV 0.6 0.1))
+;;              ))
+;;      )
+;;  )
+;;
+;;  (: Rule 5
+;;      (TTV 0)
+;;      (STV 0.6 0.02)
+;;      (Complexity 5)
+;;      (IMPLICATION
+;;          (AND
+;;              (Context (STV 0.5 0.1)
+;;                  (AND
+;;                      (PERFORMANCE_EVALUATED (STV 0.6 0.1))
+;;                      (PROFIT_TREND_DOWN (STV 0.5 0.1))
+;;                      (STRATEGY_ACTIVE (STV 0.4 0.1))
+;;                  ))
+;;              (Action
+;;                  (SEQ_AND
+;;                      (UPDATE_RISK_PROFILE)
+;;                      (REFINE_TRADING_RULES)
+;;                  ))
+;;          )
+;;          (Goal (STV 0.6 0.1)
+;;              (AND
+;;                  (STRATEGY_ADAPTED (STV 0.6 0.1))
+;;                  (EXPECTED_PROFIT_INCREASED (STV 0.5 0.1))
+;;              ))
+;;      )
+;;  )
+;;
+;;  (: Rule 6
+;;      (TTV 0)
+;;      (STV 0.58 0.015)
+;;      (Complexity 3)
+;;      (IMPLICATION
+;;          (AND
+;;              (Context (STV 0.4 0.1)
+;;                  (AND
+;;                      (MULTIPLE_ROUTES_AVAILABLE (STV 0.5 0.1))
+;;                      (TRAVEL_COST_HIGH (STV 0.4 0.1))
+;;                  ))
+;;              (Action
+;;                  (SEQ_AND
+;;                      (SELECT_OPTIMAL_ROUTE)
+;;                  ))
+;;          )
+;;          (Goal (STV 0.5 0.1)
+;;              (AND
+;;                  (TRAVEL_COST_REDUCED (STV 0.5 0.1))
+;;                  (NET_PROFIT_IMPROVED (STV 0.6 0.1))
+;;              ))
+;;      )
+;;  )
+;;
+;;)
+;;) (add-atom $space $rules)))
 
 ;; What if I use the following format ($id $rule-narsese)
 
@@ -287,7 +446,7 @@
 ;;!(reason (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (STV 0.5 0.002)) 
 ;;          (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (DEAD (STV 0.2 0.1)))) (STV 0.5 0.002)))
 ;;!(applyInference &rulespace)
-!(reasoningSelector (LEFT_SQUARE STILL_ALIVE) (CENTER_SQUARE STILL_ALIVE) &ruleSpace &cachespace)
+!(reasoningSelector (LEFT_SQUARE STILL_ALIVE) (CENTER_SQUARE STILL_ALIVE) &rulespace &cachespace)
 
 
 ;;!(convertRuleToPSI (1 (((((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((RIGHT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (0.5 0.002))))

@@ -1,21 +1,3 @@
-(= (matchGoals $goals $rules) (
-    if (== $rules ())
-        ()
-        (let* (
-            (($rule $restRules) (decons-atom $rules))
-            ($rule-goal (extractRule GoalValues $rule))
-            ($restMatching (matchGoals $goals $restRules))
-        ) (if (sameElements $goals $rule-goal)
-            (cons-atom $rule $restMatching)
-            $restMatching
-        ))
-))
-
-(= (sameElements $list1 $list2) (
-    if (not (== (size-atom $list1) (size-atom $list2)))
-        False
-        (let $intersection (intersection-atom $list1 $list2) (== (size-atom $intersection) (size-atom $list1)))      
-))
 
 (= (matchContexts $rules $contexts) (
     if (== $rules ())
@@ -53,7 +35,7 @@
 (= (performActions $actions) (
     let* (
         ($action-size (size-atom $actions))
-        ($cutoff (div 1 (+ 1 $action-size)))
+        ($cutoff (/ 1 (+ 1 $action-size)))
         ($_ (println! ("Action size: " $action-size " Cutoff: " $cutoff)))
         ($randomValue (/ (getRandom) 2))
         ($_ (println! ("Random Value: " $randomValue)))
