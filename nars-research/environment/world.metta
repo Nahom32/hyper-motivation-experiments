@@ -33,9 +33,9 @@
 )
 
 (= (executeRule $rule $currState)
-    (let $action (extractRule Action $rule)
-        (if (== $action travel)
-           (let* (
+  (let $action (extractRule Action $rule)
+        (case $action (
+          (travel (let* (
               ($sourcePlanet (extractSourcePlanet $rule))
               ($destPlanet (extractDestinationPlanet $rule))
               ($travelCost (getTravelCost $sourcePlanet $destPlanet))
@@ -44,13 +44,56 @@
               ($newContext $destPlanet)
            )
               ($newMoney $newContext)
-           )
-           ;;(if (== $action buy)
-           ;;   (let* (
-           ;;     ($item (extractItem $rule))
-           ;;     ($itemPrice (getPrice $))
-           ;;   ))
-           ;;)
-        )
-    )
+           ))
+          (buy (let* (
+                ($item (extractItem $rule))
+                ($planet (extractPlanet $rule))
+                ($itemPrice (getPrice $planet $rule))
+                ($money (extractMoney $currState))
+                ($netMoney (- $money $itemPrice))
+              )
+              ($netMoney $planet)
+              
+              ))
+          (sell (let* (
+                ($item (extractItem $rule))
+                ($planet (extractPlanet $rule))
+                ($itemPrice (getPrice $planet $rule))
+                ($money (extractMoney $currState))
+                ($netMoney (+ $money $itemPrice))
+              )
+              ($netMoney $planet)
+              
+              ))
+        ))
+  )
 )
+;;TODO do we need the state here?
+;;(= (executeRule $rule $currState)
+;;    (let $action (extractRule Action $rule)
+;;        (if (== $action travel)
+;;           (let* (
+;;              ($sourcePlanet (extractSourcePlanet $rule))
+;;              ($destPlanet (extractDestinationPlanet $rule))
+;;              ($travelCost (getTravelCost $sourcePlanet $destPlanet))
+;;              ($money (extractMoney $currState))
+;;              ($newMoney (- $money $travelCost))
+;;              ($newContext $destPlanet)
+;;           )
+;;              ($newMoney $newContext)
+;;           )
+;;           (if (== $action buy)
+;;              (let* (
+;;                ($item (extractItem $rule))
+;;                ($planet (extractPlanet $rule))
+;;                ($itemPrice (getPrice $planet $rule))
+;;                ($money (extractMoney $currState))
+;;                ($netMoney (- $money $itemPrice))
+;;              )
+;;              ($netMoney $planet)
+;;              
+;;              )
+;;           )
+;;        )
+;;    )
+;;)
