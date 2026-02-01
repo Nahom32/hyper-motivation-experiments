@@ -82,7 +82,7 @@
 
 
 (= (executeRule $rule $money)
-  (let $action (extractRule Action $rule)
+    (let $action (extractRule Action $rule)
         (case $action (
           ((TRAVEL) (let* (
               ($sourcePlanet (extractSourcePlanet $rule))
@@ -90,7 +90,7 @@
               ($destPlanet (extractDestinationPlanet $rule))
               ($_ (println! (destinationPlanet $destPlanet)))
               ($travelCost (getTravelCost $sourcePlanet $destPlanet))
-              (println! (travelCost $travelCost))
+              ;;(println! (travelCost $travelCost))
               ($newMoney (- $money $travelCost))
               ($newContext $destPlanet)
            )
@@ -98,18 +98,18 @@
            ))
           
 
-          ((BUY) (let* (
-                ($item (extractItem $rule))
-                ($planet (extractPlanet $rule))
-                ($itemPrice (getPrice $planet $rule))
+          ((BUY $item) (let* (
+                ;;($item (extractItem $rule))  ;;TODO: extractItem
+                ($planet (extractSourcePlanet $rule))
+                ($itemPrice (getPrice $planet $item))
                 ($netMoney (- $money $itemPrice))
               )
               ($netMoney $planet)
               
               ))
           
-          ((SELL) (let* (
-                ($item (extractItem $rule))
+          ((SELL $item) (let* (
+                ;;($item (extractItem $rule))
                 ($planet (extractPlanet $rule))
                 ($itemPrice (getPrice $planet $rule))
                 ($netMoney (+ $money $itemPrice))
@@ -117,6 +117,7 @@
               ($netMoney $planet)
               
               ))
+          ($_ ($money NONE))
         ))
   )
 )
@@ -191,3 +192,5 @@
             (PLANET_B (STV 0.2 0.1))
         )))
 )) 56)
+
+!(getTravelCost PLANET_C PLANET_A)
