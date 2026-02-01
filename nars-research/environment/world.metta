@@ -5,42 +5,30 @@
 (PRICE_TABLE C)
 
 
-(A (FOOD 8))
-(A (METAL 15))
-(A (FUEL 25))
+(PLANET_A (FOOD 8))
+(PLANET_A (METAL 15))
+(PLANET_A (FUEL 25))
 
-(B (FOOD 8))
-(B (METAL 15))
-(B (FUEL 25))
+(PLANET_B (FOOD 8))
+(PLANET_B (METAL 15))
+(PLANET_B (FUEL 25))
 
-(C (FOOD 8))
-(C (METAL 15))
-(C (FUEL 25))
+(PLANET_C (FOOD 8))
+(PLANET_C (METAL 15))
+(PLANET_C (FUEL 25))
 
 (AVERAGE_COST FOOD 13)
 (AVERAGE_COST METAL 15)
 (AVERAGE_COST FUEL 16)
 
 
-(TRAVEL_COST A B 1)
-(TRAVEL_COST B C 1)
-(TRAVEL_COST C A 1)
+(TRAVEL_COST PLANET_A PLANET_B 1)
+(TRAVEL_COST PLANET_B PLANET_C 1)
+(TRAVEL_COST PLANET_C PLANET_A 1)
 
-;;(: Rule 1
-;;    (TTV 0)
-;;    (STV 0.5 0.002)
-;;    (Complexity 1)
-;;    (IMPLICATION
-;;        (AND
-;;            (Context (STV 0.2 0.1) (AND (
-;;                (PLANET_A (STV 0.2 0.1))
-;;            )))
-;;            (Action (SEQ_AND (TRAVEL)))
-;;        )
-;;        (Goal (STV 0.2 0.1) (AND (
-;;            (PLANET_B (STV 0.2 0.1))
-;;        )))
-;;))
+(TRAVEL_COST PLANET_B PLANET_A 1)
+(TRAVEL_COST PLANET_C PLANET_B 1)
+(TRAVEL_COST PLANET_A PLANET_C 1)
 
 (= (getTravelCost $placeA $placeB)
     (match &self (TRAVEL_COST $placeA $placeB $weight) $weight))
@@ -53,21 +41,7 @@
 (= (getPrice $planet $good)
     (match &self ($planet ($good $value)) $value)
 )
-(: Rule 6
-    (TTV 0)
-    (STV 0.5 0.002)
-    (Complexity 1)
-    (IMPLICATION
-        (AND
-            (Context (STV 0.2 0.1) (AND (
-                (PLANET_C (STV 0.2 0.1))
-            )))
-            (Action (SEQ_AND (TRAVEL)))
-        )
-        (Goal (STV 0.2 0.1) (AND (
-            (PLANET_B (STV 0.2 0.1))
-        )))
-))
+
 (= (extractSourcePlanet $rule) 
     (let* (
         ($context (extractRule Context $rule))
@@ -83,11 +57,11 @@
 (= (extractDestinationPlanet $rule) 
     (let* (
         ($goal (extractRule Goal $rule))
-        ($_ (println! (context $context)))
-        ((($planet $stv)) $context)
-
+        ($_ (println! (goal $goal)))
+        ($destinationPlanetInfo (car-atom $goal))
+        (($destPlanet $destStv) $destinationPlanetInfo)
     )
-      $planet
+      $destPlanet
     )
 )
 !(extractSourcePlanet  (: Rule 6
@@ -105,13 +79,18 @@
             (PLANET_B (STV 0.2 0.1))
         )))
 )))
-(= (executeRule $rule $context $money)
+
+
+(= (executeRule $rule $money)
   (let $action (extractRule Action $rule)
         (case $action (
           ((TRAVEL) (let* (
               ($sourcePlanet (extractSourcePlanet $rule))
+              ($_ (println! (sourcePlanet $sourcePlanet)))
               ($destPlanet (extractDestinationPlanet $rule))
+              ($_ (println! (destinationPlanet $destPlanet)))
               ($travelCost (getTravelCost $sourcePlanet $destPlanet))
+              (println! (travelCost $travelCost))
               ($newMoney (- $money $travelCost))
               ($newContext $destPlanet)
            )
@@ -196,3 +175,19 @@
             (PLANET_B (STV 0.2 0.1))
         )))
 )))
+
+!(executeRule (: Rule 6
+    (TTV 0)
+    (STV 0.5 0.002)
+    (Complexity 1)
+    (IMPLICATION
+        (AND
+            (Context (STV 0.2 0.1) (AND (
+                (PLANET_C (STV 0.2 0.1))
+            )))
+            (Action (SEQ_AND (TRAVEL)))
+        )
+        (Goal (STV 0.2 0.1) (AND (
+            (PLANET_B (STV 0.2 0.1))
+        )))
+)) 56)
