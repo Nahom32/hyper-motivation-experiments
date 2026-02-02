@@ -193,4 +193,4 @@
         )))
 )) 56)
 
-!(getTravelCost PLANET_C PLANET_A)
+;;!(getTravelCost PLANET_C PLANET_A)
