@@ -1,5 +1,5 @@
-!(import! &self sampler)
-!(import! &self rule-ops)
+;;!(import! &self sampler)
+;;!(import! &self rule-ops)
 !(import! &self nars-util)
 ;;!(import! &self utils)
 
@@ -371,7 +371,7 @@
       ($_ (println! (decons-result $head $tail)))
       ($inferedRules (applyInferenceForRule $head $tail ()))
       ($_ (println! (inferedRules $inferedRules)))
-      ($ruleSize (size-atom $inferedRules))
+      ;;($ruleSize (size-atom $inferedRules))
       ($accum' (union-atom $accum $inferedRules))
     )
      (applyInference' $tail  $accum')
@@ -447,7 +447,7 @@
 ;;!(reason (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (STV 0.5 0.002)) 
 ;;          (((((LEFT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((CENTER_SQUARE (STV 0.2 0.1)) (DEAD (STV 0.2 0.1)))) (STV 0.5 0.002)))
 ;;!(applyInference &rulespace)
-!(reasoningSelector (LEFT_SQUARE STILL_ALIVE) (CENTER_SQUARE STILL_ALIVE) &rulespace &cachespace)
+;;!(reasoningSelector (LEFT_SQUARE STILL_ALIVE) (CENTER_SQUARE STILL_ALIVE) &rulespace &cachespace)
 
 
 ;;!(convertRuleToPSI (1 (((((CENTER_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1))) (MOVE_RIGHT)) --> ((RIGHT_SQUARE (STV 0.2 0.1)) (STILL_ALIVE (STV 0.2 0.1)))) (0.5 0.002))))

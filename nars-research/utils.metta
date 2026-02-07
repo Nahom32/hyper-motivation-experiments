@@ -1,4 +1,4 @@
-(: countSimilar (-> Expression Expression Number))
+;;(: countSimilar (-> Expression Expression Number))
 (= (countSimilar $listOne $listTwo) (
     let* (
         ($count (collapse (let $value (superpose $listOne) (let $isIn (isMember $listTwo $value) $isIn))))
@@ -19,17 +19,20 @@
   )
 )
 
-(: min (-> Number Number Number))
+;;(: min (-> Number Number Number))
 (= (min $num1 $num2) (
     if (< $num1 $num2)
         $num1
         $num2
 ))
 
-(: div (-> Number Number Number))
+;;(: div (-> Number Number Number))
 (= (div $num $denom) (
     (py-atom operator.truediv) $num $denom
 ))
 
-(: round (-> Number Number Number))
+;;(: round (-> Number Number Number))
 (= (round $num $sig) ((py-atom round) $num $sig))
+
+(= (add-atoms $space $atoms) (add-atom $space (superpose $atoms)))
+

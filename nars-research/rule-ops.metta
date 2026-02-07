@@ -8,6 +8,9 @@
 
 (= (if-equal2 $A $B $Then $Else)
    (if (== $A $B) $Then $Else))
+(= (cadr-atom $atom)
+    (let $interim (cdr-atom $atom) (car-atom $interim))
+)
 
 (= (assertEqual $A $B)
    (assert (== $A $B)))
@@ -151,7 +154,7 @@
 ))
 
 (= (extractRuleContextValues $rule) (
-    let $contexts (extractRuleContext $rule) (map-atom $contexts $context (car-atom $context))
+    let $contexts (extractRuleContext $rule) (map-atom $contexts $context ((car-atom $context) (cadr-atom $context)))
 ))
 
 (= (extractRuleAction $rule) (
@@ -167,7 +170,7 @@
 ))
 
 (= (extractRuleGoalValues $rule) (
-    let $goals (extractRuleGoal $rule) (map-atom $goals $goal (car-atom $goal))
+    let $goals (extractRuleGoal $rule) (map-atom $goals $goal ((car-atom $goal) (cadr-atom $goal)))
 ))
 
 (= (extractRuleSTV $rule) (

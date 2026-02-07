@@ -281,13 +281,16 @@
 (= (probBasedSample $ruleSpace $k)
     (let* (
         ($rules (collapse (get-atoms $ruleSpace)))
-        ($_ (println! (rules $rules)))
+       ;; ($_ (println! (ln (size-atom $rules))))
+        ;;($_ (println! (rules $rules)))
         ($ids (collapse (getRuleIdWithStv (superpose $rules))))
-        ($_ (println! (ids $ids)))
+        ;;($_ (println! (ids $ids)))
         ($idsWithBeta (collapse (changeSTVToBeta (superpose $ids))))
-        ($_ (println! (idsWithBeta $idsWithBeta)))
+       ;; ($_ (println! (idsWithBeta $idsWithBeta)))
         ($idsWithDistrib (collapse (convertShortToBetaSample (superpose $idsWithBeta))))
+        ;;($_ (println! (idsWithDistrib $idsWithDistrib)))
         ($sortedRules (sortRules $idsWithDistrib dec))
+        ;;($_ (println! (sortedRules $sortedRules)))
         ($selectedRules (if (>= $k (size-atom $rules)) $sortedRules (let ($left $right) (splitAt  $k  $sortedRules)  $left)))
         
         )
@@ -347,8 +350,8 @@
     (match $space  
         (: Rule $id $temporal $stv $comp (IMPLICATION (AND $context $action) $goal)) 
           (: Rule $id $temporal $stv $comp (IMPLICATION (AND $context $action) $goal))))
-!(probBasedSample &ruleSpace 4)
-!(getRuleIdWithStv (get-atoms &ruleSpace))
+;;!(probBasedSample &ruleSpace 4)
+;;!(getRuleIdWithStv (get-atoms &ruleSpace))
 (= (collectRules $space $values $accum)
   (if (== $values ())
     $accum
