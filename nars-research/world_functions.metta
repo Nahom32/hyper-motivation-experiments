@@ -44,6 +44,4 @@
     match &self ($item $planet $price) $price
 ))
 
-(= (getAvgPrice $item) (
-    match &self (AVG_PRICE $item $price) $price
-))
+(= (getAvgPrice $item) (if (== $item ()) 0 (match &self (AVG_PRICE $item $price) $price)))

@@ -201,6 +201,7 @@
 
 (= (evaluateState $contexts $money) (
     let* (
+        ($_ (println! (stateContexts $contexts)))
         ($item (getItem $contexts))
         ($_ (println! (stateItem $item)))
         ($itemValue (getAvgPrice $item))
