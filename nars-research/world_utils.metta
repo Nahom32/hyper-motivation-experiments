@@ -93,9 +93,11 @@
         ()
         (let* (
             (($head $tail) (decons-atom $contexts))
+            ($_ (println! (planet $head)))
             ($contextType (index-atom $head 0))
             ($contextValue (index-atom $head 1))
             ($rest (updatePlanet $tail $planet))
+            ($_ (println! (rest $rest)))
         ) (if (== $contextType PLANET)
             (cons-atom (PLANET $planet) $rest)
             (cons-atom $head $rest)
@@ -132,11 +134,16 @@
 
 (= (applyTravel $rule $contexts $money) (
     let* (
+        ($_ (println! (TRAVEL BEING APPLIED)))
         ($ruleContext (extractRule ContextValues $rule))
+        ($_ (println! (ruleContextTravel $ruleContext)))
         ($ruleGoal (extractRule GoalValues $rule))
         ($source (getPlanetFromContexts $ruleContext))
+        ($_ (println! (sourceTravel $source)))
         ($destination (getPlanetFromContexts $ruleGoal))
+        ($_ (println! (destinationTravel $destination)))
         ($cost (getTravelCost $source $destination))
+        ($_ (println! (costTravel $cost)))
         ($newContext (updatePlanet $contexts $destination)) ;; TODO
         ($newMoney (- $money $cost))
     ) ($newContext $newMoney)
@@ -168,7 +175,7 @@
         ($ruleActions (extractRule Action $rule))
         ($_ (println! (ruleActions $ruleActions)))
         ($ruleAction (index-atom $ruleActions 0))
-        ($_ (println! (ruleAction $ruleActions)))
+        ($_ (println! (ruleAction $ruleAction)))
     ) (case $ruleAction (
         (TRAVEL (applyTravel $rule $contexts $money))
         (SELL (applySell $rule $contexts $money))
@@ -195,7 +202,9 @@
 (= (evaluateState $contexts $money) (
     let* (
         ($item (getItem $contexts))
+        ($_ (println! (stateItem $item)))
         ($itemValue (getAvgPrice $item))
+        ($_ (evalStateValue $itemValue))
     ) (+ $itemValue $money)
 ))
 
