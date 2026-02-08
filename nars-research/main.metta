@@ -26,22 +26,68 @@
 ;;   )
 ;;)
 
-(= (thompson-sample $rules) (
-    if (== $rules ())
-        (0 Nil)
+;; (= (thompson-sample $rules) (
+;;     if (== $rules ())
+;;         (0 Nil)
+;;         (let* (
+;;             (($rule $tail) (decons-atom $rules))
+;;             ($_ (println! (rule $rule)))
+;;             ((STV $s $c) (extractRule STV $rule))
+;;             ($_ (println! (s c $s $c)))
+;;             ($ruleId (extractRule Id $rule))
+;;             ($_ (println! (ruleId $ruleId)))
+;;             (($alpha $beta) (stvToBeta ($s $c)))
+;;             ($_ (println! (alpha-beta ($alpha $beta))))
+;;             ($sampledValue (betaSample $alpha $beta))
+;;             ($_ (println! (Rule $ruleId $sampledValue)))
+;;             ($_ (println! (currMax $currMax currRule $currRule)))
+;;             ($_ (println! (tail $tail)))
+;;             (($currMax $currRule) (thompson-sample $tail))
+            
+;;         ) (if (> $sampledValue $currMax)
+;;             ($sampledValue $rule)
+;;             $currRule
+;;         ))
+;; ))
+
+
+(= (thompson-sampleHelper $rules $maxRule $maxVal)
+    (if (== $rules ())
+        ($maxVal $maxRule)
         (let* (
             (($rule $tail) (decons-atom $rules))
+            ($_ (println! (rule $rule)))
             ((STV $s $c) (extractRule STV $rule))
+            ($_ (println! (s c $s $c)))
             ($ruleId (extractRule Id $rule))
+            ($_ (println! (ruleId $ruleId)))
+            (($alpha $beta) (stvToBeta ($s $c)))
+            ($_ (println! (alpha-beta ($alpha $beta))))
+            ($sampledValue (betaSample $alpha $beta))
+        )
+            (if (> $sampledValue $maxVal)
+                (thompson-sampleHelper $tail $rule $sampledValue)
+                (thompson-sampleHelper $tail $maxRule $maxVal)
+            )
+
+        )
+    )
+)
+(= (thompson-sample $rules)
+    (if (== $rules ())
+        (0 Nil)
+        (let* (
+            (($head $tail) (decons-atom $rules))
+            ((STV $s $c) (extractRule STV $head))
             (($alpha $beta) (stvToBeta ($s $c)))
             ($sampledValue (betaSample $alpha $beta))
-            ($_ (println! (Rule $ruleId $sampledValue)))
-            (($currMax $currRule) (thompson-sample $tail))
-        ) (if (> $sampledValue $currMax)
-            ($sampledValue $rule)
-            $currRule
-        ))
-))
+            ($_ (println! (alpha-beta ($alpha $beta))))
+        )
+            (thompson-sampleHelper $tail $head $sampledValue)
+        )
+    )
+)
+
 
 
 (= (addWorldRules $space)
@@ -507,7 +553,9 @@
          ($_ (println! (Im here 5)))
         ($_ (println! (applicableRules $applicableRules)))
         ($selectedRule (thompson-sample $applicableRules))
+        ($_ (println! (selectedRule $selectedRule)))
         (($newContexts $newMoney) (applyRule $selectedRule $contexts))
+        ($_ (println! (Im here 7)))
         ($oldStateValue (evaluateState $contexts $money))
         ($newStateValue (evaluateState $newContexts $newMoney))
         ($reward (- $newStateValue $oldStateValue))
