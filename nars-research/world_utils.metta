@@ -165,8 +165,10 @@
 
 (= (applyRule $rule $contexts $money) (
     let* (
-        ($ruleActions (extractRule Actions $rule))
+        ($ruleActions (extractRule Action $rule))
+        ($_ (println! (ruleActions $ruleActions)))
         ($ruleAction (index-atom $ruleActions 0))
+        ($_ (println! (ruleAction $ruleActions)))
     ) (case $ruleAction (
         (TRAVEL (applyTravel $rule $contexts $money))
         (SELL (applySell $rule $contexts $money))

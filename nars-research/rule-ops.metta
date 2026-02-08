@@ -160,7 +160,7 @@
 (= (extractRuleAction $rule) (
     unify (: Rule $id $ttv $stv $complexity (IMPLICATION (AND $context (Action (SEQ_AND $action))) $goal)) $rule
         $action
-        Empty
+        $rule
 ))
 
 (= (extractRuleGoal $rule) (
