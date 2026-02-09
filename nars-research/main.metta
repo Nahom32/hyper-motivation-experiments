@@ -3,29 +3,6 @@
 !(import! &self world_utils)
 
 
-;; (= (thompson-sample $rules) (
-;;     if (== $rules ())
-;;         (0 Nil)
-;;         (let* (
-;;             (($rule $tail) (decons-atom $rules))
-;;             ($_ (println! (rule $rule)))
-;;             ((STV $s $c) (extractRule STV $rule))
-;;             ($_ (println! (s c $s $c)))
-;;             ($ruleId (extractRule Id $rule))
-;;             ($_ (println! (ruleId $ruleId)))
-;;             (($alpha $beta) (stvToBeta ($s $c)))
-;;             ($_ (println! (alpha-beta ($alpha $beta))))
-;;             ($sampledValue (betaSample $alpha $beta))
-;;             ($_ (println! (Rule $ruleId $sampledValue)))
-;;             ($_ (println! (currMax $currMax currRule $currRule)))
-;;             ($_ (println! (tail $tail)))
-;;             (($currMax $currRule) (thompson-sample $tail))
-            
-;;         ) (if (> $sampledValue $currMax)
-;;             ($sampledValue $rule)
-;;             $currRule
-;;         ))
-;; ))
 (= (updateRule $rule $result $ruleSpace) (
     let* (
         ($_ (println! ("Updating rule: " $rule " with result: " $result)))
@@ -39,16 +16,14 @@
     ) (updateSTV $rule ($newStrength $newConfidence) $ruleSpace)
 ))
 
-;;(: updateSTV (-> Number (Number Number) hyperon::space::DynSpace (->)))
 (= (updateSTV $rule ($s $c) $space) (
     let* (
-        ;; ((: Rule $id $ttv (STV $os $oc) $comp $context $action $goal) $rule)
-        ;; ($newRule (: Rule $id $ttv (STV $s $c) $comp $impl))
+       
         ((: Rule $id $ttv (STV $os $oc) $complexity (IMPLICATION (AND $context $action) $goal)) $rule)
         ($newRule (: Rule $id $ttv (STV $s $c) $complexity (IMPLICATION (AND $context $action) $goal)))
 
         ($_ (println! (newRule $newRule)))
-        ;;($_ )
+       
     ) (updateAtom $space $rule $newRule)
 ))
 
@@ -554,18 +529,7 @@
 
 !(addWorldRules &worldSpace)
 
-;;!(get-atoms &worldSpace)
 
-;;!(updateMoney 400)
-;;!(match &self (money $x) $x)
-
-
-;;How can I build the main loop?
-;;So the player knows the context he is in. 
-;;What is the criteria of stopping? and what is the criteria of winining
-;;Should we have maximum number of loops. This can be one of the stopping criteria.
-;;The winning criteria is surpassing a threshold of money
-;;The losing criteria having money zero or being on debt.
 
 (= (gameLoop $contexts $money $ruleSpace $optimizer $numIter) 
     (if (>= $numIter 25)
@@ -612,24 +576,4 @@
     )
 )
 
-
-;;(= (reasoningSelector $context $goal $space $cacheSpace)
-;;  (let* (
-;;    ($indices (probBasedSample $space 5))
-;;    ($sampledRules (collectRules $space $indices ()))
-;;    ($_ (add-atoms $cacheSpace $sampledRules))
-;;    ($inferedRules (applyInference $cacheSpace))
-;;    ($convertedRules (convertRulesToPSI $inferedRules))
-;;    ($_ (println! (converted Rules $convertedRules)))
-;;    ($_ (add-atoms $space $convertedRules))
-;;    ($_ (remove-atoms $cacheSpace))
-;;    
-;;  )
-;;    (psiPlanner $context $goal $space)
-;;  )
-;;)
-
-
-;;!(bind! &ruleSpace (new-space))
-;;!(initializeSpace &ruleSpace)
 !(gameLoop ((PLANET A)) 100 &worldSpace thompson-sample 0)
