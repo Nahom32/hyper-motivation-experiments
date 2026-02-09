@@ -1,30 +1,7 @@
 !(import! &self nars-planner)
 !(import! &self sampler)
 !(import! &self world_utils)
-;;!(import! &self rule-ops)
-;; (= (clearSpace $space)
-;;   (match $space $atom
-;;     (remove-atom $space $atom)
-;;   )
-;; )
-;; (= (add-atoms $space $atoms) 
-;;     (if (== atoms ()) 
-;;         ()
-;;         (let* (
-;;             ;;(($head $tail) (decons-atom $atoms))
-;;             ($head (car-atom $atoms))
-;;             ($tail (cdr-atom $atoms))
-;;             ($_ (add-atom $space $head))
-;;         )
-;;             (add-atoms $space $tail)
-;;         )
-;;     )
-;; )
-;; (= (remove-atoms $space)
-;;   (match $space $atom
-;;     (remove-atom $space $atom)
-;;   )
-;;)
+
 
 ;; (= (thompson-sample $rules) (
 ;;     if (== $rules ())
@@ -568,11 +545,11 @@
 
 (= (loop $contexts $money $ruleSpace $optimizer) (
     let* (
-        ;;($indices (probBasedSample $ruleSpace 10))
-        ;;($_ (println! (This are the indices $indices)))
-        ;;($sampledRules (collectRules $ruleSpace $indices ()))
-        ($_ (println! (currMoney $money)))
-        ($sampledRules (collapse (get-atoms $ruleSpace)))
+        ($indices (probBasedSample $ruleSpace 10))
+        ($_ (println! (This are the indices $indices)))
+        ($sampledRules (collectRules $ruleSpace $indices ()))
+        ;; ($_ (println! (currMoney $money)))
+        ;; ($sampledRules (collapse (get-atoms $ruleSpace)))
         ($_ (add-atoms &cacheSpace $sampledRules))
         ($inferedRules (applyInference &cacheSpace))
         ($convertedRules (convertRulesToPSI $inferedRules))
@@ -623,18 +600,4 @@
 
 ;;!(bind! &ruleSpace (new-space))
 ;;!(initializeSpace &ruleSpace)
-!(loop ((PLANET A)) 100 &worldSpace greedySearch)
-;;(= (agentLoop $rule $numIter)
-;;    (if (>= $numIter 5000)
-;;      (let $money (match &self (money $x) $x) (Stalemate your money is $money))
-;;      (let $money (match &self (money $x) $x)
-;;          (if (<= $money 0) 
-;;               (You Lost your money is $money)
-;;               (if (>= money 2000)
-;;                  (You Won your money is $money)
-;;                  
-;;               )
-;;          )
-;;      )
-;;    )
-;;)
+!(loop ((PLANET A)) 100 &worldSpace thompson-sample)
