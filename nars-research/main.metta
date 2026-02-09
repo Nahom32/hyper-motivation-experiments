@@ -568,7 +568,7 @@
 ;;The losing criteria having money zero or being on debt.
 
 (= (gameLoop $contexts $money $ruleSpace $optimizer $numIter) 
-    (if (>= $numIter 7)
+    (if (>= $numIter 25)
         ("money:" $money "numIter:"  $numIter)
         (let* (
             ;; ($indices (probBasedSample $ruleSpace 10))
