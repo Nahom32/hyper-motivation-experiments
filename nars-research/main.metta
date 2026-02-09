@@ -88,7 +88,44 @@
     )
 )
 
+(= (greedySample $alpha $beta) (/ $alpha (+ $alpha $beta))) ;;Reference: A Tutorial on Thompson Sampling (Derrick Kingma et. al) (2019)
+(= (greedyHelper $rules $maxRule $maxVal)
+    (if (== $rules ())
+        ($maxVal $maxRule)
+        (let* (
+            (($rule $tail) (decons-atom $rules))
+            ($_ (println! (rule $rule)))
+            ((STV $s $c) (extractRule STV $rule))
+            ($_ (println! (s c $s $c)))
+            ($ruleId (extractRule Id $rule))
+            ($_ (println! (ruleId $ruleId)))
+            (($alpha $beta) (stvToBeta ($s $c)))
+            ($_ (println! (alpha-beta ($alpha $beta))))
+            ;;($sampledValue (betaSample $alpha $beta))
+            ($sampledValue (greedySample $alpha $beta))
+        )
+            (if (> $sampledValue $maxVal)
+                (greedyHelper $tail $rule $sampledValue)
+                (greedyHelper $tail $maxRule $maxVal)
+            )
 
+        )
+    )
+)
+(= (greedySearch $rules)
+    (if (== $rules ())
+        (0 Nil)
+        (let* (
+            (($head $tail) (decons-atom $rules))
+            ((STV $s $c) (extractRule STV $head))
+            (($alpha $beta) (stvToBeta ($s $c)))
+            ($sampledValue (betaSample $alpha $beta))
+            ($_ (println! (alpha-beta ($alpha $beta))))
+        )
+            (greedyHelper $tail $head $sampledValue)
+        )
+    )
+)
 
 (= (addWorldRules $space)
     ;; Travel A -> B
@@ -529,7 +566,7 @@
 ;;The winning criteria is surpassing a threshold of money
 ;;The losing criteria having money zero or being on debt.
 
-(= (loop $contexts $money $ruleSpace) (
+(= (loop $contexts $money $ruleSpace $optimizer) (
     let* (
         ;;($indices (probBasedSample $ruleSpace 10))
         ;;($_ (println! (This are the indices $indices)))
@@ -552,7 +589,7 @@
         ($applicableRules (getApplicableRules $contexts $money $rules))
          ($_ (println! (Im here 5)))
         ($_ (println! (applicableRules $applicableRules)))
-        (($valueResult $selectedRule) (thompson-sample $applicableRules))
+        (($valueResult $selectedRule) ($optimizer $applicableRules))
         ($_ (println! (selectedRule $selectedRule)))
         (($newContexts $newMoney) (applyRule $selectedRule $contexts $money))
         ($_ (println! (context $newContexts newMoney $newMoney)))
@@ -563,7 +600,7 @@
         ($_ (println! (reward $reward)))
         ($_ (updateRule $selectedRule $reward $ruleSpace))
     )
-    (loop $newContexts $newMoney $ruleSpace)
+    (loop $newContexts $newMoney $ruleSpace $optimizer)
 ))
 
 
@@ -586,7 +623,7 @@
 
 ;;!(bind! &ruleSpace (new-space))
 ;;!(initializeSpace &ruleSpace)
-!(loop ((PLANET A)) 100 &worldSpace)
+!(loop ((PLANET A)) 100 &worldSpace greedySearch)
 ;;(= (agentLoop $rule $numIter)
 ;;    (if (>= $numIter 5000)
 ;;      (let $money (match &self (money $x) $x) (Stalemate your money is $money))
