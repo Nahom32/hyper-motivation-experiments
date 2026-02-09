@@ -218,22 +218,22 @@
         )
 ))
 
-(= (updateSTV $rule ($strength $confidence)) (
-    let* (
-        ((: Rule $id $ttv (STV $s $c) $comp $impl) $rule)
-    ) (: Rule $id $ttv (STV $strength $confidence) $comp $impl)
-))
+;; (= (updateSTV $rule ($strength $confidence)) (
+;;     let* (
+;;         ((: Rule $id $ttv (STV $s $c) $comp $impl) $rule)
+;;     ) (: Rule $id $ttv (STV $strength $confidence) $comp $impl)
+;; ))
 
-(= (updateRule $selectedRule $reward) (
-    let* (
-        ((STV $s $c) (extractRule STV $selectedRule))
-        (($alpha $beta) (stvToBeta ($s $c)))
-        (($newAlpha $newBeta) (updateBeta $alpha $beta $reward))
-        (($newStrength $newConfidence) (betaToSTV $newAlpha $newBeta))
-        ($newRule (updateSTV $selectedRule ($newStrength $newConfidence)))
-    ) $newRule
-))
+;; (= (updateRule $selectedRule $reward) (
+;;     let* (
+;;         ((STV $s $c) (extractRule STV $selectedRule))
+;;         (($alpha $beta) (stvToBeta ($s $c)))
+;;         (($newAlpha $newBeta) (updateBeta $alpha $beta $reward))
+;;         (($newStrength $newConfidence) (betaToSTV $newAlpha $newBeta))
+;;         ($newRule (updateSTV $selectedRule ($newStrength $newConfidence)))
+;;     ) $newRule
+;; ))
 
 ;; Update Atoms in a space
 ;;(: updateAtom (-> Grounded Atom Atom (->)))
-(= (updateAtom $oatom $natom $space) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
+;;(= (updateAtom $oatom $natom $space) (let $_ (remove-atom $space $oatom) (add-atom $space $natom)))
