@@ -26,7 +26,31 @@
 ;;             $currRule
 ;;         ))
 ;; ))
+(= (updateRule $rule $result $ruleSpace) (
+    let* (
+        ($_ (println! ("Updating rule: " $rule " with result: " $result)))
+        ((STV $strength $confidence) (extractRule STV $rule))
+        (($alpha $beta) (stvToBeta ($strength $confidence)))
+        ($newAlpha (if (== $result 1) (+ $alpha 1) $alpha))
+        ($newBeta (if (== $result 1) $beta (+ $beta 1)))
+        (($newStrength $newConfidence) (betaToSTV ($newAlpha $newBeta)))
+        ($_ (println! ("Old STV: " ($strength $confidence) " New STV: " ($newStrength $newConfidence))))
+        ($_ (updateSTV $rule ($newStrength $newConfidence) $ruleSpace))
+    ) ()
+))
 
+;;(: updateSTV (-> Number (Number Number) hyperon::space::DynSpace (->)))
+(= (updateSTV $rule ($s $c) $space) (
+    let* (
+        ;; ((: Rule $id $ttv (STV $os $oc) $comp $context $action $goal) $rule)
+        ;; ($newRule (: Rule $id $ttv (STV $s $c) $comp $impl))
+        ((: Rule $id $ttv (STV $os $oc) $complexity (IMPLICATION (AND $context $action) $goal)) $rule)
+        ($newRule (: Rule $id $ttv (STV $s $c) $complexity (IMPLICATION (AND $context $action) $goal)))
+
+        ($_ (println! (newRule $newRule)))
+        ($_ (updateAtom $space $rule $newRule))
+    ) ()
+))
 
 (= (thompson-sampleHelper $rules $maxRule $maxVal)
     (if (== $rules ())
@@ -543,13 +567,13 @@
 ;;The winning criteria is surpassing a threshold of money
 ;;The losing criteria having money zero or being on debt.
 
-(= (loop $contexts $money $ruleSpace $optimizer) (
+(= (gameLoop $contexts $money $ruleSpace $optimizer $numIter) (
     let* (
-        ($indices (probBasedSample $ruleSpace 10))
-        ($_ (println! (This are the indices $indices)))
-        ($sampledRules (collectRules $ruleSpace $indices ()))
-        ;; ($_ (println! (currMoney $money)))
-        ;; ($sampledRules (collapse (get-atoms $ruleSpace)))
+        ;; ($indices (probBasedSample $ruleSpace 10))
+        ;; ($_ (println! (This are the indices $indices)))
+        ;; ($sampledRules (collectRules $ruleSpace $indices ()))
+        ($_ (println! (currMoney $money)))
+        ($sampledRules (collapse (get-atoms $ruleSpace)))
         ($_ (add-atoms &cacheSpace $sampledRules))
         ($inferedRules (applyInference &cacheSpace))
         ($convertedRules (convertRulesToPSI $inferedRules))
@@ -576,8 +600,10 @@
         ($reward (- $newStateValue $oldStateValue))
         ($_ (println! (reward $reward)))
         ($_ (updateRule $selectedRule $reward $ruleSpace))
+        ($_ (println! (numberOfIterations $numIter)))
+        ($newIter (+ $numIter 1))
     )
-    (loop $newContexts $newMoney $ruleSpace $optimizer)
+    (gameLoop $newContexts $newMoney $ruleSpace $optimizer $newIter)
 ))
 
 
@@ -600,4 +626,4 @@
 
 ;;!(bind! &ruleSpace (new-space))
 ;;!(initializeSpace &ruleSpace)
-!(loop ((PLANET A)) 100 &worldSpace thompson-sample)
+!(loop ((PLANET A)) 100 &worldSpace thompson-sample 0)

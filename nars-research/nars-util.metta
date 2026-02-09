@@ -77,24 +77,4 @@
     )
 ))
 
-(= (updateRule $rule $result $ruleSpace) (
-    let* (
-        ($_ (println! ("Updating rule: " $rule " with result: " $result)))
-        ((STV $strength $confidence) (extractRule STV $rule))
-        (($alpha $beta) (stvToBeta ($strength $confidence)))
-        ($newAlpha (if (== $result 1) (+ $alpha 1) $alpha))
-        ($newBeta (if (== $result 1) $beta (+ $beta 1)))
-        (($newStrength $newConfidence) (betaToSTV ($newAlpha $newBeta)))
-        ($_ (println! ("Old STV: " ($strength $confidence) " New STV: " ($newStrength $newConfidence))))
-        ($_ (updateSTV $rule ($newStrength $newConfidence) $ruleSpace))
-    ) ()
-))
 
-;;(: updateSTV (-> Number (Number Number) hyperon::space::DynSpace (->)))
-(= (updateSTV $rule ($s $c) $space) (
-    let* (
-        ((: Rule $id $ttv (STV $os $oc) $comp $context $action $goal) $rule)
-        ($newRule (: Rule $id $ttv (STV $s $c) $comp $impl))
-        ($_ (updateAtom $space $rule $newRule))
-    ) ()
-))
