@@ -1,196 +1,49 @@
-
-!(import! &self ../rule-ops.metta)
-(PRICE_TABLE A)
-(PRICE_TABLE B)
-(PRICE_TABLE C)
-
-
-(PLANET_A (FOOD 8))
-(PLANET_A (METAL 15))
-(PLANET_A (FUEL 25))
-
-(PLANET_B (FOOD 8))
-(PLANET_B (METAL 15))
-(PLANET_B (FUEL 25))
-
-(PLANET_C (FOOD 8))
-(PLANET_C (METAL 15))
-(PLANET_C (FUEL 25))
-
-(AVERAGE_COST FOOD 13)
-(AVERAGE_COST METAL 15)
-(AVERAGE_COST FUEL 16)
+;; Travel Info
+(TRAVEL_COST A B 1)
+(TRAVEL_COST A C 1)
+(TRAVEL_COST B A 1)
+(TRAVEL_COST B C 1)
+(TRAVEL_COST C A 1)
+(TRAVEL_COST C B 1)
 
 
-(TRAVEL_COST PLANET_A PLANET_B 1)
-(TRAVEL_COST PLANET_B PLANET_C 1)
-(TRAVEL_COST PLANET_C PLANET_A 1)
+(FOOD A 8)
+(FOOD B 20)
+(FOOD C 18)
 
-(TRAVEL_COST PLANET_B PLANET_A 1)
-(TRAVEL_COST PLANET_C PLANET_B 1)
-(TRAVEL_COST PLANET_A PLANET_C 1)
+(METAL A 15)
+(METAL B 8)
+(METAL C 22)
 
-(= (getTravelCost $placeA $placeB)
-    (match &self (TRAVEL_COST $placeA $placeB $weight) $weight))
+(FUEL A 25)
+(FUEL B 18)
+(FUEL C 5)
 
+(AVG_PRICE FOOD 15)
+(AVG_PRICE METAL 15)
+(AVG_PRICE FUEL 16)
 
-(= (getItemCost $item $place)
-    (match &self ($place ($item $value)) $value)
-)
+;; Helper Functions
+(= (getTravelCost $source $destination) (
+    match &self (TRAVEL_COST $source $destination $cost) $cost
+))
 
-(= (getPrice $planet $good)
-    (match &self ($planet ($good $value)) $value)
-)
+(= (getFoodCost $planet) (
+    match &self (FOOD $planet $cost) $cost
+))
 
-(= (extractSourcePlanet $rule) 
-    (let* (
-        ($context (extractRule Context $rule))
-        ($_ (println! (context $context)))
-        ;;(($internalContext) $context)
-        ($planetInfo (car-atom $context))
-        (($planet $planetStv) $planetInfo)
-    )
-      $planet
-  )
-)
+(= (getMetalCost $planet) (
+    match &self (METAL $planet $cost) $cost
+))
 
-(= (extractDestinationPlanet $rule) 
-    (let* (
-        ($goal (extractRule Goal $rule))
-        ($_ (println! (goal $goal)))
-        ($destinationPlanetInfo (car-atom $goal))
-        (($destPlanet $destStv) $destinationPlanetInfo)
-    )
-      $destPlanet
-    )
-)
-!(extractSourcePlanet  (: Rule 6
-    (TTV 0)
-    (STV 0.5 0.002)
-    (Complexity 1)
-    (IMPLICATION
-        (AND
-            (Context (STV 0.2 0.1) (AND (
-                (PLANET_C (STV 0.2 0.1))
-            )))
-            (Action (SEQ_AND (TRAVEL)))
-        )
-        (Goal (STV 0.2 0.1) (AND (
-            (PLANET_B (STV 0.2 0.1))
-        )))
-)))
+(= (getFuelCost $planet) (
+    match &self (FUEL $planet $cost) $cost
+))
 
+(= (getItemPrice $item $planet) (
+    match &self ($item $planet $price) $price
+))
 
-(= (executeRule $rule $money)
-    (let $action (extractRule Action $rule)
-        (case $action (
-          ((TRAVEL) (let* (
-              ($sourcePlanet (extractSourcePlanet $rule))
-              ($_ (println! (sourcePlanet $sourcePlanet)))
-              ($destPlanet (extractDestinationPlanet $rule))
-              ($_ (println! (destinationPlanet $destPlanet)))
-              ($travelCost (getTravelCost $sourcePlanet $destPlanet))
-              ;;(println! (travelCost $travelCost))
-              ($newMoney (- $money $travelCost))
-              ($newContext $destPlanet)
-           )
-              ($newMoney $newContext)
-           ))
-          
-
-          ((BUY $item) (let* (
-                ;;($item (extractItem $rule))  ;;TODO: extractItem
-                ($planet (extractSourcePlanet $rule))
-                ($itemPrice (getPrice $planet $item))
-                ($netMoney (- $money $itemPrice))
-              )
-              ($netMoney $planet)
-              
-              ))
-          
-          ((SELL $item) (let* (
-                ;;($item (extractItem $rule))
-                ($planet (extractPlanet $rule))
-                ($itemPrice (getPrice $planet $rule))
-                ($netMoney (+ $money $itemPrice))
-              )
-              ($netMoney $planet)
-              
-              ))
-          ($_ ($money NONE))
-        ))
-  )
-)
-;;TODO do we need the state here?
-;;(= (executeRule $rule $context)
-;;    (let $action (extractRule Action $rule)
-;;        (if (== $action travel)
-;;           (let* (
-;;              ($sourcePlanet (extractSourcePlanet $rule))
-;;              ($destPlanet (extractDestinationPlanet $rule))
-;;              ($travelCost (getTravelCost $sourcePlanet $destPlanet))
-;;              ($money (extractMoney $context))
-;;              ($newMoney (- $money $travelCost))
-;;              ($newContext $destPlanet)
-;;           )
-;;              ($newMoney $newContext)
-;;           )
-;;           (if (== $action buy)
-;;              (let* (
-;;                ($item (extractItem $rule))
-;;                ($planet (extractPlanet $rule))
-;;                ($itemPrice (getPrice $planet $rule))
-;;                ($money (extractMoney $context))
-;;                ($netMoney (- $money $itemPrice))
-;;              )
-;;              ($netMoney $planet)
-;;              
-;;              )
-;;           )
-;;        )
-;;    )
-;;)
-
-
-;; TODOS
-;;extractItem
-;;extractPlanet
-;;
-;;(= (extractMoney $context)
-;;    ()
-;;)
-
-!(extractRule Context (: Rule 23
-    (TTV 0)
-    (STV 0.5 0.002)
-    (Complexity 1)
-    (IMPLICATION
-        (AND
-            (Context (STV 0.2 0.1) (AND (
-                (PLANET_B (STV 0.2 0.1))
-                (HAS_FUEL (STV 0.1 0.1))
-            )))
-            (Action (SEQ_AND (SELL_FUEL)))
-        )
-        (Goal (STV 0.2 0.1) (AND (
-            (PLANET_B (STV 0.2 0.1))
-        )))
-)))
-
-!(executeRule (: Rule 6
-    (TTV 0)
-    (STV 0.5 0.002)
-    (Complexity 1)
-    (IMPLICATION
-        (AND
-            (Context (STV 0.2 0.1) (AND (
-                (PLANET_C (STV 0.2 0.1))
-            )))
-            (Action (SEQ_AND (TRAVEL)))
-        )
-        (Goal (STV 0.2 0.1) (AND (
-            (PLANET_B (STV 0.2 0.1))
-        )))
-)) 56)
-
-;;!(getTravelCost PLANET_C PLANET_A)
+(= (getAvgPrice $item) (
+    match &self (AVG_PRICE $item $price) $price
+))
