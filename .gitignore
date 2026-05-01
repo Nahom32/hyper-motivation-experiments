@@ -2,3 +2,5 @@ vertenv/
 trialvenv/
 lastvenv/
 .env
+
+**/__pycache__
