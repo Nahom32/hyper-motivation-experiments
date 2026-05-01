@@ -173,16 +173,40 @@
 ))
 
 ;; Update rule after action execution based on result (1 for success, 0 for failure)
-(= (updateRule $ruleId $result $space) (
-    let* (
+;; (= (updateRule $ruleId $result $space) (
+;;     let* (
+;;         (($strength $confidence) (getSTV $ruleId $space))
+;;         (($alpha $beta) (stvToBeta ($strength $confidence)))
+;;         ($newAlpha (if (== $result 1) (+ $alpha 1) $alpha))
+;;         ($newBeta (if (== $result 1) $beta (+ $beta 1)))
+;;         (($newStrength $newConfidence) (betaToSTV ($newAlpha $newBeta)))
+;;         ($_ (updateSTV $ruleId ($newStrength $newConfidence) $space))
+;;     ) ()
+;; ))
+(= (updateRule $ruleId $result $space)
+    (let* (
         (($strength $confidence) (getSTV $ruleId $space))
         (($alpha $beta) (stvToBeta ($strength $confidence)))
         ($newAlpha (if (== $result 1) (+ $alpha 1) $alpha))
         ($newBeta (if (== $result 1) $beta (+ $beta 1)))
-        (($newStrength $newConfidence) (betaToSTV ($newAlpha $newBeta)))
-        ($_ (updateSTV $ruleId ($newStrength $newConfidence) $space))
-    ) ()
-))
+        ($c 100)
+    )
+        (if (< (+ $alpha $beta) $c)
+            (let ($newStrength $newConfidence)  (betaToSTV ($newAlpha $newBeta))
+                    (updateSTV $ruleId ($newStrength $newConfidence) $space)
+            ) 
+            (let* (
+                ($regularizer (/ $c (+ $c 1)))
+                ($modAlpha (* $newAlpha $regularizer))
+                ($modBeta (* $newBeta $regularizer))
+                (($newStrength $newConfidence) (betaToSTV ($modAlpha $modBeta)))
+            )
+                (updateSTV $ruleId ($newStrength $newConfidence) $space)
+            )
+
+        )
+    )
+)
 
 (= (getRuleIdWithStv $rule) (let (: Rule $id $temporal $stv $comp (IMPLICATION (AND $context $action) $goal)) $rule ($id $stv)))
 (= (changeSTVToBeta $ruleIdWithSTV)

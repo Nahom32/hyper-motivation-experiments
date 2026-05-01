@@ -18,7 +18,7 @@
 (= (assertAlphaEqual $A $B)
    (assert (=alpha $A $B)))
 
-(: unify (-> Expression Expression Expression Expression %Undefined%))
+;;(: unify (-> Expression Expression Expression Expression %Undefined%))
 
 (= (unify $space $pattern $then $else)
    (if (is-space $space)
@@ -132,14 +132,14 @@
 ))
 
 
-(: extractRuleId (-> Expression Number))
+; (: extractRuleId (-> Expression Number))
 (= (extractRuleId $rule) (
     unify (: Rule $id $ttv $stv $complexity $implication) $rule
         $id
         -1
 ))
 
-(: extractRuleTTV (-> Expression Number))
+; (: extractRuleTTV (-> Expression Number))
 (= (extractRuleTTV $rule) (
     unify (: Rule $id (TTV $ttv) $stv $complexity $implication) $rule
         $ttv
@@ -150,27 +150,27 @@
     unify (: Rule $id $ttv $stv $complexity (IMPLICATION (AND (Context $context-stv (AND $context)) $action) $goal))
       $rule
       $context
-      Empty         
+      empty         
 ))
 
 (= (extractRuleContextValues $rule) (
-    let $contexts (extractRuleContext $rule) (map-atom $contexts $context ((car-atom $context) (cadr-atom $context)))
+    let $contexts (extractRuleContext $rule) (map-atom $contexts $context ((index-atom $context 0) (index-atom $context 1)))
 ))
 
 (= (extractRuleAction $rule) (
     unify (: Rule $id $ttv $stv $complexity (IMPLICATION (AND $context (Action (SEQ_AND $action))) $goal)) $rule
         $action
-        $rule
+        empty
 ))
 
 (= (extractRuleGoal $rule) (
     unify (: Rule $id $ttv $stv $complexity (IMPLICATION $and-link (Goal $goal-stv (AND $goal)))) $rule
         $goal
-        Empty
+        empty
 ))
 
 (= (extractRuleGoalValues $rule) (
-    let $goals (extractRuleGoal $rule) (map-atom $goals $goal ((car-atom $goal) (cadr-atom $goal)))
+    let $goals (extractRuleGoal $rule) (map-atom $goals $goal ((index-atom $goal 0) (index-atom $goal 1)))
 ))
 
 (= (extractRuleSTV $rule) (
@@ -203,22 +203,24 @@
         empty
 ))
 
-(= (extractAllContext $rule) 
-(unify (: Rule $id $ttv $stv $complexity (IMPLICATION (AND $context $action) $goal)) $rule
+(= (extractAllContext $rule) (
+    unify (: Rule $id $ttv $stv $complexity (IMPLICATION (AND $context $action) $goal)) $rule
         $context
-       empty
+        empty
 ))
 
-;; General Rule helpers
 
-;; For now complexity is the number of actions in the rule
-(: calculateComplexity (-> Expression Number))
+
 (= (calculateComplexity $rule) (
     let* (
         ($action (extractRuleAction $rule))
         ($actionCount (size-atom $action))
     ) $actionCount
 ))
+
+;; General Rule helpers
+
+
 
 ;; This could be optimized by adding an atom that tracks the max TTV in the rule space instead of searching every time
 ;;(: findCurrentTTV (-> hyperon::space::DynSpace Number))
@@ -253,8 +255,6 @@
 )
 
 
-
-
 (= (isMember $item $list) 
         (if (== $list ()) 
             False 
@@ -262,6 +262,7 @@
                 (if (== $head $item) 
                     True 
                     (isMember $item $tail)))))
+
 (= (generateId $space)
     (let* (
       ($rules (collapse (get-atoms $space)))
@@ -288,3 +289,95 @@
       )
     )
 )
+
+(= (filterByAction $action $ruleSpace) (
+    let* (
+        ($rules (collapse (get-atoms $ruleSpace)))
+        ($filtered (filter-rules-by-action $action $rules))
+    ) $filtered
+))
+
+(= (filter-rules-by-action $action $rules) (
+    if (== () $rules)
+        ()
+        (let* (
+            (($head $tail) (decons-atom $rules))
+            ($ruleAction (eval (extractRule Action $head)))
+            ($isMatch (eval (areSimilar $action $ruleAction)))
+            ($restMatches (eval (filter-rules-by-action $action $tail)))
+        ) (if $isMatch
+            (cons-atom $head $restMatches)
+            $restMatches))
+))
+
+;; Filters rules from a rule space based on matching goal values
+(= (filterByGoal $goal $ruleSpace) (
+    let* (
+        ($rules (collapse (get-atoms $ruleSpace)))
+        ($filtered (filter-rules-by-goal $goal $rules))
+    ) $filtered
+))
+
+(= (filter-rules-by-goal $goal $rules) (
+    if (== () $rules)
+        ()
+        (let* (
+            (($head $tail) (decons-atom $rules))
+            ($ruleGoal (eval (extractRule GoalValues $head)))
+            ($isMatch (eval (areSimilar $goal $ruleGoal)))
+            ($restMatches (eval (filter-rules-by-goal $goal $tail)))
+        ) (if $isMatch
+            (cons-atom $head $restMatches)
+            $restMatches))
+))
+
+;; Filters rules from a rule space based on matching context values
+(= (filterByContext $context $ruleSpace) (
+    let* (
+        ($rules (collapse (get-atoms $ruleSpace)))
+        ($filtered (filter-rules-by-context $context $rules))
+        ($_ (println! (filtered $filtered)))
+    ) $filtered
+))
+
+(= (filter-rules-by-context $context $rules) (
+    if (== () $rules)
+        ()
+        (let* (
+            (($head $tail) (decons-atom $rules))
+            ($ruleContext (eval (extractRule ContextValues $head)))
+            ($isMatch (eval (areSimilar $context $ruleContext)))
+            ($_ (println! ("Context match: " $isMatch $context " vs " $ruleContext)))
+            ($restMatches (filter-rules-by-context $context $tail))
+        ) (if $isMatch
+            (cons-atom $head $restMatches)
+            $restMatches))
+))
+
+(= (filter-rules-by-antecedent $antecedent $rules) (
+    if (== () $rules)
+        ()
+        (let* (
+            (($head $tail) (decons-atom $rules))
+            ($ruleAntecedent (eval (extractRule ContextAndAction $head)))
+            ($isMatch (eval (areSimilar $antecedent $ruleAntecedent)))
+            ($restMatches (eval (filter-rules-by-antecedent $antecedent $tail)))
+        ) (if $isMatch
+            (cons-atom $head $restMatches)
+            $restMatches))
+))
+
+(= (countSimilar $listOne $listTwo) (
+    let* (
+        ($count (collapse (let $value (superpose $listOne) (let $isIn (isMember $listTwo $value) $isIn))))
+    ) (sum $count)
+))
+
+(= (areSimilar $listOne $listTwo) 
+    (if (not (== (size-atom $listOne) (size-atom $listTwo)))
+        False
+        (if (== (size-atom $listOne) (countSimilar $listOne $listTwo))
+            True 
+            False)
+))
+

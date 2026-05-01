@@ -368,4 +368,6 @@
          ))
     )) (add-atom $space $rule)
 ))
-!(addWorldRules &worldSpace)
+;; !(addWorldRules &worldSpace)
+
+;; !(get-atoms &worldSpace)

@@ -7,6 +7,7 @@
 !(import! &self reasoning)
 !(import! &self utils)
 
+
 !(bind! &ruleSpace (new-space))
 
 ;;Subject = (AND Context Action)
@@ -17,24 +18,27 @@
 (= (nars-reasoning $rules) (
     let* (
         ($deductions (applyDeduction $rules))
-        ($inductions (applyInduction $rules))
-        ($abductions (applyAbduction $rules))
-        ($exemplifications ()) ;; Todo
+        ;;($inductions (applyInduction $rules))
+        ;;($abductions (applyAbduction $rules))
+        ;;($exemplifications ()) ;; Todo
+        ($inductions ())
+        ($abductions ())
+        ($exemplifications ())
     )
     (union-atom $deductions (union-atom $inductions (union-atom $abductions $exemplifications)))
 ))
 
 (= (loop $contexts $money $ruleSpace $depth) (
     if (== $depth 0)
-        (println! (DONE))
+        (println! (money $money depth $depth))
         (let* (
             ($rules (collapse (get-atoms $ruleSpace)))
             ($reasonedRules (nars-reasoning $rules))
-            ; ($_ (println! ("Reasoned Rules: " ( $reasonedRules))))
+            ($_ (println! ("Reasoned Rules: " ( $reasonedRules))))
             ($_ (collapse (let $rule (superpose $reasonedRules) (add-atom $ruleSpace $rule))))
             ($combinedRules (union-atom $rules $reasonedRules))
             ($_ (println! ("Combined Rules: " (size-atom $combinedRules))))
-            
+            ($_ (println! (contexts $contexts)))
             ($applicableRules (getApplicableRules $contexts $money $combinedRules))
             ($_ (println! (Applicable Rules: ( $applicableRules))))
             (($score $selectedRule) (thompson-sample $applicableRules))
@@ -55,4 +59,4 @@
 
 !(collapse (addWorldRules &ruleSpace))
 
-!(loop (((PLANET A) (STV 0.2 0.1))) 100 &ruleSpace 2)
+!(loop (((PLANET A) (STV 0.2 0.1))) 100 &ruleSpace 10)

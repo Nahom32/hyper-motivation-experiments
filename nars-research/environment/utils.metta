@@ -77,7 +77,9 @@
         ()
         (let* (
             (($head $tail) (decons-atom $rules))
+            ($_ (println! (head $head)))
             ($isValid (isValidRule $contexts $money $head))
+            ($_ (println! (isValid $isValid)))
             ($rest (getApplicableRules $contexts $money $tail))
         ) (if $isValid
             (cons-atom $head $rest)

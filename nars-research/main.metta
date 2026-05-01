@@ -1,31 +1,35 @@
 !(import! &self nars-planner)
 !(import! &self sampler)
 !(import! &self world_utils)
+!(import! &self world-rules)
+;;!(import! &self rule-ops)
+!(bind! &worldSpace (new-space))
+!(bind! &cacheSpace (new-space))
+
+;; (= (updateRule $rule $result $ruleSpace) (
+;;     let* (
+;;         ($_ (println! ("Updating rule: " $rule " with result: " $result)))
+;;         ((STV $strength $confidence) (extractRule STV $rule))
+;;         (($alpha $beta) (stvToBeta ($strength $confidence)))
+;;         ($newAlpha (if (== $result 1) (+ $alpha 1) $alpha))
+;;         ($newBeta (if (== $result 1) $beta (+ $beta 1)))
+;;         (($newStrength $newConfidence) (betaToSTV ($newAlpha $newBeta)))
+;;         ($_ (println! ("Old STV: " ($strength $confidence) " New STV: " ($newStrength $newConfidence))))
+;;         ;;($_ (updateSTV $rule ($newStrength $newConfidence) $ruleSpace))
+;;     ) (updateSTV $rule ($newStrength $newConfidence) $ruleSpace)
+;; ))
 
 
-(= (updateRule $rule $result $ruleSpace) (
-    let* (
-        ($_ (println! ("Updating rule: " $rule " with result: " $result)))
-        ((STV $strength $confidence) (extractRule STV $rule))
-        (($alpha $beta) (stvToBeta ($strength $confidence)))
-        ($newAlpha (if (== $result 1) (+ $alpha 1) $alpha))
-        ($newBeta (if (== $result 1) $beta (+ $beta 1)))
-        (($newStrength $newConfidence) (betaToSTV ($newAlpha $newBeta)))
-        ($_ (println! ("Old STV: " ($strength $confidence) " New STV: " ($newStrength $newConfidence))))
-        ;;($_ (updateSTV $rule ($newStrength $newConfidence) $ruleSpace))
-    ) (updateSTV $rule ($newStrength $newConfidence) $ruleSpace)
-))
-
-(= (updateSTV $rule ($s $c) $space) (
-    let* (
+;; (= (updateSTV $rule ($s $c) $space) (
+;;     let* (
        
-        ((: Rule $id $ttv (STV $os $oc) $complexity (IMPLICATION (AND $context $action) $goal)) $rule)
-        ($newRule (: Rule $id $ttv (STV $s $c) $complexity (IMPLICATION (AND $context $action) $goal)))
+;;         ((: Rule $id $ttv (STV $os $oc) $complexity (IMPLICATION (AND $context $action) $goal)) $rule)
+;;         ($newRule (: Rule $id $ttv (STV $s $c) $complexity (IMPLICATION (AND $context $action) $goal)))
 
-        ($_ (println! (newRule $newRule)))
+;;         ($_ (println! (newRule $newRule)))
        
-    ) (updateAtom $space $rule $newRule)
-))
+;;     ) (updateAtom $space $rule $newRule)
+;; ))
 
 (= (thompson-sampleHelper $rules $maxRule $maxVal)
     (if (== $rules ())
@@ -77,7 +81,6 @@
             ($_ (println! (ruleId $ruleId)))
             (($alpha $beta) (stvToBeta ($s $c)))
             ($_ (println! (alpha-beta ($alpha $beta))))
-            ;;($sampledValue (betaSample $alpha $beta))
             ($sampledValue (greedySample $alpha $beta))
         )
             (if (> $sampledValue $maxVal)
@@ -103,434 +106,6 @@
     )
 )
 
-(= (addWorldRules $space)
-    ;; Travel A -> B
-    (let $rules (superpose (  
-        ;; Travel A -> B
-        (: Rule 1
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET A (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (TRAVEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Travel A -> C
-        (: Rule 2
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET A (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (TRAVEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Travel B -> A
-        (: Rule 3
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET B (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (TRAVEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Travel B -> C
-        (: Rule 4
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET B (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (TRAVEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Travel C -> A
-        (: Rule 5
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET C (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (TRAVEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Travel C -> B
-        (: Rule 6
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET C (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (TRAVEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy FOOD
-        (: Rule 7
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND ((PLANET A (STV 0.2 0.1)))))
-                    (Action (SEQ_AND (BUY FOOD)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                    (HAS FOOD (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy Food in B
-        (: Rule 8
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND ((PLANET B (STV 0.2 0.1)))))
-                    (Action (SEQ_AND (BUY FOOD)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                    (HAS FOOD (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy food at C
-        (: Rule 9
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND ((PLANET C (STV 0.2 0.1)))))
-                    (Action (SEQ_AND (BUY FOOD)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                    (HAS FOOD (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy METAL at A
-        (: Rule 10
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET A (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (BUY METAL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                    (HAS METAL (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy METAL at B
-        (: Rule 11
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET B (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (BUY METAL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                    (HAS METAL (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy METAL at C
-        (: Rule 12
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET C (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (BUY METAL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                    (HAS METAL (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy FUEL at A
-        (: Rule 13
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET A (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (BUY FUEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                    (HAS FUEL (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy FUEL at B
-        (: Rule 14
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET B (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (BUY FUEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                    (HAS FUEL (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Buy FUEL at C
-        (: Rule 15
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET C (STV 0.2 0.1))
-                    )))
-                    (Action (SEQ_AND (BUY FUEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                    (HAS FUEL (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell FOOD at A
-        (: Rule 16
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET A (STV 0.2 0.1))
-                        (HAS FOOD (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL FOOD)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell FOOD at B
-        (: Rule 17
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET B (STV 0.2 0.1))
-                        (HAS FOOD (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL FOOD)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell FOOD at C
-        (: Rule 18
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET C (STV 0.2 0.1))
-                        (HAS FOOD (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL FOOD)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell METAL at A
-        (: Rule 19
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET A (STV 0.2 0.1))
-                        (HAS METAL (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL METAL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell METAL at B
-        (: Rule 20
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET B (STV 0.2 0.1))
-                        (HAS METAL (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL METAL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell METAL at C
-        (: Rule 21
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET C (STV 0.2 0.1))
-                        (HAS METAL (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL METAL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell FUEL at A
-        (: Rule 22
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET A (STV 0.2 0.1))
-                        (HAS FUEL (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL FUEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET A (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell FUEL at B
-        (: Rule 23
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET B (STV 0.2 0.1))
-                        (HAS FUEL (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL FUEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET B (STV 0.2 0.1))
-                )))
-        ))
-
-        ;; Sell FUEL at C
-        (: Rule 24
-            (TTV 0)
-            (STV 0.5 0.002)
-            (Complexity 1)
-            (IMPLICATION
-                (AND
-                    (Context (STV 0.2 0.1) (AND (
-                        (PLANET C (STV 0.2 0.1))
-                        (HAS FUEL (STV 0.1 0.1))
-                    )))
-                    (Action (SEQ_AND (SELL FUEL)))
-                )
-                (Goal (STV 0.2 0.1) (AND (
-                    (PLANET C (STV 0.2 0.1))
-                )))
-        )))
-    ) (add-atom $space $rules)))
-
-!(addWorldRules &worldSpace)
-
-
-
 (= (gameLoop $contexts $money $ruleSpace $optimizer $numIter) 
     (if (>= $numIter 25)
         ("money:" $money "numIter:"  $numIter)
@@ -541,39 +116,36 @@
             
             ($_ (println! (currMoney $money)))
             ($sampledRules (collapse (get-atoms $ruleSpace)))
+            ;;($_ (println! (sampledRules $sampledRules)))
             ($_ (add-atoms &cacheSpace $sampledRules))
-            ($inferedRules (applyInference &cacheSpace))
-            ($convertedRules (convertRulesToPSI $inferedRules))
-            ($_ (println! (Im here $convertedRules)))
+            ($convertedRules (applyInference &cacheSpace))
+            ($_ (println! (convertedRules $convertedRules)))
+            ;;($convertedRules (convertRulesToPSI $inferedRules))
             ($_ (add-atoms $ruleSpace $convertedRules))
-            ($_ (println! (Im here 2)))
             ($cachedValues (collapse (get-atoms &cacheSpace)))
             ($_ (remove-atoms &cacheSpace $cachedValues))
-            ($_ (println! (Im here 3)))
+            
             ($rules (collapse (get-atoms $ruleSpace)))
-            ($_ (println! (Im here 4)))
-            ;;($_ (println! (contexts $contexts money $money rules $rules)))
-            ($_ (println! (contextForApplications $contexts)))
             ($applicableRules (getApplicableRules $contexts $money $rules))
-            ($_ (println! (Im here 5)))
             ($_ (println! (applicableRules $applicableRules)))
             (($valueResult $selectedRule) ($optimizer $applicableRules))
-            ($_ (println! (selectedRule $selectedRule)))
             (($newContexts $newMoney) (applyRule $selectedRule $contexts $money))
-            ($_ (println! (context $newContexts newMoney $newMoney)))
-            ($_ (println! (Im here 7)))
             ($oldStateValue (evaluateState $contexts $money))
             ($newStateValue (evaluateState $newContexts $newMoney))
             ($reward (- $newStateValue $oldStateValue))
-            ($_ (println! (reward $reward)))
-            ;; ($_ (updateRule $selectedRule $reward $ruleSpace))
-            ($_ (println! (numberOfIterations $numIter)))
+            ;;($_ (println! (reward $reward)))
+            ($_ (updateRule $selectedRule $reward $ruleSpace))
+            ;;($_ (println! (numberOfIterations $numIter)))
             ($newIter (+ $numIter 1))
         )
-            ;   ;$newIter
+           
             (gameLoop $newContexts $newMoney $ruleSpace $optimizer $newIter)
         )
+      
     )
 )
 
-!(gameLoop ((PLANET A)) 100 &worldSpace thompson-sample 0)
+!(addWorldRules &worldSpace)
+;;!(get-atoms &worldSpace)
+!(gameLoop (((PLANET A) (STV 0.2 0.1))) 100 &worldSpace thompson-sample 0)
+

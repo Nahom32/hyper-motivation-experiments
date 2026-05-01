@@ -24,7 +24,7 @@
 
 (= (convertRuleToPSI $rule)
     (let* (
-        ($id 25) ;; temporary ID generation
+        ($id (random-int 2000 3000)) ;; temporary ID generation
         ; ($_ (println! ("Converting rule to Narsese with ID: " $id " and rule: " $rule)))
         (((($context $action) --> $goal) ($freq $conf)) $rule)
         ($lbConf (max 0.01 $conf)) ;; due to arthmetic issues, I set a lower bound for confidence
