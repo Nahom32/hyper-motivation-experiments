@@ -1,0 +1,27 @@
+{
+  "user": {
+    "id": 1,
+    "name": "Ada Lovelace",
+    "active": true,
+    "roles": ["admin", "researcher"]
+  },
+  "tasks": [
+    {
+      "id": "task-001",
+      "title": "Collect samples",
+      "completed": false,
+      "priority": 0.8
+    },
+    {
+      "id": "task-002",
+      "title": "Review results",
+      "completed": true,
+      "priority": 0.4
+    }
+  ],
+  "metadata": {
+    "source": "dummy-fixture",
+    "tags": ["json", "s-expression", "converter"],
+    "notes": null
+  }
+}
